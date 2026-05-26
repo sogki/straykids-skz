@@ -35,11 +35,15 @@ export default function GuessMember() {
 
   useEffect(() => {
     if (!game.state || completedRef.current) return
-    if (game.state.status === 'won' || game.state.status === 'lost') {
+    if (game.state.status !== 'won' && game.state.status !== 'lost') return
+    if (game.state.tracked) {
       completedRef.current = true
-      trackGameComplete('guess-member', { status: game.state.status })
+      return
     }
-  }, [game.state])
+    completedRef.current = true
+    trackGameComplete('guess-member', { status: game.state.status })
+    game.markTracked()
+  }, [game.state, game])
 
   const questionMeta = game.puzzle
     ? getMemberQuestionMeta(game.puzzle.questionType)

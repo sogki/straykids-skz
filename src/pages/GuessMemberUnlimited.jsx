@@ -10,7 +10,10 @@ import { fetchDailyMemberPool, getDailyMemberPuzzle } from '@/services/skzDaily'
 import { getMemberQuestionMeta } from '@/data/memberQuestionTypes'
 import { useUnlimitedGuessGame } from '@/hooks/useUnlimitedGuessGame'
 import { getTodayKey } from '@/utils/dailyPuzzle'
-import { trackGameComplete, trackGameStart } from '@/services/skzAnalytics'
+import {
+  trackUnlimitedRoundComplete,
+  trackUnlimitedRoundStart,
+} from '@/services/skzAnalytics'
 import { absoluteSiteUrl } from '@/data/site'
 import styles from '@/styles/DailyGuess.module.css'
 import gameStyles from '@/styles/GamePage.module.css'
@@ -29,7 +32,7 @@ export default function GuessMemberUnlimited() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    trackGameStart('guess-member-unlimited')
+    trackUnlimitedRoundStart('guess-member')
   }, [])
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function GuessMemberUnlimited() {
     const stamp = `${game.puzzle.id}:${game.state?.status}`
     if (lastResolvedRound.current === stamp) return
     lastResolvedRound.current = stamp
-    trackGameComplete('guess-member-unlimited', {
+    trackUnlimitedRoundComplete('guess-member', {
       status: game.state?.status,
       streak: game.stats?.streak,
     })

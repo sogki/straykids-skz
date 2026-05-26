@@ -49,10 +49,16 @@ export default function GuessSong() {
   const completedRef = useRef(false)
   useEffect(() => {
     if (!state || completedRef.current) return
-    if (state.status === 'won' || state.status === 'lost') {
+    if (state.status !== 'won' && state.status !== 'lost') return
+    if (state.tracked) {
       completedRef.current = true
-      trackGameComplete('guess-song', { status: state.status })
+      return
     }
+    completedRef.current = true
+    trackGameComplete('guess-song', { status: state.status })
+    const trackedState = { ...state, tracked: true }
+    setState(trackedState)
+    saveDailyState(trackedState)
   }, [state])
 
   useEffect(() => {

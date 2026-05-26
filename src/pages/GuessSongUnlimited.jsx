@@ -8,7 +8,10 @@ import GuessModeToggle from '@/components/daily/GuessModeToggle'
 import { fetchDailySongPool, getDailyPuzzle } from '@/services/skzDaily'
 import { useUnlimitedGuessGame } from '@/hooks/useUnlimitedGuessGame'
 import { getTodayKey } from '@/utils/dailyPuzzle'
-import { trackGameComplete, trackGameStart } from '@/services/skzAnalytics'
+import {
+  trackUnlimitedRoundComplete,
+  trackUnlimitedRoundStart,
+} from '@/services/skzAnalytics'
 import { absoluteSiteUrl } from '@/data/site'
 import styles from '@/styles/DailyGuess.module.css'
 import gameStyles from '@/styles/GamePage.module.css'
@@ -27,7 +30,7 @@ export default function GuessSongUnlimited() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    trackGameStart('guess-song-unlimited')
+    trackUnlimitedRoundStart('guess-song')
   }, [])
 
   useEffect(() => {
@@ -58,7 +61,7 @@ export default function GuessSongUnlimited() {
     const stamp = `${game.puzzle.id}:${game.state?.status}`
     if (lastResolvedRound.current === stamp) return
     lastResolvedRound.current = stamp
-    trackGameComplete('guess-song-unlimited', {
+    trackUnlimitedRoundComplete('guess-song', {
       status: game.state?.status,
       streak: game.stats?.streak,
     })

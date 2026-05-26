@@ -34,11 +34,15 @@ export default function GuessLyric() {
 
   useEffect(() => {
     if (!game.state || completedRef.current) return
-    if (game.state.status === 'won' || game.state.status === 'lost') {
+    if (game.state.status !== 'won' && game.state.status !== 'lost') return
+    if (game.state.tracked) {
       completedRef.current = true
-      trackGameComplete('guess-lyric', { status: game.state.status })
+      return
     }
-  }, [game.state])
+    completedRef.current = true
+    trackGameComplete('guess-lyric', { status: game.state.status })
+    game.markTracked()
+  }, [game.state, game])
 
   if (!game.puzzle || !game.state) {
     return (

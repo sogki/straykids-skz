@@ -54,3 +54,16 @@ export function trackGameStart(gameSlug) {
 export function trackGameComplete(gameSlug, metadata = {}) {
   return trackEvent('game_complete', { gameSlug, metadata })
 }
+
+/**
+ * Unlimited rounds use a dedicated event type so they NEVER count toward the
+ * public leaderboard (which queries `game_complete`) or daily-only KPIs.
+ * Useful for separate analytics if we ever want engagement insights.
+ */
+export function trackUnlimitedRoundStart(gameSlug, metadata = {}) {
+  return trackEvent('unlimited_round_start', { gameSlug, metadata })
+}
+
+export function trackUnlimitedRoundComplete(gameSlug, metadata = {}) {
+  return trackEvent('unlimited_round_complete', { gameSlug, metadata })
+}

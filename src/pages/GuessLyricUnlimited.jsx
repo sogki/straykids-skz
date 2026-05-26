@@ -9,7 +9,10 @@ import { dailyLyrics as fallbackPool } from '@/data/dailyLyrics'
 import { fetchDailyLyricPool, getDailyLyricPuzzle } from '@/services/skzDaily'
 import { useUnlimitedGuessGame } from '@/hooks/useUnlimitedGuessGame'
 import { getTodayKey } from '@/utils/dailyPuzzle'
-import { trackGameComplete, trackGameStart } from '@/services/skzAnalytics'
+import {
+  trackUnlimitedRoundComplete,
+  trackUnlimitedRoundStart,
+} from '@/services/skzAnalytics'
 import { absoluteSiteUrl } from '@/data/site'
 import styles from '@/styles/DailyGuess.module.css'
 import gameStyles from '@/styles/GamePage.module.css'
@@ -28,7 +31,7 @@ export default function GuessLyricUnlimited() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    trackGameStart('guess-lyric-unlimited')
+    trackUnlimitedRoundStart('guess-lyric')
   }, [])
 
   useEffect(() => {
@@ -60,7 +63,7 @@ export default function GuessLyricUnlimited() {
     const stamp = `${game.puzzle.id}:${game.state?.status}`
     if (lastResolvedRound.current === stamp) return
     lastResolvedRound.current = stamp
-    trackGameComplete('guess-lyric-unlimited', {
+    trackUnlimitedRoundComplete('guess-lyric', {
       status: game.state?.status,
       streak: game.stats?.streak,
     })

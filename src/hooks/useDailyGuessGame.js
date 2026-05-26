@@ -67,6 +67,15 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
     saveDailyState(next, storageGame)
   }
 
+  function markTracked() {
+    setState((current) => {
+      if (!current || current.tracked) return current
+      const next = { ...current, tracked: true }
+      saveDailyState(next, storageGame)
+      return next
+    })
+  }
+
   function showWrongToast(missCount) {
     const nextReveal = puzzle?.reveals?.[missCount]
     setToast(nextReveal ? `${nextReveal.label || 'Clue'} unlocked` : 'Not quite')
@@ -129,6 +138,7 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
     hintLadder,
     handleGuess,
     handleKeyDown,
+    markTracked,
     trackId,
   }
 }
