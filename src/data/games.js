@@ -79,4 +79,15 @@ export const games = [
     tag: 'Creative',
     sortOrder: 7,
   },
+  {
+    id: 'higher-lower',
+    slug: 'higher-lower',
+    title: 'Higher or Lower',
+    description: 'Compare SKZ stats and stack a streak — fast-paced unlimited rounds.',
+    emoji: '📈',
+    path: '/higher-lower',
+    color: '#a855f7',
+    tag: 'Minigame',
+    sortOrder: 8,
+  },
 ]

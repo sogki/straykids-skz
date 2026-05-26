@@ -21,7 +21,7 @@ import '@/styles/HomeArcadeHub.css'
 import '@/styles/pattern-bar.css'
 
 /** Page size for the games grid — featured card spans 2 cols so 7 fits page 1 cleanly. */
-const PAGE_SIZE = 7
+const PAGE_SIZE = 8
 
 function GameCard({ game, featured = false }) {
   const accent = game.color || '#ffffff'

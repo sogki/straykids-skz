@@ -11,6 +11,7 @@ import FanProfile from './pages/FanProfile'
 import BiasQuiz from './pages/BiasQuiz'
 import MemoryMatch from './pages/MemoryMatch'
 import TierList from './pages/TierList'
+import HigherLower from './pages/HigherLower'
 import ArcadeDirectory from './pages/ArcadeDirectory'
 import GameRouteGuard from './components/GameRouteGuard'
 import AdminLayout from './components/admin/AdminLayout'
@@ -124,6 +125,14 @@ export default function App() {
             element={
               <GameRouteGuard slug="tier-list">
                 <TierList />
+              </GameRouteGuard>
+            }
+          />
+          <Route
+            path="higher-lower"
+            element={
+              <GameRouteGuard slug="higher-lower">
+                <HigherLower />
               </GameRouteGuard>
             }
           />

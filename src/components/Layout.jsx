@@ -6,7 +6,7 @@ import AppUpdateToast from '@/components/AppUpdateToast'
 import SmallScreenWarning from '@/components/SmallScreenWarning'
 import { useAnalyticsPageView } from '@/hooks/useAnalyticsPageView'
 
-const GAME_PATHS = ['/guess-song', '/guess-member', '/guess-lyric', '/memory-match', '/tier-list', '/fan-profile', '/bias-quiz']
+const GAME_PATHS = ['/guess-song', '/guess-member', '/guess-lyric', '/memory-match', '/tier-list', '/fan-profile', '/bias-quiz', '/higher-lower']
 
 function gameMainClass(pathname) {
   if (pathname === '/tier-list') {

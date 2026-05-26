@@ -3,6 +3,7 @@ import { getHintLadder, isAnswerCorrect } from '@/utils/dailyPuzzle'
 
 const HISTORY_PREFIX = 'skz-unlimited-history-'
 const STATS_PREFIX = 'skz-unlimited-stats-'
+const PENDING_PREFIX = 'skz-unlimited-pending-'
 const RECENT_LIMIT = 8
 
 function safeLocalGet(key) {
@@ -59,6 +60,38 @@ function writeStats(storageGame, stats) {
   safeLocalSet(STATS_PREFIX + storageGame, JSON.stringify(stats))
 }
 
+function readPending(storageGame) {
+  return safeLocalGet(PENDING_PREFIX + storageGame) === '1'
+}
+
+function writePending(storageGame, value) {
+  if (value) {
+    safeLocalSet(PENDING_PREFIX + storageGame, '1')
+  } else {
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(PENDING_PREFIX + storageGame)
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/**
+ * Read stats, but if an "abandoned wrong-guess round" flag is present from a
+ * previous tab/refresh, treat it as a loss before reading. This guarantees
+ * the user can't refresh mid-round to preserve a streak after a wrong answer.
+ */
+function resolveInitialStats(storageGame) {
+  const base = readStats(storageGame)
+  if (!readPending(storageGame)) return base
+  const reset = { ...base, streak: 0 }
+  writeStats(storageGame, reset)
+  writePending(storageGame, false)
+  return reset
+}
+
 /**
  * Random non-repeating puzzle picker.
  * - Skips today's daily puzzle id (so the unlimited round never matches the daily).
@@ -108,7 +141,7 @@ export function useUnlimitedGuessGame({
   const [input, setInput] = useState('')
   const [shake, setShake] = useState(false)
   const [toast, setToast] = useState(null)
-  const [stats, setStats] = useState(() => readStats(storageGame))
+  const [stats, setStats] = useState(() => resolveInitialStats(storageGame))
 
   const recentRef = useRef(readRecent(storageGame))
   const initialisedRef = useRef(false)
@@ -166,6 +199,7 @@ export function useUnlimitedGuessGame({
         writeStats(storageGame, next)
         return next
       })
+      writePending(storageGame, false)
     },
     [storageGame]
   )
@@ -217,6 +251,9 @@ export function useUnlimitedGuessGame({
       pushRecent(puzzle.id)
       recordOutcome('lost')
     } else {
+      // Mark this round as "abandoned-on-refresh = loss": any future mount with
+      // this flag still set will zero out the streak.
+      writePending(storageGame, true)
       setGuesses(nextGuesses)
       showWrongToast(nextGuesses.length)
       setShake(true)
@@ -242,7 +279,8 @@ export function useUnlimitedGuessGame({
     setStatus('playing')
     setInput('')
     setToast(null)
-  }, [pool, excludeIds, puzzle])
+    writePending(storageGame, false)
+  }, [pool, excludeIds, puzzle, storageGame])
 
   // Mirror the daily-hook shape (state object) so shared UI components keep working.
   const state = puzzle

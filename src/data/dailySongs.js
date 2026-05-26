@@ -403,17 +403,6 @@ export const dailySongs = [
     ],
   },
   {
-    id: 'spider-web',
-    answers: ['spider web', 'spiderweb'],
-    reveals: [
-      { type: 'emoji', label: 'Clue', content: '🕷️🕸️🌙' },
-      { type: 'category', label: 'Type', content: 'Dark groove' },
-      { type: 'hint', label: 'Hint', content: 'Arachnid architecture' },
-      { type: 'letters', label: 'Letters', content: '' },
-      { type: 'era', label: 'Era', content: 'ODDINARY' },
-    ],
-  },
-  {
     id: 'freeze',
     answers: ['freeze'],
     reveals: [
