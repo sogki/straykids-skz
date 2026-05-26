@@ -10,6 +10,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import GuessSlots from '../GuessSlots'
+import GuessHistoryList from '@/components/daily/GuessHistoryList'
 import DailyGuessShareCard from '@/components/share/DailyGuessShareCard'
 import { buildDailyGuessShare, copyDailyGuessLink } from '@/utils/dailyGuessShare'
 import {
@@ -197,6 +198,16 @@ export default function DailyGuessComplete({
             </Link>
           )}
         </div>
+
+        {state.guesses.length > 0 && (
+          <div className={styles.completedHistory}>
+            <GuessHistoryList
+              guesses={state.guesses}
+              puzzle={puzzle}
+              title="Your guesses"
+            />
+          </div>
+        )}
       </div>
 
       {enableShare && share ? (

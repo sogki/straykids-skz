@@ -12,6 +12,8 @@ import BiasQuiz from './pages/BiasQuiz'
 import MemoryMatch from './pages/MemoryMatch'
 import TierList from './pages/TierList'
 import HigherLower from './pages/HigherLower'
+import AudioGuess from './pages/AudioGuess'
+import AudioGuessUnlimited from './pages/AudioGuessUnlimited'
 import ArcadeDirectory from './pages/ArcadeDirectory'
 import GameRouteGuard from './components/GameRouteGuard'
 import AdminLayout from './components/admin/AdminLayout'
@@ -133,6 +135,22 @@ export default function App() {
             element={
               <GameRouteGuard slug="higher-lower">
                 <HigherLower />
+              </GameRouteGuard>
+            }
+          />
+          <Route
+            path="audio-guess"
+            element={
+              <GameRouteGuard slug="audio-guess">
+                <AudioGuess />
+              </GameRouteGuard>
+            }
+          />
+          <Route
+            path="audio-guess/unlimited"
+            element={
+              <GameRouteGuard slug="audio-guess">
+                <AudioGuessUnlimited />
               </GameRouteGuard>
             }
           />

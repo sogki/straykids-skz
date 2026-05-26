@@ -6,7 +6,7 @@ import AppUpdateToast from '@/components/AppUpdateToast'
 import SmallScreenWarning from '@/components/SmallScreenWarning'
 import { useAnalyticsPageView } from '@/hooks/useAnalyticsPageView'
 
-const GAME_PATHS = ['/guess-song', '/guess-member', '/guess-lyric', '/memory-match', '/tier-list', '/fan-profile', '/bias-quiz', '/higher-lower']
+const GAME_PATHS = ['/guess-song', '/guess-member', '/guess-lyric', '/memory-match', '/tier-list', '/fan-profile', '/bias-quiz', '/higher-lower', '/audio-guess']
 
 function gameMainClass(pathname) {
   if (pathname === '/tier-list') {
@@ -18,10 +18,14 @@ function gameMainClass(pathname) {
   if (pathname === '/arcade') {
     return 'mx-auto w-full max-w-[1140px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }
-  if (pathname === '/guess-song') {
+  if (pathname === '/guess-song' || pathname.startsWith('/guess-song/')) {
     return 'mx-auto w-full max-w-[1040px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }
-  if (GAME_PATHS.includes(pathname)) {
+  if (
+    GAME_PATHS.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`)
+    )
+  ) {
     return 'mx-auto w-full max-w-[960px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }
   return 'mx-auto w-full max-w-[640px] flex-1 px-5 pb-8 md:px-8 md:pb-16'

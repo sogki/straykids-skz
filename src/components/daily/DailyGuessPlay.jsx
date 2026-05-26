@@ -2,11 +2,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Infinity as InfinityIcon } from 'lucide-react'
 import GuessSlots from '@/components/GuessSlots'
 import HintPanel from '@/components/HintPanel'
+import GuessHistoryList from '@/components/daily/GuessHistoryList'
 import styles from '@/styles/DailyGuess.module.css'
 import gameStyles from '@/styles/GamePage.module.css'
 
 export default function DailyGuessPlay({
   state,
+  puzzle,
   maxGuesses,
   countdown,
   hintLadder,
@@ -117,20 +119,12 @@ export default function DailyGuessPlay({
               </div>
             </div>
 
-            {state.guesses.length > 0 && (
-              <div className={styles.guessLog}>
-                <p className={styles.guessLogTitle}>Past guesses</p>
-                <ul className={styles.guessList}>
-                  {state.guesses.map((g, i) => (
-                    <li key={`${g}-${i}`} className={styles.guessListItem}>
-                      <span className={styles.guessName}>{g}</span>
-                      <span className={styles.guessMarkWrong} aria-hidden="true">
-                        ✗
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {puzzle && state.guesses.length > 0 && (
+              <GuessHistoryList
+                guesses={state.guesses}
+                puzzle={puzzle}
+                title="Past guesses"
+              />
             )}
           </div>
         </motion.div>

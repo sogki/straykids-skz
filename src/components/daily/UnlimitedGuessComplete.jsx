@@ -8,6 +8,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import GuessSlots from '@/components/GuessSlots'
+import GuessHistoryList from '@/components/daily/GuessHistoryList'
 import styles from '@/styles/DailyGuess.module.css'
 import gameStyles from '@/styles/GamePage.module.css'
 
@@ -76,6 +77,16 @@ export default function UnlimitedGuessComplete({
             showLabel
           />
         </div>
+
+        {state.guesses.length > 0 && (
+          <div className={styles.completedHistory}>
+            <GuessHistoryList
+              guesses={state.guesses}
+              puzzle={puzzle}
+              title="Your guesses"
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles.unlimitedStats}>

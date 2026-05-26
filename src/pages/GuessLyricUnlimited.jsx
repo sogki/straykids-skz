@@ -119,6 +119,7 @@ export default function GuessLyricUnlimited() {
       ) : (
         <DailyGuessPlay
           state={game.state}
+          puzzle={game.puzzle}
           maxGuesses={game.maxGuesses}
           hintLadder={game.hintLadder}
           placeholder="Missing word…"

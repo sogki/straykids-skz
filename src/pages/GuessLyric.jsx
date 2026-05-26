@@ -92,6 +92,7 @@ export default function GuessLyric() {
       ) : (
         <DailyGuessPlay
           state={game.state}
+          puzzle={game.puzzle}
           maxGuesses={game.maxGuesses}
           countdown={game.countdown}
           hintLadder={game.hintLadder}

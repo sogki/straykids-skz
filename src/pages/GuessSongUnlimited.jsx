@@ -117,6 +117,7 @@ export default function GuessSongUnlimited() {
       ) : (
         <DailyGuessPlay
           state={game.state}
+          puzzle={game.puzzle}
           maxGuesses={game.maxGuesses}
           hintLadder={game.hintLadder}
           placeholder="Enter song title…"

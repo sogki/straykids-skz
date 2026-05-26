@@ -67,6 +67,17 @@ const ROUTES = [
     description: 'Customizable tier list builder for SKZOO, gallery photos, and uploads.',
   },
   {
+    path: '/higher-lower',
+    title: 'Higher or Lower · SKZ Arcade',
+    description: 'Compare Stray Kids stats to stack a streak — ages, heights, and album years.',
+  },
+  {
+    path: '/audio-guess',
+    title: 'Audio Guess · SKZ Arcade',
+    description:
+      'Name the Stray Kids song from a short clip. Wrong guesses unlock more audio.',
+  },
+  {
     path: '/terms',
     title: 'Terms of Use · SKZ Arcade',
     description: 'Terms of use for SKZ Arcade.',

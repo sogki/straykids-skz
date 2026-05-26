@@ -97,6 +97,7 @@ export default function GuessMember() {
       ) : (
         <DailyGuessPlay
           state={game.state}
+          puzzle={game.puzzle}
           maxGuesses={game.maxGuesses}
           countdown={game.countdown}
           hintLadder={game.hintLadder}

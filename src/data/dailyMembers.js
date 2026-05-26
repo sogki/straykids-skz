@@ -91,10 +91,10 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '😭🎸✍️' },
-      { type: 'hint', label: 'Hint', content: '3RACHA all-rounder from Malaysia' },
+      { type: 'hint', label: 'Hint', content: '3RACHA all-rounder, emotional lyricist' },
       { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Rapper · vocalist · producer' },
-      { type: 'hint', label: 'Extra', content: 'Emotional lyricist, variety chaos' },
+      { type: 'hint', label: 'Extra', content: 'Variety chaos energy' },
     ],
   }),
   q({
@@ -386,7 +386,7 @@ const dailyMembersBase = [
     displayAnswer: 'Han',
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
-      { type: 'hint', label: 'Hint', content: 'From Malaysia — rapper, producer, vocalist' },
+      { type: 'hint', label: 'Hint', content: 'Quokka — rapper, producer, vocalist' },
       { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Unit name', content: '3RACHA (CB97, SPEARB, J.ONE)' },
       { type: 'emoji', label: 'Vibe', content: '🎤🔥' },
@@ -529,14 +529,14 @@ const dailyMembersBase = [
   q({
     id: 'tr-malaysia',
     questionType: 'trivia',
-    prompt: 'Which Stray Kids member is from Malaysia?',
+    prompt: 'Which Stray Kids member studied in Malaysia for a couple of years?',
     displayAnswer: 'Han',
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
-      { type: 'hint', label: 'Hint', content: '3RACHA rapper' },
+      { type: 'hint', label: 'Hint', content: '3RACHA rapper — born in Incheon, studied abroad briefly' },
       { type: 'letters', label: 'Letters', content: '' },
-      { type: 'category', label: 'Born', content: '2000 · Incheon raised' },
-      { type: 'emoji', label: 'Vibe', content: '🇲🇾' },
+      { type: 'category', label: 'Background', content: 'Born in Incheon, South Korea' },
+      { type: 'emoji', label: 'Vibe', content: '✈️📚' },
     ],
   }),
   q({

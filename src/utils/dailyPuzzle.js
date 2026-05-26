@@ -105,10 +105,19 @@ export function getLetterHint(answer, revealLevel) {
     .join(' ')
 }
 
+/**
+ * Cap how far the letter hint progresses. After 3 wrong guesses the answer
+ * becomes trivial if we keep exposing more letters, and most players don't
+ * benefit from a 5th-tier reveal because they're already on (or past) their
+ * final guess.
+ */
+const LETTER_HINT_WRONG_CAP = 3
+
 function resolveHintContent(reveal, puzzle, wrongCount) {
   if (reveal.type === 'letters') {
     const name = puzzle.displayAnswer || puzzle.answers[0]
-    return getLetterHint(name, wrongCount + 1) || '—'
+    const cappedWrong = Math.min(wrongCount, LETTER_HINT_WRONG_CAP)
+    return getLetterHint(name, cappedWrong + 1) || '—'
   }
   if (reveal.type === 'prompt' && puzzle.prompt) {
     return puzzle.prompt

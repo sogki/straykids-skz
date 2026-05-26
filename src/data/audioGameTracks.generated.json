@@ -1,0 +1,1118 @@
+[
+  {
+    "id": "hellevator",
+    "title": "Hellevator",
+    "album": "Mixtape",
+    "year": 2017,
+    "answers": [
+      "hellevator",
+      "hellavator"
+    ],
+    "preview": "/audio-game/hellevator.mp3",
+    "cover": "/audio-game/hellevator.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Hellevator",
+    "itunes": {
+      "trackId": 1608245337,
+      "collectionId": 1608245331,
+      "artistName": "Stray Kids",
+      "trackName": "Hellevator",
+      "collectionName": "Mixtape",
+      "releaseDate": "2017-11-01T12:00:00Z"
+    }
+  },
+  {
+    "id": "district-9",
+    "title": "District 9",
+    "album": "I am NOT",
+    "year": 2018,
+    "answers": [
+      "district 9",
+      "district nine",
+      "d9"
+    ],
+    "preview": "/audio-game/district-9.mp3",
+    "cover": "/audio-game/district-9.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20District%209",
+    "itunes": {
+      "trackId": 1608250044,
+      "collectionId": 1608250038,
+      "artistName": "Stray Kids",
+      "trackName": "District 9",
+      "collectionName": "I am NOT",
+      "releaseDate": "2018-03-26T12:00:00Z"
+    }
+  },
+  {
+    "id": "grow-up",
+    "title": "Grow Up",
+    "album": "I am NOT",
+    "year": 2018,
+    "answers": [
+      "grow up",
+      "growup"
+    ],
+    "preview": "/audio-game/grow-up.mp3",
+    "cover": "/audio-game/grow-up.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Grow%20Up",
+    "itunes": {
+      "trackId": 1608250420,
+      "collectionId": 1608250038,
+      "artistName": "Stray Kids",
+      "trackName": "Grow Up",
+      "collectionName": "I am NOT",
+      "releaseDate": "2018-03-26T12:00:00Z"
+    }
+  },
+  {
+    "id": "beware",
+    "title": "Beware",
+    "album": "I am NOT",
+    "year": 2018,
+    "answers": [
+      "beware"
+    ],
+    "preview": "/audio-game/beware.mp3",
+    "cover": "/audio-game/beware.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Beware",
+    "itunes": {
+      "trackId": 1608245341,
+      "collectionId": 1608245331,
+      "artistName": "Stray Kids",
+      "trackName": "BEWARE",
+      "collectionName": "Mixtape",
+      "releaseDate": "2018-01-08T12:00:00Z"
+    }
+  },
+  {
+    "id": "my-pace",
+    "title": "My Pace",
+    "album": "I am WHO",
+    "year": 2018,
+    "answers": [
+      "my pace",
+      "mypace"
+    ],
+    "preview": "/audio-game/my-pace.mp3",
+    "cover": "/audio-game/my-pace.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20My%20Pace",
+    "itunes": {
+      "trackId": 1608247184,
+      "collectionId": 1608247182,
+      "artistName": "Stray Kids",
+      "trackName": "My Pace",
+      "collectionName": "I am WHO",
+      "releaseDate": "2018-08-06T12:00:00Z"
+    }
+  },
+  {
+    "id": "get-cool",
+    "title": "Get Cool",
+    "album": "I am YOU",
+    "year": 2018,
+    "answers": [
+      "get cool",
+      "getcool"
+    ],
+    "preview": "/audio-game/get-cool.mp3",
+    "cover": "/audio-game/get-cool.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Get%20Cool",
+    "itunes": {
+      "trackId": 1608249888,
+      "collectionId": 1608249409,
+      "artistName": "Stray Kids",
+      "trackName": "Get Cool",
+      "collectionName": "I am YOU",
+      "releaseDate": "2018-10-22T12:00:00Z"
+    }
+  },
+  {
+    "id": "secret-secret",
+    "title": "Secret Secret",
+    "album": "I am YOU",
+    "year": 2018,
+    "answers": [
+      "secret secret",
+      "secretsecret"
+    ],
+    "preview": "/audio-game/secret-secret.mp3",
+    "cover": "/audio-game/secret-secret.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Secret%20Secret",
+    "itunes": {
+      "trackId": 1608256167,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "Secret Secret",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "miroh",
+    "title": "MIROH",
+    "album": "Clé 1: MIROH",
+    "year": 2019,
+    "answers": [
+      "miroh"
+    ],
+    "preview": "/audio-game/miroh.mp3",
+    "cover": "/audio-game/miroh.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20MIROH",
+    "itunes": {
+      "trackId": 1608250342,
+      "collectionId": 1608250336,
+      "artistName": "Stray Kids",
+      "trackName": "MIROH",
+      "collectionName": "Clé 1 : MIROH",
+      "releaseDate": "2019-03-25T12:00:00Z"
+    }
+  },
+  {
+    "id": "side-effects",
+    "title": "Side Effects",
+    "album": "Clé 2: Yellow Wood",
+    "year": 2019,
+    "answers": [
+      "side effects",
+      "sideeffects"
+    ],
+    "preview": "/audio-game/side-effects.mp3",
+    "cover": "/audio-game/side-effects.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Side%20Effects",
+    "itunes": {
+      "trackId": 1608249563,
+      "collectionId": 1608249558,
+      "artistName": "Stray Kids",
+      "trackName": "Side Effects",
+      "collectionName": "Clé 2 : Yellow Wood",
+      "releaseDate": "2019-06-19T12:00:00Z"
+    }
+  },
+  {
+    "id": "m-i-a",
+    "title": "M.I.A.",
+    "album": "Clé 2: Yellow Wood",
+    "year": 2019,
+    "answers": [
+      "m.i.a.",
+      "mia",
+      "m.i.a"
+    ],
+    "preview": "/audio-game/m-i-a.mp3",
+    "cover": "/audio-game/m-i-a.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20M.I.A.",
+    "itunes": {
+      "trackId": 1608247200,
+      "collectionId": 1608247182,
+      "artistName": "Stray Kids",
+      "trackName": "M.I.A.",
+      "collectionName": "I am WHO",
+      "releaseDate": "2018-08-06T12:00:00Z"
+    }
+  },
+  {
+    "id": "astronaut",
+    "title": "Astronaut",
+    "album": "Clé: LEVANTER",
+    "year": 2019,
+    "answers": [
+      "astronaut"
+    ],
+    "preview": "/audio-game/astronaut.mp3",
+    "cover": "/audio-game/astronaut.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Astronaut",
+    "itunes": {
+      "trackId": 1608249447,
+      "collectionId": 1608249431,
+      "artistName": "Stray Kids",
+      "trackName": "Astronaut",
+      "collectionName": "Clé : LEVANTER",
+      "releaseDate": "2019-12-09T12:00:00Z"
+    }
+  },
+  {
+    "id": "levanter",
+    "title": "Levanter",
+    "album": "Clé: LEVANTER",
+    "year": 2019,
+    "answers": [
+      "levanter"
+    ],
+    "preview": "/audio-game/levanter.mp3",
+    "cover": "/audio-game/levanter.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Levanter",
+    "itunes": {
+      "trackId": 1608249440,
+      "collectionId": 1608249431,
+      "artistName": "Stray Kids",
+      "trackName": "Levanter",
+      "collectionName": "Clé : LEVANTER",
+      "releaseDate": "2019-12-09T12:00:00Z"
+    }
+  },
+  {
+    "id": "gods-menu",
+    "title": "God's Menu",
+    "album": "GO LIVE (GO生)",
+    "year": 2020,
+    "answers": [
+      "god's menu",
+      "gods menu",
+      "godsmenu"
+    ],
+    "preview": "/audio-game/gods-menu.mp3",
+    "cover": "/audio-game/gods-menu.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20God's%20Menu",
+    "itunes": {
+      "trackId": 1608257484,
+      "collectionId": 1608257477,
+      "artistName": "Stray Kids",
+      "trackName": "God's Menu",
+      "collectionName": "GO LIVE",
+      "releaseDate": "2020-06-17T12:00:00Z"
+    }
+  },
+  {
+    "id": "easy",
+    "title": "Easy",
+    "album": "IN LIFE (IN生)",
+    "year": 2020,
+    "answers": [
+      "easy"
+    ],
+    "preview": "/audio-game/easy.mp3",
+    "cover": "/audio-game/easy.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Easy",
+    "itunes": {
+      "trackId": 1608251972,
+      "collectionId": 1608251775,
+      "artistName": "Stray Kids",
+      "trackName": "Easy",
+      "collectionName": "IN LIFE",
+      "releaseDate": "2020-06-17T12:00:00Z"
+    }
+  },
+  {
+    "id": "back-door",
+    "title": "Back Door",
+    "album": "IN LIFE (IN生)",
+    "year": 2020,
+    "answers": [
+      "back door",
+      "backdoor"
+    ],
+    "preview": "/audio-game/back-door.mp3",
+    "cover": "/audio-game/back-door.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Back%20Door",
+    "itunes": {
+      "trackId": 1608251779,
+      "collectionId": 1608251775,
+      "artistName": "Stray Kids",
+      "trackName": "Back Door",
+      "collectionName": "IN LIFE",
+      "releaseDate": "2020-09-14T12:00:00Z"
+    }
+  },
+  {
+    "id": "cover-me",
+    "title": "Cover Me",
+    "album": "IN LIFE (IN生)",
+    "year": 2020,
+    "answers": [
+      "cover me",
+      "coverme"
+    ],
+    "preview": "/audio-game/cover-me.mp3",
+    "cover": "/audio-game/cover-me.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Cover%20Me",
+    "itunes": {
+      "trackId": 1710645143,
+      "collectionId": 1710644819,
+      "artistName": "Stray Kids",
+      "trackName": "Cover Me",
+      "collectionName": "ROCK-STAR",
+      "releaseDate": "2023-11-10T12:00:00Z"
+    }
+  },
+  {
+    "id": "thunderous",
+    "title": "Thunderous",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "thunderous"
+    ],
+    "preview": "/audio-game/thunderous.mp3",
+    "cover": "/audio-game/thunderous.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Thunderous",
+    "itunes": {
+      "trackId": 1608255955,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "Thunderous",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "domino",
+    "title": "Domino",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "domino"
+    ],
+    "preview": "/audio-game/domino.mp3",
+    "cover": "/audio-game/domino.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Domino",
+    "itunes": {
+      "trackId": 1608255956,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "DOMINO",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "charmer",
+    "title": "Charmer",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "charmer"
+    ],
+    "preview": "/audio-game/charmer.mp3",
+    "cover": "/audio-game/charmer.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Charmer",
+    "itunes": {
+      "trackId": 1609666704,
+      "collectionId": 1609666698,
+      "artistName": "Stray Kids",
+      "trackName": "Charmer",
+      "collectionName": "ODDINARY",
+      "releaseDate": "2022-03-18T12:00:00Z"
+    }
+  },
+  {
+    "id": "freeze",
+    "title": "FREEZE",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "freeze"
+    ],
+    "preview": "/audio-game/freeze.mp3",
+    "cover": "/audio-game/freeze.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20FREEZE",
+    "itunes": {
+      "trackId": 1609666705,
+      "collectionId": 1609666698,
+      "artistName": "Stray Kids",
+      "trackName": "FREEZE",
+      "collectionName": "ODDINARY",
+      "releaseDate": "2022-03-18T12:00:00Z"
+    }
+  },
+  {
+    "id": "star-lost",
+    "title": "Star Lost",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "star lost",
+      "starlost"
+    ],
+    "preview": "/audio-game/star-lost.mp3",
+    "cover": "/audio-game/star-lost.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Star%20Lost",
+    "itunes": {
+      "trackId": 1608256173,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "Star Lost",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "red-lights",
+    "title": "Red Lights",
+    "album": "NOEASY",
+    "year": 2021,
+    "answers": [
+      "red lights",
+      "redlights"
+    ],
+    "preview": "/audio-game/red-lights.mp3",
+    "cover": "/audio-game/red-lights.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Red%20Lights",
+    "itunes": {
+      "trackId": 1608256175,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "Red Lights (Bang Chan, Hyunjin)",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "christmas-evel",
+    "title": "Christmas EveL",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "christmas evel",
+      "christmas evil"
+    ],
+    "preview": "/audio-game/christmas-evel.mp3",
+    "cover": "/audio-game/christmas-evel.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Christmas%20EveL",
+    "itunes": {
+      "trackId": 1608247201,
+      "collectionId": 1608247192,
+      "artistName": "Stray Kids",
+      "trackName": "Christmas EveL",
+      "collectionName": "Christmas EveL - EP",
+      "releaseDate": "2021-11-29T12:00:00Z"
+    }
+  },
+  {
+    "id": "winter-falls",
+    "title": "Winter Falls",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "winter falls",
+      "winterfalls"
+    ],
+    "preview": "/audio-game/winter-falls.mp3",
+    "cover": "/audio-game/winter-falls.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Winter%20Falls",
+    "itunes": {
+      "trackId": 1608247240,
+      "collectionId": 1608247192,
+      "artistName": "Stray Kids",
+      "trackName": "Winter Falls",
+      "collectionName": "Christmas EveL - EP",
+      "releaseDate": "2021-11-29T12:00:00Z"
+    }
+  },
+  {
+    "id": "silent-cry",
+    "title": "Silent Cry",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "silent cry",
+      "silentcry"
+    ],
+    "preview": "/audio-game/silent-cry.mp3",
+    "cover": "/audio-game/silent-cry.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Silent%20Cry",
+    "itunes": {
+      "trackId": 1608256165,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "Silent Cry",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "another-day",
+    "title": "Another Day",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "another day",
+      "anotherday"
+    ],
+    "preview": "/audio-game/another-day.mp3",
+    "cover": "/audio-game/another-day.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Another%20Day",
+    "itunes": {
+      "trackId": 1608257494,
+      "collectionId": 1608257477,
+      "artistName": "Stray Kids",
+      "trackName": "Another Day",
+      "collectionName": "GO LIVE",
+      "releaseDate": "2020-06-17T12:00:00Z"
+    }
+  },
+  {
+    "id": "spread-my-wings",
+    "title": "Spread My Wings",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "spread my wings",
+      "spreadmywings"
+    ],
+    "preview": "/audio-game/spread-my-wings.mp3",
+    "cover": "/audio-game/spread-my-wings.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Spread%20My%20Wings",
+    "itunes": {
+      "trackId": 1608245344,
+      "collectionId": 1608245331,
+      "artistName": "Stray Kids",
+      "trackName": "Spread My Wings",
+      "collectionName": "Mixtape",
+      "releaseDate": "2018-01-08T12:00:00Z"
+    }
+  },
+  {
+    "id": "drive",
+    "title": "Drive",
+    "album": "Christmas EveL",
+    "year": 2021,
+    "answers": [
+      "drive"
+    ],
+    "preview": "/audio-game/drive.mp3",
+    "cover": "/audio-game/drive.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Drive",
+    "itunes": {
+      "trackId": 1657539400,
+      "collectionId": 1657537947,
+      "artistName": "Stray Kids, Bang Chan & Lee Know",
+      "trackName": "Drive (Bang Chan, Lee Know)",
+      "collectionName": "SKZ-REPLAY",
+      "releaseDate": "2022-12-21T12:00:00Z"
+    }
+  },
+  {
+    "id": "maniac",
+    "title": "MANIAC",
+    "album": "ODDINARY",
+    "year": 2022,
+    "answers": [
+      "maniac"
+    ],
+    "preview": "/audio-game/maniac.mp3",
+    "cover": "/audio-game/maniac.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20MANIAC",
+    "itunes": {
+      "trackId": 1609666702,
+      "collectionId": 1609666698,
+      "artistName": "Stray Kids",
+      "trackName": "MANIAC",
+      "collectionName": "ODDINARY",
+      "releaseDate": "2022-03-18T12:00:00Z"
+    }
+  },
+  {
+    "id": "venom",
+    "title": "VENOM",
+    "album": "ODDINARY",
+    "year": 2022,
+    "answers": [
+      "venom"
+    ],
+    "preview": "/audio-game/venom.mp3",
+    "cover": "/audio-game/venom.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20VENOM",
+    "itunes": {
+      "trackId": 1609666699,
+      "collectionId": 1609666698,
+      "artistName": "Stray Kids",
+      "trackName": "VENOM",
+      "collectionName": "ODDINARY",
+      "releaseDate": "2022-03-18T12:00:00Z"
+    }
+  },
+  {
+    "id": "waiting-for-us",
+    "title": "Waiting For Us",
+    "album": "ODDINARY",
+    "year": 2022,
+    "answers": [
+      "waiting for us",
+      "waitingforus"
+    ],
+    "preview": "/audio-game/waiting-for-us.mp3",
+    "cover": "/audio-game/waiting-for-us.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Waiting%20For%20Us",
+    "itunes": {
+      "trackId": 1609666711,
+      "collectionId": 1609666698,
+      "artistName": "Stray Kids",
+      "trackName": "Waiting For Us (Bang Chan, Lee Know, Seungmin & I.N)",
+      "collectionName": "ODDINARY",
+      "releaseDate": "2022-03-18T12:00:00Z"
+    }
+  },
+  {
+    "id": "circus",
+    "title": "CIRCUS",
+    "album": "CIRCUS (Japanese)",
+    "year": 2022,
+    "answers": [
+      "circus"
+    ],
+    "preview": "/audio-game/circus.mp3",
+    "cover": "/audio-game/circus.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20CIRCUS",
+    "itunes": {
+      "trackId": 1627761820,
+      "collectionId": 1627761785,
+      "artistName": "Stray Kids",
+      "trackName": "CIRCUS",
+      "collectionName": "CIRCUS - Single",
+      "releaseDate": "2022-06-10T12:00:00Z"
+    }
+  },
+  {
+    "id": "case-143",
+    "title": "CASE 143",
+    "album": "MAXIDENT",
+    "year": 2022,
+    "answers": [
+      "case 143",
+      "case143",
+      "case one four three"
+    ],
+    "preview": "/audio-game/case-143.mp3",
+    "cover": "/audio-game/case-143.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20CASE%20143",
+    "itunes": {
+      "trackId": 1644436109,
+      "collectionId": 1644436101,
+      "artistName": "Stray Kids",
+      "trackName": "CASE 143",
+      "collectionName": "MAXIDENT",
+      "releaseDate": "2022-10-07T12:00:00Z"
+    }
+  },
+  {
+    "id": "chill",
+    "title": "CHILL",
+    "album": "MAXIDENT",
+    "year": 2022,
+    "answers": [
+      "chill"
+    ],
+    "preview": "/audio-game/chill.mp3",
+    "cover": "/audio-game/chill.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20CHILL",
+    "itunes": {
+      "trackId": 1644436116,
+      "collectionId": 1644436101,
+      "artistName": "Stray Kids",
+      "trackName": "CHILL",
+      "collectionName": "MAXIDENT",
+      "releaseDate": "2022-10-07T12:00:00Z"
+    }
+  },
+  {
+    "id": "cant-stop",
+    "title": "Can't Stop",
+    "album": "MAXIDENT",
+    "year": 2022,
+    "answers": [
+      "can't stop",
+      "cantstop"
+    ],
+    "preview": "/audio-game/cant-stop.mp3",
+    "cover": "/audio-game/cant-stop.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Can't%20Stop",
+    "itunes": {
+      "trackId": 1644436552,
+      "collectionId": 1644436101,
+      "artistName": "Stray Kids",
+      "trackName": "Can't Stop (Seungmin, I.N)",
+      "collectionName": "MAXIDENT",
+      "releaseDate": "2022-10-07T12:00:00Z"
+    }
+  },
+  {
+    "id": "24-to-25",
+    "title": "24 to 25",
+    "album": "SKZ-REPLAY",
+    "year": 2022,
+    "answers": [
+      "24 to 25",
+      "24to25"
+    ],
+    "preview": "/audio-game/24-to-25.mp3",
+    "cover": "/audio-game/24-to-25.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%2024%20to%2025",
+    "itunes": {
+      "trackId": 1608247237,
+      "collectionId": 1608247192,
+      "artistName": "Stray Kids",
+      "trackName": "24 to 25",
+      "collectionName": "Christmas EveL - EP",
+      "releaseDate": "2021-11-29T12:00:00Z"
+    }
+  },
+  {
+    "id": "voices",
+    "title": "Voices",
+    "album": "SKZ-REPLAY",
+    "year": 2022,
+    "answers": [
+      "voices"
+    ],
+    "preview": "/audio-game/voices.mp3",
+    "cover": "/audio-game/voices.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Voices",
+    "itunes": {
+      "trackId": 1608257394,
+      "collectionId": 1608257176,
+      "artistName": "Stray Kids",
+      "trackName": "Voices",
+      "collectionName": "SKZ2020",
+      "releaseDate": "2018-08-06T12:00:00Z"
+    }
+  },
+  {
+    "id": "fam",
+    "title": "FAM",
+    "album": "SKZ-REPLAY",
+    "year": 2022,
+    "answers": [
+      "fam"
+    ],
+    "preview": "/audio-game/fam.mp3",
+    "cover": "/audio-game/fam.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20FAM",
+    "itunes": {
+      "trackId": 1657537951,
+      "collectionId": 1657537947,
+      "artistName": "Stray Kids",
+      "trackName": "FAM (Korean Ver.)",
+      "collectionName": "SKZ-REPLAY",
+      "releaseDate": "2022-12-21T12:00:00Z"
+    }
+  },
+  {
+    "id": "s-class",
+    "title": "S-Class",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "s-class",
+      "s class",
+      "sclass"
+    ],
+    "preview": "/audio-game/s-class.mp3",
+    "cover": "/audio-game/s-class.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20S-Class",
+    "itunes": {
+      "trackId": 1686489691,
+      "collectionId": 1686489462,
+      "artistName": "Stray Kids",
+      "trackName": "S-Class",
+      "collectionName": "5-STAR",
+      "releaseDate": "2023-06-02T12:00:00Z"
+    }
+  },
+  {
+    "id": "super-bowl",
+    "title": "Super Bowl",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "super bowl",
+      "superbowl"
+    ],
+    "preview": "/audio-game/super-bowl.mp3",
+    "cover": "/audio-game/super-bowl.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Super%20Bowl",
+    "itunes": {
+      "trackId": 1686489695,
+      "collectionId": 1686489462,
+      "artistName": "Stray Kids",
+      "trackName": "Super Bowl",
+      "collectionName": "5-STAR",
+      "releaseDate": "2023-06-02T12:00:00Z"
+    }
+  },
+  {
+    "id": "megaverse",
+    "title": "MEGAVERSE",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "megaverse"
+    ],
+    "preview": "/audio-game/megaverse.mp3",
+    "cover": "/audio-game/megaverse.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20MEGAVERSE",
+    "itunes": {
+      "trackId": 1710644824,
+      "collectionId": 1710644819,
+      "artistName": "Stray Kids",
+      "trackName": "MEGAVERSE",
+      "collectionName": "ROCK-STAR",
+      "releaseDate": "2023-11-10T12:00:00Z"
+    }
+  },
+  {
+    "id": "item",
+    "title": "Item",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "item"
+    ],
+    "preview": "/audio-game/item.mp3",
+    "cover": "/audio-game/item.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Item",
+    "itunes": {
+      "trackId": 1686489694,
+      "collectionId": 1686489462,
+      "artistName": "Stray Kids",
+      "trackName": "ITEM",
+      "collectionName": "5-STAR",
+      "releaseDate": "2023-06-02T12:00:00Z"
+    }
+  },
+  {
+    "id": "wow",
+    "title": "WOW",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "wow"
+    ],
+    "preview": "/audio-game/wow.mp3",
+    "cover": "/audio-game/wow.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20WOW",
+    "itunes": {
+      "trackId": 1608251952,
+      "collectionId": 1608251775,
+      "artistName": "Stray Kids",
+      "trackName": "Wow (Lee Know, Hyunjin & Felix)",
+      "collectionName": "IN LIFE",
+      "releaseDate": "2020-09-14T12:00:00Z"
+    }
+  },
+  {
+    "id": "blueprint",
+    "title": "Blueprint",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "blueprint"
+    ],
+    "preview": "/audio-game/blueprint.mp3",
+    "cover": "/audio-game/blueprint.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Blueprint",
+    "itunes": {
+      "trackId": 1608252133,
+      "collectionId": 1608251775,
+      "artistName": "Stray Kids",
+      "trackName": "Blueprint",
+      "collectionName": "IN LIFE",
+      "releaseDate": "2020-06-17T12:00:00Z"
+    }
+  },
+  {
+    "id": "hollow",
+    "title": "Hollow",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "hollow"
+    ],
+    "preview": "/audio-game/hollow.mp3",
+    "cover": "/audio-game/hollow.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Hollow",
+    "itunes": {
+      "trackId": 1815865710,
+      "collectionId": 1815865407,
+      "artistName": "Stray Kids",
+      "trackName": "Hollow",
+      "collectionName": "Hollow - EP",
+      "releaseDate": "2025-06-11T07:00:00Z"
+    }
+  },
+  {
+    "id": "collision",
+    "title": "Collision",
+    "album": "5-STAR",
+    "year": 2023,
+    "answers": [
+      "collision"
+    ],
+    "preview": "/audio-game/collision.mp3",
+    "cover": "/audio-game/collision.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Collision",
+    "itunes": {
+      "trackId": 1686490165,
+      "collectionId": 1686489462,
+      "artistName": "Stray Kids",
+      "trackName": "Collision",
+      "collectionName": "5-STAR",
+      "releaseDate": "2023-06-02T12:00:00Z"
+    }
+  },
+  {
+    "id": "lalalala",
+    "title": "LALALALA",
+    "album": "樂-STAR (ROCK-STAR)",
+    "year": 2023,
+    "answers": [
+      "lalalala",
+      "la la la la",
+      "rock"
+    ],
+    "preview": "/audio-game/lalalala.mp3",
+    "cover": "/audio-game/lalalala.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20LALALALA",
+    "itunes": {
+      "trackId": 1710644832,
+      "collectionId": 1710644819,
+      "artistName": "Stray Kids",
+      "trackName": "LALALALA",
+      "collectionName": "ROCK-STAR",
+      "releaseDate": "2023-11-10T12:00:00Z"
+    }
+  },
+  {
+    "id": "cheese",
+    "title": "Cheese",
+    "album": "樂-STAR (ROCK-STAR)",
+    "year": 2023,
+    "answers": [
+      "cheese"
+    ],
+    "preview": "/audio-game/cheese.mp3",
+    "cover": "/audio-game/cheese.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Cheese",
+    "itunes": {
+      "trackId": 1608255575,
+      "collectionId": 1608255571,
+      "artistName": "Stray Kids",
+      "trackName": "CHEESE",
+      "collectionName": "NOEASY",
+      "releaseDate": "2021-08-23T12:00:00Z"
+    }
+  },
+  {
+    "id": "chronosaurus",
+    "title": "Chronosaurus",
+    "album": "樂-STAR (ROCK-STAR)",
+    "year": 2023,
+    "answers": [
+      "chronosaurus",
+      "chronos"
+    ],
+    "preview": "/audio-game/chronosaurus.mp3",
+    "cover": "/audio-game/chronosaurus.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Chronosaurus",
+    "itunes": {
+      "trackId": 1608250354,
+      "collectionId": 1608250336,
+      "artistName": "Stray Kids",
+      "trackName": "Chronosaurus",
+      "collectionName": "Clé 1 : MIROH",
+      "releaseDate": "2019-03-25T12:00:00Z"
+    }
+  },
+  {
+    "id": "hall-of-fame",
+    "title": "Hall of Fame",
+    "album": "The Sound (Japanese)",
+    "year": 2023,
+    "answers": [
+      "hall of fame",
+      "halloffame"
+    ],
+    "preview": "/audio-game/hall-of-fame.mp3",
+    "cover": "/audio-game/hall-of-fame.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Hall%20of%20Fame",
+    "itunes": {
+      "trackId": 1686489687,
+      "collectionId": 1686489462,
+      "artistName": "Stray Kids",
+      "trackName": "Hall of Fame",
+      "collectionName": "5-STAR",
+      "releaseDate": "2023-06-02T12:00:00Z"
+    }
+  },
+  {
+    "id": "top",
+    "title": "TOP",
+    "album": "TOP (Japanese / Tower of God OP)",
+    "year": 2020,
+    "answers": [
+      "top"
+    ],
+    "preview": "/audio-game/top.mp3",
+    "cover": "/audio-game/top.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20TOP",
+    "itunes": {
+      "trackId": 1608257046,
+      "collectionId": 1608256891,
+      "artistName": "Stray Kids",
+      "trackName": "TOP (\"Tower of God\" OP)",
+      "collectionName": "TOP - Single",
+      "releaseDate": "2020-05-13T12:00:00Z"
+    }
+  },
+  {
+    "id": "chk-chk-boom",
+    "title": "Chk Chk Boom",
+    "album": "ATE",
+    "year": 2024,
+    "answers": [
+      "chk chk boom",
+      "chkchkboom"
+    ],
+    "preview": "/audio-game/chk-chk-boom.mp3",
+    "cover": "/audio-game/chk-chk-boom.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Chk%20Chk%20Boom",
+    "itunes": {
+      "trackId": 1752739619,
+      "collectionId": 1752739357,
+      "artistName": "Stray Kids",
+      "trackName": "Chk Chk Boom",
+      "collectionName": "ATE",
+      "releaseDate": "2024-07-19T12:00:00Z"
+    }
+  },
+  {
+    "id": "giant",
+    "title": "GIANT",
+    "album": "ATE",
+    "year": 2024,
+    "answers": [
+      "giant"
+    ],
+    "preview": "/audio-game/giant.mp3",
+    "cover": "/audio-game/giant.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20GIANT",
+    "itunes": {
+      "trackId": 1799804279,
+      "collectionId": 1799804278,
+      "artistName": "Stray Kids",
+      "trackName": "GIANT (Korean Ver.)",
+      "collectionName": "Mixtape : dominATE - EP",
+      "releaseDate": "2025-03-21T12:00:00Z"
+    }
+  },
+  {
+    "id": "stray-kids",
+    "title": "Stray Kids",
+    "album": "ATE",
+    "year": 2024,
+    "answers": [
+      "stray kids",
+      "straykids",
+      "sk"
+    ],
+    "preview": "/audio-game/stray-kids.mp3",
+    "cover": "/audio-game/stray-kids.jpg",
+    "spotifySearch": "https://open.spotify.com/search/Stray%20Kids%20Stray%20Kids",
+    "itunes": {
+      "trackId": 1752739832,
+      "collectionId": 1752739357,
+      "artistName": "Stray Kids",
+      "trackName": "Stray Kids",
+      "collectionName": "ATE",
+      "releaseDate": "2024-07-19T12:00:00Z"
+    }
+  }
+]

@@ -90,4 +90,15 @@ export const games = [
     tag: 'Minigame',
     sortOrder: 8,
   },
+  {
+    id: 'audio-guess',
+    slug: 'audio-guess',
+    title: 'Audio Guess',
+    description: 'Name the track from a short clip. Wrong guesses unlock more audio.',
+    emoji: '🎧',
+    path: '/audio-guess',
+    color: '#fb7185',
+    tag: 'Daily',
+    sortOrder: 9,
+  },
 ]

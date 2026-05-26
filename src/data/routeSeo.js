@@ -60,6 +60,24 @@ export const ROUTE_SEO = [
       'Create custom Stray Kids tier lists with editable rows, labels, and image sets including SKZOO and gallery photos.',
   },
   {
+    path: '/higher-lower',
+    title: 'Higher or Lower',
+    description:
+      'Higher-or-lower with Stray Kids stats — compare member ages, heights, and album release years to stack a streak.',
+  },
+  {
+    path: '/audio-guess',
+    title: 'Audio Guess',
+    description:
+      'Name the Stray Kids song from a short clip. Wrong guesses unlock more audio. Daily and unlimited modes.',
+  },
+  {
+    path: '/audio-guess/unlimited',
+    title: 'Audio Guess — Unlimited',
+    description:
+      'Endless Stray Kids audio guessing — random clip every round, streak tracking, today’s daily track excluded.',
+  },
+  {
     path: '/terms',
     title: 'Terms of Use',
     description: 'Terms of use for SKZ Arcade — fan-made Stray Kids puzzles and minigames.',

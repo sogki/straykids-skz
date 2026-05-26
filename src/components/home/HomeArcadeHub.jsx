@@ -20,15 +20,15 @@ import { cn } from '@/lib/utils'
 import '@/styles/HomeArcadeHub.css'
 import '@/styles/pattern-bar.css'
 
-/** Page size for the games grid — featured card spans 2 cols so 7 fits page 1 cleanly. */
-const PAGE_SIZE = 8
+/** Page size for the games grid — uniform 2-column cards, 6 per page. */
+const PAGE_SIZE = 6
 
-function GameCard({ game, featured = false }) {
+function GameCard({ game }) {
   const accent = game.color || '#ffffff'
 
   return (
     <motion.article
-      className={cn('arcade-card', featured && 'arcade-card--featured')}
+      className={cn('arcade-card')}
       whileHover={{ y: -2 }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
     >
@@ -111,13 +111,6 @@ export default function HomeArcadeHub({ games, loading }) {
     return filtered.slice(start, start + PAGE_SIZE)
   }, [filtered, safePage])
 
-  const featured =
-    paged.find(
-      (g) =>
-        (g.slug ?? g.id) === 'guess-song' || gameCategoryId(g) === 'daily'
-    ) ?? paged[0]
-  const rest = paged.filter((g) => g.id !== featured?.id)
-
   function handleCategoryChange(id) {
     setCategory(id)
     setPage(1)
@@ -163,8 +156,7 @@ export default function HomeArcadeHub({ games, loading }) {
             ) : (
               <>
                 <div className="arcade-hub__grid">
-                  {featured && <GameCard game={featured} featured />}
-                  {rest.map((game) => (
+                  {paged.map((game) => (
                     <GameCard key={game.id} game={game} />
                   ))}
                 </div>
