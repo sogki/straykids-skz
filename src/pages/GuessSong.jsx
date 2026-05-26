@@ -7,6 +7,7 @@ import GameSteps from '../components/games/GameSteps'
 import GuessSlots from '../components/GuessSlots'
 import HintPanel from '../components/HintPanel'
 import DailyGuessComplete from '../components/guess-song/DailyGuessComplete'
+import GuessModeToggle from '../components/daily/GuessModeToggle'
 import { useSkzData } from '../context/SkzDataContext'
 import { getDailyPuzzle } from '../services/skzDaily'
 import { absoluteSiteUrl } from '@/data/site'
@@ -166,7 +167,14 @@ export default function GuessSong() {
   }
 
   const headerActions = (
-    <GameSteps steps={HOW_TO_STEPS(maxGuesses)} variant="header" />
+    <div className={styles.headerActionsStack}>
+      <GuessModeToggle
+        dailyHref="/guess-song"
+        unlimitedHref="/guess-song/unlimited"
+        mode="daily"
+      />
+      <GameSteps steps={HOW_TO_STEPS(maxGuesses)} variant="header" />
+    </div>
   )
 
   return (
@@ -193,6 +201,7 @@ export default function GuessSong() {
           maxGuesses={maxGuesses}
           todayKey={todayKey}
           countdown={countdown}
+          unlimitedHref="/guess-song/unlimited"
         />
       ) : (
         <div

@@ -4,6 +4,7 @@ import GameShell from '@/components/GameShell'
 import GameSteps from '@/components/games/GameSteps'
 import DailyGuessPlay from '@/components/daily/DailyGuessPlay'
 import DailyGuessComplete from '@/components/guess-song/DailyGuessComplete'
+import GuessModeToggle from '@/components/daily/GuessModeToggle'
 import { dailyMembers } from '@/data/dailyMembers'
 import { getMemberQuestionMeta } from '@/data/memberQuestionTypes'
 import { useDailyGuessGame } from '@/hooks/useDailyGuessGame'
@@ -68,7 +69,16 @@ export default function GuessMember() {
           </a>
         </>
       }
-      headerActions={<GameSteps steps={HOW_TO} variant="header" />}
+      headerActions={
+        <div className={styles.headerActionsStack}>
+          <GuessModeToggle
+            dailyHref="/guess-member"
+            unlimitedHref="/guess-member/unlimited"
+            mode="daily"
+          />
+          <GameSteps steps={HOW_TO} variant="header" />
+        </div>
+      }
     >
       {game.gameOver ? (
         <DailyGuessComplete
@@ -78,6 +88,7 @@ export default function GuessMember() {
           todayKey={game.todayKey}
           countdown={game.countdown}
           kind="member"
+          unlimitedHref="/guess-member/unlimited"
         />
       ) : (
         <DailyGuessPlay

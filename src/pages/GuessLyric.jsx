@@ -4,6 +4,7 @@ import GameShell from '@/components/GameShell'
 import GameSteps from '@/components/games/GameSteps'
 import DailyGuessPlay from '@/components/daily/DailyGuessPlay'
 import DailyGuessComplete from '@/components/guess-song/DailyGuessComplete'
+import GuessModeToggle from '@/components/daily/GuessModeToggle'
 import { dailyLyrics } from '@/data/dailyLyrics'
 import { useDailyGuessGame } from '@/hooks/useDailyGuessGame'
 import { absoluteSiteUrl } from '@/data/site'
@@ -63,7 +64,16 @@ export default function GuessLyric() {
           </a>
         </>
       }
-      headerActions={<GameSteps steps={HOW_TO} variant="header" />}
+      headerActions={
+        <div className={styles.headerActionsStack}>
+          <GuessModeToggle
+            dailyHref="/guess-lyric"
+            unlimitedHref="/guess-lyric/unlimited"
+            mode="daily"
+          />
+          <GameSteps steps={HOW_TO} variant="header" />
+        </div>
+      }
     >
       {game.gameOver ? (
         <DailyGuessComplete
@@ -73,6 +83,7 @@ export default function GuessLyric() {
           todayKey={game.todayKey}
           countdown={game.countdown}
           kind="lyric"
+          unlimitedHref="/guess-lyric/unlimited"
         />
       ) : (
         <DailyGuessPlay

@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { CheckCircle2, Clock, Copy, Download, Share2, XCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import {
+  CheckCircle2,
+  Clock,
+  Copy,
+  Download,
+  Infinity as InfinityIcon,
+  Share2,
+  XCircle,
+} from 'lucide-react'
 import GuessSlots from '../GuessSlots'
 import DailyGuessShareCard from '@/components/share/DailyGuessShareCard'
 import { buildDailyGuessShare, copyDailyGuessLink } from '@/utils/dailyGuessShare'
@@ -21,6 +30,7 @@ export default function DailyGuessComplete({
   onShareTrack,
   kind = 'song',
   enableShare = true,
+  unlimitedHref,
 }) {
   const won = state.status === 'won'
   const answer = puzzle.displayAnswer || puzzle.answers[0]
@@ -178,6 +188,14 @@ export default function DailyGuessComplete({
               Next puzzle in <strong>{countdown}</strong>
             </span>
           </div>
+          {unlimitedHref && (
+            <Link to={unlimitedHref} className={styles.completedUnlimitedCta}>
+              <InfinityIcon size={15} aria-hidden="true" />
+              <span>
+                Keep playing in <strong>Unlimited</strong>
+              </span>
+            </Link>
+          )}
         </div>
       </div>
 

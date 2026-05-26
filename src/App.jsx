@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import GuessSong from './pages/GuessSong'
+import GuessSongUnlimited from './pages/GuessSongUnlimited'
 import GuessMember from './pages/GuessMember'
+import GuessMemberUnlimited from './pages/GuessMemberUnlimited'
 import GuessLyric from './pages/GuessLyric'
+import GuessLyricUnlimited from './pages/GuessLyricUnlimited'
 import FanProfile from './pages/FanProfile'
 import BiasQuiz from './pages/BiasQuiz'
 import MemoryMatch from './pages/MemoryMatch'
@@ -53,6 +56,14 @@ export default function App() {
             }
           />
           <Route
+            path="guess-song/unlimited"
+            element={
+              <GameRouteGuard slug="guess-song">
+                <GuessSongUnlimited />
+              </GameRouteGuard>
+            }
+          />
+          <Route
             path="guess-member"
             element={
               <GameRouteGuard slug="guess-member">
@@ -61,10 +72,26 @@ export default function App() {
             }
           />
           <Route
+            path="guess-member/unlimited"
+            element={
+              <GameRouteGuard slug="guess-member">
+                <GuessMemberUnlimited />
+              </GameRouteGuard>
+            }
+          />
+          <Route
             path="guess-lyric"
             element={
               <GameRouteGuard slug="guess-lyric">
                 <GuessLyric />
+              </GameRouteGuard>
+            }
+          />
+          <Route
+            path="guess-lyric/unlimited"
+            element={
+              <GameRouteGuard slug="guess-lyric">
+                <GuessLyricUnlimited />
               </GameRouteGuard>
             }
           />

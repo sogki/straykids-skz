@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { Infinity as InfinityIcon } from 'lucide-react'
 import GuessSlots from '@/components/GuessSlots'
 import HintPanel from '@/components/HintPanel'
 import styles from '@/styles/DailyGuess.module.css'
@@ -20,7 +21,10 @@ export default function DailyGuessPlay({
   onKeyDown,
   onGuess,
   questionBadge,
+  mode = 'daily',
+  stats,
 }) {
+  const isUnlimited = mode === 'unlimited'
   return (
     <div
       className={`${gameStyles.panel} ${styles.board}`}
@@ -43,11 +47,29 @@ export default function DailyGuessPlay({
             <span className={styles.tilesLabel}>{triesLeft} left</span>
           )}
         </div>
-        <div className={styles.timerBlock}>
-          <p className={styles.timerLabel}>Next puzzle</p>
-          <p className={styles.timerValue}>{countdown}</p>
-          <p className={styles.puzzleDate}>Resets at midnight</p>
-        </div>
+        {isUnlimited ? (
+          <div className={styles.timerBlock}>
+            <p className={styles.timerLabel}>
+              <InfinityIcon size={12} aria-hidden="true" />
+              <span>Unlimited mode</span>
+            </p>
+            <p className={styles.timerValue}>
+              {stats?.streak ? `${stats.streak}` : '0'}
+              <span className={styles.timerUnit}> streak</span>
+            </p>
+            <p className={styles.puzzleDate}>
+              {stats?.played
+                ? `${stats.wins}/${stats.played} solved`
+                : 'First round of the session'}
+            </p>
+          </div>
+        ) : (
+          <div className={styles.timerBlock}>
+            <p className={styles.timerLabel}>Next puzzle</p>
+            <p className={styles.timerValue}>{countdown}</p>
+            <p className={styles.puzzleDate}>Resets at midnight</p>
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
