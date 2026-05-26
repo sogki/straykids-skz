@@ -1,0 +1,234 @@
+/* In game header row — trigger only; panel floats over page content */
+.headerHowTo {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.headerHowTo[open] {
+  z-index: 200;
+}
+
+.headerHowTo summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  transition:
+    color 0.15s,
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.headerHowTo summary::-webkit-details-marker {
+  display: none;
+}
+
+.headerHowTo summary::after {
+  content: '▾';
+  font-size: 0.65rem;
+  opacity: 0.7;
+  transition: transform 0.15s;
+}
+
+.headerHowTo[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.headerHowTo summary:hover {
+  color: #fff;
+  background: color-mix(in srgb, var(--game-accent, #a855f7) 10%, var(--surface));
+}
+
+.headerHowToList {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: auto;
+  z-index: 201;
+  width: min(20rem, calc(100vw - 2.5rem));
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
+}
+
+.headerHowToList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* Desktop sidebar — always visible */
+.sidebarPanel {
+  display: none;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--game-shadow);
+}
+
+@media (min-width: 768px) {
+  .sidebarPanel {
+    display: block;
+  }
+
+  .stepsWrapMobile {
+    display: none;
+  }
+}
+
+.sidebarPanel::before {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 2px;
+  margin-bottom: 0.85rem;
+  background: var(--game-accent, #fff);
+  border-radius: 1px;
+}
+
+.sidebarTitle {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.sidebarSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebarSteps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.sidebarNum {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  background: color-mix(in srgb, var(--game-accent, #fff) 18%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--game-accent, #fff) 25%, var(--border));
+}
+
+.sidebarText {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Mobile collapsible */
+.stepsWrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.stepsWrap summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.stepsWrap summary::-webkit-details-marker {
+  display: none;
+}
+
+.stepsWrap summary::after {
+  content: '+';
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.stepsWrap[open] summary::after {
+  content: '−';
+}
+
+.stepsWrap summary:hover {
+  color: #fff;
+  background: var(--surface-2);
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.num {
+  flex-shrink: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--game-accent, #fff) 15%, var(--surface-2));
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}

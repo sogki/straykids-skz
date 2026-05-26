@@ -1,0 +1,60 @@
+/* React Bits demo row — do NOT override .card-swap-container transform */
+
+.skz-games-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .skz-games-row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.skz-games-row__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .skz-games-row__copy {
+    width: 50%;
+    padding-right: 2rem;
+    text-align: left;
+  }
+}
+
+.skz-games-eyebrow {
+  margin-bottom: 1rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* Official docs: height 600px, position relative — overflow visible so drop anim isn't clipped */
+.skz-games-row__swap {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  overflow: visible;
+}
+
+@media (min-width: 900px) {
+  .skz-games-row__swap {
+    width: 50%;
+    height: 600px;
+    /* Bleed stack slightly past the column without touching .card-swap-container transform */
+    margin-right: -3rem;
+    padding-right: 0;
+  }
+}
+
+.skz-games-section {
+  overflow-x: clip;
+}

@@ -1,0 +1,28 @@
+/* Diagonal stripe bar — shared by footer (bottom) and panels (top) */
+
+.skz-pattern-bar {
+  background-color: var(--color-skz-bg, #121213);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    color-mix(in srgb, var(--color-skz-border, #3a3a3c) 55%, transparent) 5px,
+    color-mix(in srgb, var(--color-skz-border, #3a3a3c) 55%, transparent) 6px
+  );
+}
+
+.skz-pattern-bar--top {
+  border-bottom: 1px solid var(--color-skz-border, #3a3a3c);
+}
+
+.skz-pattern-bar--bottom {
+  border-top: 1px solid var(--color-skz-border, #3a3a3c);
+}
+
+.skz-pattern-bar--compact {
+  min-height: 2.75rem;
+}
+
+.skz-pattern-bar--footer {
+  min-height: 3.25rem;
+}

@@ -1,0 +1,125 @@
+.skz-footer {
+  background: var(--color-skz-bg, #121213);
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .skz-footer {
+    padding: 0 1.5rem;
+  }
+}
+
+.skz-footer__outer {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.skz-footer__frame {
+  background: var(--color-skz-surface, #1a1a1b);
+  border: 1px solid var(--color-skz-border, #3a3a3c);
+  overflow: hidden;
+}
+
+.skz-footer__bottom .skz-pattern-bar--footer {
+  min-height: 0;
+  padding: 0;
+}
+
+.skz-footer__legal {
+  position: relative;
+  z-index: 1;
+}
+
+.skz-footer__logo {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  margin-bottom: 0.65rem;
+  line-height: 0;
+}
+
+.skz-footer__logo-link {
+  display: block;
+  line-height: 0;
+}
+
+/* Bottom-align mark; negative margin collapses transparent padding under artwork */
+.skz-footer__logo .site-logo__img--footer {
+  display: block;
+  height: 5rem;
+  width: auto;
+  max-width: min(100%, 20rem);
+  margin-bottom: -1rem;
+  object-fit: contain;
+  object-position: left bottom;
+}
+
+.skz-footer__col-title {
+  margin-bottom: 1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.skz-footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.skz-footer__link {
+  font-size: 0.875rem;
+  color: var(--color-skz-muted, #818384);
+  transition: color 0.15s;
+}
+
+.skz-footer__legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.skz-footer__legal-link {
+  font-size: 0.75rem;
+  color: var(--color-skz-muted, #818384);
+  transition: color 0.15s;
+}
+
+.skz-footer__legal-link:hover {
+  color: #fff;
+}
+
+.skz-footer__legal-sep {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+.skz-footer__link:hover {
+  color: #fff;
+}
+
+.skz-footer__link--discord:hover {
+  color: #5865f2;
+}
+
+.skz-footer__social-icon--coffee:hover {
+  color: #ffdd00;
+  border-color: color-mix(in srgb, #ffdd00 45%, var(--color-skz-border, #3a3a3c));
+}
+
+.skz-footer__link--coffee:hover {
+  color: #ffdd00;
+}
+
+.skz-footer__legal-support {
+  color: var(--color-skz-muted, #818384);
+  transition: color 0.15s;
+}

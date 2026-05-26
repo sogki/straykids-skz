@@ -1,0 +1,37 @@
+/**
+ * Stray Kids releases for profile “Era” — aligned with Spotify / JYPE discography (newest first).
+ * @see https://open.spotify.com/artist/2dIgFjalVxs4ThymZ67YCE
+ */
+export const SKZ_ERAS = [
+  '별, 빛 (STAY)',
+  'Endless Sun',
+  'DO IT',
+  'KARMA',
+  'CEREMONY',
+  'Hollow',
+  'Mixtape : dominATE',
+  '合 (HOP)',
+  'GIANT',
+  'NIGHT',
+  'SLASH',
+  'ATE',
+  '★★★★★ (5-STAR)',
+  '樂-STAR',
+  'MAXIDENT',
+  'Mixtape : Time Out',
+  'ODDINARY',
+  'Christmas EveL',
+  'NOEASY',
+  'Mixtape : 애',
+  'ALL IN',
+  'THE SOUND',
+  'IN生',
+  'GO生',
+  'Clé : LEVANTER',
+  'Clé 1 : MIROH',
+  'Clé 2 : Yellow Wood',
+  'I am YOU',
+  'I am WHO',
+  'I am NOT',
+  'Mixtape',
+]

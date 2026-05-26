@@ -1,0 +1,463 @@
+.shell {
+  --mm-accent: var(--game-accent, #22c55e);
+}
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border, #333);
+  background: color-mix(in srgb, var(--mm-accent) 6%, var(--bg, #0a0a0f));
+}
+
+.hudStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.hudLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, #a1a1aa);
+}
+
+.hudValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.introLayout {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .introLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .introLayout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 24rem);
+    gap: 1.5rem;
+  }
+}
+
+.introCard,
+.settingsCard {
+  padding: 1.25rem 1.35rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--mm-accent) 30%, var(--border));
+}
+
+.introCard {
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--mm-accent) 6%, var(--bg, #0a0a0f));
+}
+
+.settingsCard {
+  background: color-mix(in srgb, var(--mm-accent) 14%, var(--bg, #0a0a0f));
+  border-color: color-mix(in srgb, var(--mm-accent) 45%, var(--border));
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.25);
+}
+
+.introTitle,
+.settingsTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.settingsLead {
+  margin: 0 0 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted, #a1a1aa);
+}
+
+.introList {
+  flex: 1;
+  margin: 0 0 1.25rem;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--muted, #a1a1aa);
+}
+
+.introList li {
+  margin-bottom: 0.45rem;
+}
+
+.introCard .btnPrimary {
+  width: 100%;
+  max-width: 14rem;
+  margin-top: auto;
+}
+
+.settingsGroup {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: none;
+}
+
+.settingsGroup:last-of-type {
+  margin-bottom: 0.85rem;
+}
+
+.settingsLegend {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--mm-accent) 70%, #fff);
+}
+
+.settingsOptions {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.settingsOptionsSets {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settingsOptionsMatch {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.settingsOptionsMemorize {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.settingsBtn {
+  padding: 0.5rem 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  color: #e4e4e7;
+  background: rgb(0 0 0 / 0.35);
+  border: 1px solid color-mix(in srgb, var(--mm-accent) 25%, var(--border));
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+
+.settingsBtn:hover {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--mm-accent) 55%, var(--border));
+  background: rgb(0 0 0 / 0.5);
+}
+
+.settingsBtnActive {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--mm-accent) 70%, var(--border));
+  background: color-mix(in srgb, var(--mm-accent) 28%, rgb(0 0 0 / 0.4));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--mm-accent) 35%, transparent);
+}
+
+.settingsSummary {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--muted, #a1a1aa);
+  border-radius: 0.5rem;
+  background: rgb(0 0 0 / 0.3);
+  border: 1px solid color-mix(in srgb, var(--mm-accent) 25%, var(--border));
+}
+
+.settingsSummary strong {
+  color: color-mix(in srgb, var(--mm-accent) 85%, #fff);
+  font-weight: 700;
+}
+
+.previewBanner {
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem;
+  text-align: center;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--mm-accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--mm-accent) 12%, var(--bg, #0a0a0f));
+}
+
+.previewBannerTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.previewBannerSub {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted, #a1a1aa);
+}
+
+.previewBannerSub strong {
+  color: color-mix(in srgb, var(--mm-accent) 90%, #fff);
+  font-variant-numeric: tabular-nums;
+}
+
+.previewProgress {
+  height: 4px;
+  margin-bottom: 0.85rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  overflow: hidden;
+}
+
+.previewProgressBar {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--mm-accent), #86efac);
+  animation-name: mm-preview-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes mm-preview-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.previewSkip {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted, #a1a1aa);
+  background: transparent;
+  border: 1px solid var(--border, #333);
+  border-radius: 0.45rem;
+  cursor: pointer;
+}
+
+.previewSkip:hover {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--mm-accent) 50%, var(--border));
+}
+
+.boardMemorize {
+  pointer-events: none;
+}
+
+.boardIntro {
+  opacity: 0.45;
+  filter: saturate(0.7);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(var(--mm-cols, 4), minmax(0, 1fr));
+  gap: 0.55rem;
+  max-width: min(100%, 28rem);
+  margin: 0 auto;
+}
+
+.boardWide {
+  max-width: min(100%, 40rem);
+}
+
+.boardHuge {
+  max-width: min(100%, 52rem);
+}
+
+@media (min-width: 480px) {
+  .board {
+    gap: 0.65rem;
+  }
+
+  .board:not(.boardWide):not(.boardHuge) {
+    max-width: min(100%, 32rem);
+  }
+}
+
+.cardCompact .cardImage {
+  max-height: 3.25rem;
+}
+
+.cardCompact .cardName {
+  font-size: 0.48rem;
+}
+
+.cardCompact .cardBackMark {
+  font-size: 0.6rem;
+}
+
+.card {
+  aspect-ratio: 1;
+  perspective: 600px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0.55rem;
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.42s cubic-bezier(0.4, 0.2, 0.2, 1);
+  border-radius: 0.55rem;
+}
+
+.cardFlipped .cardInner {
+  transform: rotateY(180deg);
+}
+
+.cardFace {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  backface-visibility: hidden;
+  border-radius: 0.55rem;
+  border: 1px solid var(--border, #333);
+}
+
+.cardBack {
+  background: linear-gradient(145deg, #1a1a1f, #0f0f12);
+  color: color-mix(in srgb, var(--mm-accent) 70%, #fff);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.cardFront {
+  transform: rotateY(180deg);
+  border-color: color-mix(in srgb, var(--card-color, var(--mm-accent)) 50%, var(--border));
+  background: color-mix(in srgb, var(--card-color, var(--mm-accent)) 18%, #121214);
+}
+
+.cardBackMark {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.45;
+}
+
+.cardImage {
+  width: 78%;
+  height: 78%;
+  max-height: 4.5rem;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cardFallback {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.cardName {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #e4e4e7;
+  text-align: center;
+  padding: 0 0.2rem;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardMatched .cardFront {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, var(--mm-accent)) 55%, transparent);
+}
+
+.winPanel {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--mm-accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--mm-accent) 10%, var(--bg));
+}
+
+.winTitle {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.winSub {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--muted, #a1a1aa);
+}
+
+.winActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btnPrimary,
+.btnGhost {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+}
+
+.btnPrimary {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mm-accent) 80%, #000),
+    var(--mm-accent)
+  );
+}
+
+.btnGhost {
+  color: var(--muted, #a1a1aa);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.btnGhost:hover {
+  color: #fff;
+}

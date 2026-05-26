@@ -1,0 +1,77 @@
+/**
+ * Extra lyric puzzles — merged into dailyLyrics for ~60+ day rotation.
+ */
+function lyric(id, song, displayAnswer, answers, line, hint, extra = {}) {
+  return {
+    id,
+    song,
+    displayAnswer,
+    answers,
+    reveals: [
+      { type: 'lyric', label: 'Lyric', content: line },
+      { type: 'hint', label: 'Hint', content: hint },
+      { type: 'letters', label: 'Letters', content: '' },
+      {
+        type: extra.type || 'category',
+        label: extra.label || 'Song',
+        content: extra.content || song,
+      },
+      ...(extra.second
+        ? [{ type: extra.secondType || 'era', label: extra.secondLabel || 'Era', content: extra.second }]
+        : []),
+    ],
+  }
+}
+
+export const dailyLyricsExtended = [
+  lyric('l-red-lights', 'Red Lights', 'red', ['red', 'reds'], 'Neon _____ in the city night', 'Primary color of stop signs', { second: 'ODDINARY' }),
+  lyric('l-silent-cry', 'Silent Cry', 'cry', ['cry', 'crying'], 'Hear my silent _____', 'Tears without sound'),
+  lyric('l-hellevator', 'Hellevator', 'elevator', ['elevator', 'hellevator'], 'Take the _____ down — debut survival', 'Vertical transport in a building', { second: '2017' }),
+  lyric('l-district-9', 'District 9', 'district', ['district', 'district 9'], 'Welcome to _____ 9', 'Numbered zone in the title'),
+  lyric('l-my-pace', 'My Pace', 'pace', ['pace', 'my pace'], 'I go at my own _____', 'Speed you walk or run'),
+  lyric('l-i-am-you', 'I Am You', 'you', ['you'], 'I am _____ — mirror concept', 'Second person pronoun'),
+  lyric('l-get-cool', 'Get Cool', 'cool', ['cool'], 'Just _____ — chill anthem', 'Opposite of hot (slang)'),
+  lyric('l-awaken', 'Awaken', 'awake', ['awake', 'awaken'], 'Time to _____ — rise up', 'Not sleeping'),
+  lyric('l-victory-song', 'Victory Song', 'victory', ['victory'], 'Sing a song of _____', 'Winning celebration'),
+  lyric('l-mixtape-on', 'Mixtape#On', 'on', ['on'], 'Turn the mixtape _____', 'Opposite of off'),
+  lyric('l-mixtape-in', 'Mixtape#IN', 'in', ['in'], 'Lock me _____ — intro track', 'Inside'),
+  lyric('l-mixtape-go', 'Mixtape#GO', 'go', ['go'], 'Ready set _____', 'Leave / start moving'),
+  lyric('l-19', '19', 'nineteen', ['19', 'nineteen'], 'Young like _____ — pre-debut', 'Age in the title'),
+  lyric('l-sprout', 'Grow Up', 'grow', ['grow', 'growing'], 'Watch me _____ up', 'Get taller / mature'),
+  lyric('l-4416', '4416', 'four', ['4', 'four', '4416'], 'Numbers in the title — say _____', 'Comes before five'),
+  lyric('l-slump', 'SLUMP', 'slump', ['slump'], 'Stuck in a _____', 'Creative block dip'),
+  lyric('l-wow', 'WOW', 'wow', ['wow'], 'Say _____ — surprise hook', 'Expression of amazement'),
+  lyric('l-double-knot', 'Double Knot', 'knot', ['knot', 'double knot'], 'Tied with a double _____', 'Rope loop'),
+  lyric('l-a-stray-kids', 'A', 'stray', ['stray', 'stray kids'], 'We are _____ Kids', 'Lost / wandering word in group name'),
+  lyric('l-mixtape-clé', 'Mixtape#Clé', 'key', ['key', 'cle', 'clé'], 'Find the _____ — French “clé”', 'Opens a lock'),
+  lyric('l-side-b', 'Side B', 'side', ['side', 'side b'], 'Flip to side _____', 'B-side of a record'),
+  lyric('l-tmt', 'TMT', 'tomorrow', ['tomorrow', 'tmt'], 'See you _____', 'Day after today'),
+  lyric('l-beware', 'Beware', 'beware', ['beware'], '_____ — watch out', 'Warning word'),
+  lyric('l-ex', 'EX', 'ex', ['ex'], 'Letter _____ — short track', 'Former partner abbreviation'),
+  lyric('l-silent-board', 'Silent Cry', 'board', ['board', 'on board'], 'All on _____ — ship metaphor', 'Ship deck (figurative)'),
+  lyric('l-top', 'TOP', 'top', ['top'], 'We on _____ — peak', 'Highest point'),
+  lyric('l-haven', 'Haven', 'haven', ['haven'], 'Safe _____ — shelter', 'Harbor / refuge'),
+  lyric('l-comefort', 'Comfort', 'comfort', ['comfort'], 'Find your _____ zone', 'Ease and coziness'),
+  lyric('l-social-path', 'Social Path', 'path', ['path', 'social path'], 'Walk the social _____', 'Trail you follow'),
+  lyric('l-super-board', 'Super Board', 'super', ['super'], '_____ Board — hype track', 'Above normal'),
+  lyric('l-megaverse', 'MEGAVERSE', 'mega', ['mega', 'megaverse'], 'Enter the _____ verse', 'Huge prefix'),
+  lyric('l-3racha', '3RACHA', 'racha', ['racha', '3racha'], 'Sub-unit name ends in _____', 'Three + unit suffix'),
+  lyric('l-waiting', 'Waiting For Us', 'waiting', ['waiting', 'wait'], 'Still _____ for us', 'Not yet arrived'),
+  lyric('l-cant-stop', "Can't Stop", 'stop', ['stop'], "Can't _____ — momentum", 'Cease moving'),
+  lyric('l-rush', 'Rush', 'rush', ['rush'], 'Feel the _____', 'Sudden hurry'),
+  lyric('l-supernova', 'Supernova', 'nova', ['nova', 'supernova'], 'Bright like a super_____', 'Star explosion suffix'),
+  lyric('l-walkin', 'Walkin On Water', 'water', ['water'], 'Walkin on _____', 'H2O'),
+  lyric('l-battle', 'Battle Ground', 'battle', ['battle'], 'On the _____ ground', 'Fight / war'),
+  lyric('l-cover', 'Cover Me', 'cover', ['cover'], '_____ me — protect', 'Shield from harm'),
+  lyric('l-hallucination', 'Hallucination', 'dream', ['dream', 'hallucination'], 'Lost in a waking _____', 'Sleep vision'),
+  lyric('l-stray', 'Stray Kids', 'kids', ['kids', 'kid'], 'Stray _____ — group name', 'Children'),
+  lyric('l-venom-bite', 'VENOM', 'bite', ['bite'], 'Poison _____ — snake metaphor', 'Teeth action'),
+  lyric('l-domino-fall', 'DOMINO', 'fall', ['fall', 'falls'], 'Watch them _____', 'Drop down'),
+  lyric('l-maniac-crazy', 'MANIAC', 'crazy', ['crazy', 'maniacs'], 'Feeling _____ in my head', 'Synonym for unhinged'),
+  lyric('l-gods-menu-spice', "God's Menu", 'spice', ['spice'], 'Add the _____ — kitchen metaphor', 'Flavor heat'),
+  lyric('l-thunder-rumble', 'Thunderous', 'rumble', ['rumble', 'thunder'], 'Hear the _____', 'Low deep sound'),
+  lyric('l-back-door-secret', 'Back Door', 'secret', ['secret', 'secrets'], 'Through the back _____ entrance', 'Hidden'),
+  lyric('l-case-heart', 'CASE 143', 'heart', ['heart', 'love'], 'I love you — _____ emoji meaning', 'Organ / symbol of love'),
+  lyric('l-sclass-elite', 'S-Class', 'elite', ['elite', 'class'], 'Top tier _____ only', 'Best of the best'),
+  lyric('l-lala-hook', 'LALALALA', 'sing', ['sing', 'singing', 'lalala'], 'Just _____ along', 'Use your voice'),
+]

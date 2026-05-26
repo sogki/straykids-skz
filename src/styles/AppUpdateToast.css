@@ -1,0 +1,115 @@
+.skz-update-toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem 1rem 1rem 1.1rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, #a855f7 40%, var(--border, #333));
+  background: color-mix(in srgb, var(--bg, #0a0a0f) 92%, #1a1028);
+  box-shadow:
+    0 12px 40px rgb(0 0 0 / 0.45),
+    0 0 0 1px rgb(255 255 255 / 0.04) inset;
+  animation: skz-update-toast-in 0.35s ease-out;
+}
+
+@keyframes skz-update-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skz-update-toast__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.skz-update-toast__title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.skz-update-toast__text {
+  margin: 0 0 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--muted, #a1a1aa);
+}
+
+.skz-update-toast__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skz-update-toast__primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  cursor: pointer;
+}
+
+.skz-update-toast__primary:hover {
+  filter: brightness(1.08);
+}
+
+.skz-update-toast__ghost {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted, #a1a1aa);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.skz-update-toast__ghost:hover {
+  color: #fff;
+}
+
+.skz-update-toast__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  color: var(--muted, #a1a1aa);
+  background: transparent;
+  border: none;
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+
+.skz-update-toast__close:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.06);
+}
+
+@media (max-width: 480px) {
+  .skz-update-toast {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}

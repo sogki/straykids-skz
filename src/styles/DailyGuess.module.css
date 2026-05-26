@@ -1,0 +1,566 @@
+/* Daily Song Guess */
+
+.tiles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tile {
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.tileEmpty {
+  background: var(--bg);
+}
+
+.tileCurrent {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, #fff 15%, transparent);
+}
+
+.tileWrong {
+  background: var(--wrong-bg);
+  border-color: var(--wrong-bg);
+}
+
+.tileCorrect {
+  background: var(--correct-bg);
+  border-color: var(--correct-bg);
+}
+
+.tilesLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Top status bar */
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.triesBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.triesLabel {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.timerBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  text-align: right;
+}
+
+.timerLabel {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.timerValue {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.puzzleDate {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.questionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.85rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--game-accent, #a855f7) 80%, #fff);
+  border: 1px solid color-mix(in srgb, var(--game-accent, #a855f7) 35%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--game-accent, #a855f7) 10%, var(--bg));
+}
+
+/* Centered clue stage */
+.clueStage {
+  margin: 0 0 1.25rem;
+  padding: 1.25rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  text-align: center;
+}
+
+.clueStage .clueDots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.clues {
+  margin: 0.5rem 0 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.clueDots {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.clueDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--absent);
+  transition: background 0.2s;
+}
+
+.clueDotOn {
+  background: var(--game-accent, #a855f7);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--game-accent, #a855f7) 50%, transparent);
+}
+
+.clueActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.clueActiveLabel {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 0.65rem;
+}
+
+.cluePrompt {
+  font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+  line-height: 1.45;
+  max-width: 26rem;
+}
+
+.clueEmoji {
+  font-size: clamp(2.5rem, 8vw, 3.25rem);
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: 0.14em;
+}
+
+.clueText {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-weight: 500;
+  margin: 0;
+  color: var(--text);
+  line-height: 1.45;
+  max-width: 22rem;
+}
+
+.clueLyric {
+  font-size: clamp(1.05rem, 3.2vw, 1.25rem);
+  font-weight: 600;
+  font-style: italic;
+  margin: 0;
+  color: var(--text);
+  line-height: 1.5;
+  max-width: 24rem;
+}
+
+.clueSkzoo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.clueSkzoo img {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+.clueEmpty {
+  margin: 0;
+  min-height: 7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.clueLockedNote {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0.85rem 0 0;
+  line-height: 1.4;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+}
+
+.playGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 560px) {
+  .playGrid {
+    grid-template-columns: 1fr minmax(0, 200px);
+    align-items: start;
+  }
+
+  .playGridNoLog {
+    grid-template-columns: 1fr;
+  }
+}
+
+.playMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.guessSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.inputRow input {
+  flex: 1;
+  margin: 0;
+}
+
+.toast {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--game-accent, #a855f7);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--game-accent, #a855f7) 12%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--game-accent, #a855f7) 25%, var(--border));
+}
+
+.guessLog {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.guessLogTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.guessList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.guessListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.guessListItem:last-child {
+  border-bottom: none;
+}
+
+.guessName {
+  color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guessMarkWrong {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.endBox {
+  text-align: center;
+  padding: 1.35rem 1rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.endTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.endSub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+
+.endAnswer {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin: 0 0 1rem;
+  color: #fff;
+}
+
+.metaLink {
+  color: color-mix(in srgb, var(--game-accent, #a855f7) 65%, #fff);
+  text-decoration: none;
+}
+
+.metaLink:hover {
+  text-decoration: underline;
+}
+
+/* ─── Already completed today ─── */
+.completedScreen {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.completedHero {
+  padding: 1.75rem 1.35rem 1.5rem;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--game-accent, #a855f7) 35%, var(--border));
+  border-radius: var(--radius);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--game-accent, #a855f7) 14%, var(--surface)) 0%,
+    var(--surface) 55%
+  );
+  box-shadow: var(--game-shadow);
+}
+
+.completedIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0 auto 0.85rem;
+  border-radius: 999px;
+}
+
+.completedIconWin {
+  color: #4ade80;
+  background: color-mix(in srgb, #4ade80 18%, var(--bg));
+  border: 1px solid color-mix(in srgb, #4ade80 35%, var(--border));
+}
+
+.completedIconLoss {
+  color: #f87171;
+  background: color-mix(in srgb, #f87171 14%, var(--bg));
+  border: 1px solid color-mix(in srgb, #f87171 30%, var(--border));
+}
+
+.completedKicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.completedTitle {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.completedLead {
+  margin: 0 auto 1.15rem;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.completedMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.completedCountdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.completedCountdown strong {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.sharePanel {
+  padding: 1.15rem 1.2rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.sharePanelTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sharePanelHint {
+  margin: 0 0 0.85rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.shareDomain {
+  color: color-mix(in srgb, var(--game-accent, #a855f7) 70%, #fff);
+  font-weight: 600;
+}
+
+.shareCardStage {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.shareImagePreview {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.65);
+}
+
+.shareImageLoading {
+  margin: 0 0 0.85rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px dashed var(--border);
+}
+
+.shareToast {
+  margin: 0 0 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--game-accent, #a855f7) 75%, #fff);
+}
+
+.shareActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.completedHints {
+  width: 100%;
+}
+
+.completedHints .clueStage {
+  margin-bottom: 0;
+}

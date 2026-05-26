@@ -1,0 +1,56 @@
+/* Unified fixed header: announcement + nav pill */
+
+.site-chrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.site-chrome__inner {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0.65rem 1.25rem 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .site-chrome__inner {
+    padding: 0.75rem 1.5rem 0.9rem;
+  }
+}
+
+/* Banner: same width as nav pill, not edge-to-edge */
+.site-chrome .site-banner {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
+  flex-shrink: 0;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border-bottom-width: 1px;
+  box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.45);
+}
+
+/* On hero pages — glassier so it sits on imagery */
+.site-chrome--overlay .site-banner {
+  box-shadow:
+    0 4px 24px -10px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.site-chrome .site-banner__inner {
+  min-height: 2.1rem;
+  padding: 0.45rem 2.5rem 0.45rem 0.85rem;
+}
+
+.site-chrome .navbar-shell {
+  flex-shrink: 0;
+}

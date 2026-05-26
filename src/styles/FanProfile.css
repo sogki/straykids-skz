@@ -1,0 +1,1258 @@
+/* Fan Profile Maker — sidebar + main + preview */
+
+.fan-profile-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .fan-profile-layout {
+    grid-template-columns: 13.5rem minmax(0, 1fr) minmax(18rem, 36rem);
+    gap: 0;
+    align-items: start;
+  }
+
+  .fan-profile-layout--banner {
+    grid-template-columns: 13.5rem minmax(0, 1fr) minmax(20rem, 40rem);
+  }
+}
+
+/* ─── Step sidebar (left) ─── */
+.fan-profile-sidebar {
+  min-width: 0;
+}
+
+.fan-profile-sidebar__heading {
+  margin: 0 0 1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fan-profile-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fan-profile-sidebar__item {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0 0.85rem;
+  align-items: stretch;
+}
+
+.fan-profile-sidebar__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 2rem;
+}
+
+.fan-profile-sidebar__dot {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid var(--border, #3a3a3c);
+  background: var(--surface, #1a1a1b);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+}
+
+.fan-profile-sidebar__dot--current {
+  border-color: var(--game-accent, #ef4444);
+  background: color-mix(in srgb, var(--game-accent, #ef4444) 24%, #1a1a1b);
+  color: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--game-accent, #ef4444) 22%, transparent);
+}
+
+.fan-profile-sidebar__dot--done {
+  border-color: color-mix(in srgb, var(--game-accent, #ef4444) 55%, #3a3a3c);
+  background: color-mix(in srgb, var(--game-accent, #ef4444) 12%, #1a1a1b);
+  color: #fff;
+  font-size: 0.65rem;
+}
+
+.fan-profile-sidebar__line {
+  flex: 1;
+  width: 2px;
+  min-height: 1.25rem;
+  margin: 0.35rem 0;
+  border-radius: 1px;
+  background: var(--border, #3a3a3c);
+}
+
+.fan-profile-sidebar__item--done .fan-profile-sidebar__line {
+  background: color-mix(in srgb, var(--game-accent, #ef4444) 45%, #3a3a3c);
+}
+
+.fan-profile-sidebar__item--current .fan-profile-sidebar__line {
+  background: linear-gradient(
+    180deg,
+    var(--game-accent, #ef4444) 0%,
+    var(--border, #3a3a3c) 100%
+  );
+}
+
+.fan-profile-sidebar__step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  margin: 0 0 1.1rem;
+  padding: 0.15rem 0 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.fan-profile-sidebar__item:not(.fan-profile-sidebar__item--current):not(.fan-profile-sidebar__item--done)
+  .fan-profile-sidebar__step {
+  opacity: 0.72;
+}
+
+.fan-profile-sidebar__step:hover {
+  opacity: 1;
+}
+
+.fan-profile-sidebar__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.fan-profile-sidebar__item--current .fan-profile-sidebar__title {
+  color: #fff;
+}
+
+.fan-profile-sidebar__desc {
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.fan-profile-sidebar__item--current .fan-profile-sidebar__desc {
+  color: color-mix(in srgb, #fff 72%, var(--text-muted));
+}
+
+@media (min-width: 1100px) {
+  .fan-profile-sidebar {
+    position: sticky;
+    top: calc(1rem + var(--site-chrome-height, 6.5rem));
+    align-self: start;
+    padding-right: 1.25rem;
+    margin-right: 1.25rem;
+    border-right: 1px solid var(--border, #3a3a3c);
+  }
+}
+
+@media (max-width: 1099px) {
+  .fan-profile-sidebar {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border, #3a3a3c);
+  }
+
+  .fan-profile-sidebar__list {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scroll-snap-type: x proximity;
+  }
+
+  .fan-profile-sidebar__item {
+    flex: 0 0 min(14rem, 78vw);
+    scroll-snap-align: start;
+  }
+
+  .fan-profile-sidebar__rail {
+    display: none;
+  }
+
+  .fan-profile-sidebar__step {
+    margin-bottom: 0;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border, #3a3a3c);
+    border-radius: 8px;
+    background: var(--surface, #1a1a1b);
+  }
+
+  .fan-profile-sidebar__item--current .fan-profile-sidebar__step {
+    border-color: var(--game-accent, #ef4444);
+    background: color-mix(in srgb, var(--game-accent, #ef4444) 12%, #1a1a1b);
+  }
+}
+
+/* ─── Main step panel (center) ─── */
+.fan-profile-flow {
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .fan-profile-flow {
+    padding: 0 1.5rem;
+    border-right: 1px solid var(--border, #3a3a3c);
+  }
+}
+
+.fan-profile-flow__panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 22rem;
+}
+
+.fan-profile-flow__header {
+  margin-bottom: 1.25rem;
+}
+
+.fan-profile-flow__eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fan-profile-flow__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.fan-profile-flow__content {
+  flex: 1;
+}
+
+.fan-profile-flow__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #3a3a3c);
+}
+
+.fan-profile-flow__nav-btn {
+  min-width: 6.5rem;
+}
+
+.fan-profile-flow__nav-spacer {
+  min-width: 6.5rem;
+}
+
+.fan-profile-finish__download {
+  margin-bottom: 1rem;
+}
+
+.fan-profile-finish__secondary {
+  margin-top: 0.5rem;
+}
+
+.fan-profile-finish__text {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+/* ─── Shared editor controls ─── */
+.fan-profile-field {
+  margin-bottom: 1rem;
+}
+
+.fan-profile-field:last-child {
+  margin-bottom: 0;
+}
+
+.fan-profile-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.fan-profile-hint a {
+  color: var(--color-skz-accent, #fff);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.fan-profile-skzoo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.fan-profile-skzoo-grid--flow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (min-width: 640px) {
+  .fan-profile-skzoo-grid--flow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.fan-profile-skzoo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.35rem;
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: 10px;
+  background: var(--surface, #1a1a1b);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+
+.fan-profile-skzoo-btn:hover {
+  transform: translateY(-1px);
+}
+
+.fan-profile-skzoo-btn img {
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.fan-profile-skzoo-btn--large img {
+  width: 4rem;
+  height: 4rem;
+}
+
+.fan-profile-skzoo-btn__name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.fan-profile-skzoo-btn__member {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.fan-profile-skzoo-btn--active {
+  border-color: var(--skzoo-color, #fff);
+  box-shadow:
+    0 0 0 1px var(--skzoo-color, #fff),
+    0 8px 24px -8px color-mix(in srgb, var(--skzoo-color) 45%, transparent);
+}
+
+.fan-profile-mode-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.fan-profile-mode-tab {
+  flex: 1;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border, #3a3a3c);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.fan-profile-mode-tab--active {
+  background: color-mix(in srgb, var(--game-accent, #ef4444) 18%, #2b2d31);
+  border-color: color-mix(in srgb, var(--game-accent, #ef4444) 55%, #3a3a3c);
+  color: #fff;
+}
+
+.fan-profile-gradient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.fan-profile-gradient-grid--flow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-height: min(22rem, 50vh);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  scrollbar-gutter: stable;
+}
+
+@media (min-width: 520px) {
+  .fan-profile-gradient-grid--flow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 720px) {
+  .fan-profile-gradient-grid--flow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.fan-profile-gradient-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: 8px;
+  background: var(--surface, #1a1a1b);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fan-profile-gradient-btn__swatch {
+  width: 100%;
+  height: 2rem;
+  border-radius: 4px;
+}
+
+.fan-profile-gradient-btn__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.fan-profile-gradient-btn--active {
+  border-color: var(--color-skz-accent, #fff);
+  box-shadow: 0 0 0 1px var(--color-skz-accent, #fff);
+}
+
+.fan-profile-gradient-btn--active .fan-profile-gradient-btn__label {
+  color: #fff;
+}
+
+.fan-profile-bg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+/* 4×2 grid matches STRAY_KIDS_PHOTOS_PER_PAGE (8) so each page fills evenly */
+.fan-profile-bg-grid--flow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 520px) {
+  .fan-profile-bg-grid--flow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.fan-profile-bg-grid--layout-portrait .fan-profile-bg-btn img {
+  aspect-ratio: 3 / 4;
+  object-position: center 22%;
+}
+
+.fan-profile-bg-grid--layout-banner .fan-profile-bg-btn img {
+  aspect-ratio: 21 / 9;
+  object-position: center 28%;
+}
+
+.fan-profile-bg-btn {
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #272729;
+  cursor: pointer;
+}
+
+.fan-profile-bg-btn img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  vertical-align: middle;
+}
+
+.fan-profile-bg-btn__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fan-profile-bg-btn--active {
+  border-color: var(--color-skz-accent, #fff);
+}
+
+.fan-profile-photos-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.fan-profile-photos-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border, #3a3a3c);
+  background: var(--surface, #1a1a1b);
+  color: #fff;
+  cursor: pointer;
+}
+
+.fan-profile-photos-pagination__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fan-profile-photos-pagination__status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.fan-profile-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+@media (min-width: 520px) {
+  .fan-profile-layout-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.fan-profile-layout-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  padding: 0.65rem;
+  border: 2px solid var(--border, #3a3a3c);
+  border-radius: 10px;
+  background: var(--surface, #1a1a1b);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fan-profile-layout-btn--active {
+  border-color: var(--color-skz-accent, #fff);
+  box-shadow: 0 0 0 1px var(--color-skz-accent, #fff);
+}
+
+/* Mini wireframes — match live preview card proportions */
+.fan-profile-layout-btn__preview {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--layout-preview-primary, #5865f2);
+}
+
+.fan-profile-layout-btn--portrait .fan-profile-layout-btn__preview {
+  width: 5.25rem;
+  aspect-ratio: 10 / 17;
+  margin: 0 auto;
+}
+
+.fan-profile-layout-btn--banner .fan-profile-layout-btn__preview {
+  width: 100%;
+  aspect-ratio: 13 / 7;
+  max-height: 5rem;
+}
+
+.fan-profile-layout-btn__preview-hero {
+  flex-shrink: 0;
+  background: color-mix(in srgb, #fff 18%, var(--layout-preview-primary, #5865f2));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fan-profile-layout-btn--portrait .fan-profile-layout-btn__preview-hero {
+  height: 38%;
+}
+
+.fan-profile-layout-btn--banner .fan-profile-layout-btn__preview-hero {
+  height: 34%;
+}
+
+.fan-profile-layout-btn__preview-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.28rem 0.35rem;
+  background: linear-gradient(
+    var(--card-gradient-angle, 135deg),
+    var(--layout-preview-primary, #5865f2),
+    color-mix(in srgb, var(--layout-preview-accent, #7289da) 35%, var(--layout-preview-primary, #5865f2))
+  );
+}
+
+.fan-profile-layout-btn__preview-line {
+  display: block;
+  height: 0.2rem;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.fan-profile-layout-btn__preview-line--title {
+  width: 72%;
+  height: 0.28rem;
+}
+
+.fan-profile-layout-btn__preview-line--short {
+  width: 48%;
+}
+
+.fan-profile-layout-btn__name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fan-profile-layout-btn__desc {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.fan-profile-colour-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fan-profile-colour-field {
+  min-width: 0;
+}
+
+.fan-profile-colour-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fan-profile-colour-input input[type='color'] {
+  width: 2.75rem;
+  height: 2.25rem;
+  padding: 0.15rem;
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: 6px;
+  background: #2b2d31;
+  cursor: pointer;
+}
+
+.fan-profile-colour-hex {
+  font-size: 0.75rem;
+  font-family: ui-monospace, monospace;
+  color: var(--text-muted);
+}
+
+.fan-profile-colour-swatches {
+  margin-bottom: 0;
+}
+
+.fan-profile-angle__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.fan-profile-angle__head .label {
+  margin-bottom: 0;
+}
+
+.fan-profile-angle__value {
+  flex-shrink: 0;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: 6px;
+}
+
+.fan-profile-angle__preview {
+  height: 2.5rem;
+  margin-bottom: 0.65rem;
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: var(--radius-sm, 8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.fan-profile-angle__track {
+  padding: 0.7rem 0.9rem;
+  background: var(--bg);
+  border: 1px solid var(--border, #3a3a3c);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.fan-profile-angle__range {
+  display: block;
+  width: 100%;
+  height: 1.25rem;
+  margin: 0;
+  cursor: pointer;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.fan-profile-angle__range:focus {
+  outline: none;
+}
+
+.fan-profile-angle__range:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--game-accent, #ef4444) 28%, transparent),
+    0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.fan-profile-angle__range::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border, #3a3a3c) 55%, #fff);
+}
+
+.fan-profile-angle__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: -0.4rem;
+  border: 2px solid var(--game-accent, #ef4444);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s;
+}
+
+.fan-profile-angle__range:active::-webkit-slider-thumb {
+  transform: scale(1.06);
+}
+
+.fan-profile-angle__range::-moz-range-track {
+  height: 0.35rem;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border, #3a3a3c) 55%, #fff);
+}
+
+.fan-profile-angle__range::-moz-range-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--game-accent, #ef4444);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.fan-profile-angle__hint {
+  margin: 0.55rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* ─── Preview column (right) ─── */
+.fan-profile-preview-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .fan-profile-preview-col {
+    position: sticky;
+    top: calc(1rem + var(--site-chrome-height, 6.5rem));
+    align-self: start;
+    padding-left: 1.5rem;
+    margin-left: 0;
+    justify-self: end;
+    width: 100%;
+    max-width: 40rem;
+  }
+
+  .fan-profile-layout--banner .fan-profile-preview-col {
+    max-width: 40rem;
+  }
+}
+
+.fan-profile-preview-label {
+  margin: 0;
+  width: 100%;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.fan-profile-export-hint {
+  margin: 0;
+  width: 100%;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ─── Fan profile card — Spotify-style artist layout (export target) ─── */
+.fan-profile-preview-shell {
+  position: relative;
+  width: 100%;
+  max-width: min(100%, 340px);
+  border-radius: 12px;
+  box-shadow:
+    0 20px 48px -24px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+/* Soft specular highlight — lives on the card shell, inherits tilt + rounded clip */
+.fan-profile-preview-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 48% 40% at var(--preview-shine-x, 50%) var(--preview-shine-y, 50%),
+    rgba(255, 255, 255, 0.11) 0%,
+    rgba(255, 255, 255, 0.04) 38%,
+    transparent 72%
+  );
+  transition: opacity 0.28s ease;
+}
+
+.fan-profile-preview-tilt--hover .fan-profile-preview-shell::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fan-profile-preview-shell::after {
+    display: none;
+  }
+}
+
+.fan-profile-layout--banner .fan-profile-preview-shell {
+  max-width: min(100%, 640px);
+}
+
+.profile-card {
+  --profile-bg: var(--card-primary, #5865f2);
+  --profile-muted: color-mix(in srgb, #fff 62%, var(--card-primary, #5865f2));
+  --profile-line: color-mix(in srgb, #fff 22%, var(--card-primary, #5865f2));
+
+  width: 100%;
+  max-width: 100%;
+}
+
+.profile-card__frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 26rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card-primary, #5865f2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  isolation: isolate;
+}
+
+.profile-card__frame--has-photo {
+  background: var(--card-primary, #5865f2);
+}
+
+.profile-card__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+
+.profile-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.profile-card__content {
+  --profile-text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 10px rgba(0, 0, 0, 0.4);
+  --profile-icon-shadow:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 26rem;
+}
+
+/* Export: square layer bounds from html-to-image; final PNG is rounded via canvas mask */
+.profile-card__frame--exporting {
+  overflow: hidden !important;
+  border-radius: 12px !important;
+}
+
+.profile-card__frame--exporting .profile-card__backdrop,
+.profile-card__frame--exporting .profile-card__overlay {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Keep banner SKZOO on the divider line — do not strip translateY(-50%) */
+.profile-card__frame--exporting .profile-card__skzoo--banner {
+  transform: translateY(-50%) !important;
+}
+
+.profile-card__frame--exporting .profile-card__skzoo:not(.profile-card__skzoo--banner) {
+  transform: none !important;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45)) !important;
+}
+
+.profile-card__hero {
+  position: relative;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  max-height: 11.5rem;
+  background: transparent;
+}
+
+.profile-card__skzoo {
+  position: absolute;
+  right: 0.5rem;
+  bottom: -1.75rem;
+  z-index: 3;
+  width: 8.25rem;
+  height: 8.25rem;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+
+.profile-card__body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2.15rem 1.1rem 0.85rem;
+  background: transparent;
+}
+
+.profile-card__identity {
+  margin: 0 0 0.85rem;
+}
+
+.profile-card__kind {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--profile-muted);
+  text-shadow: var(--profile-text-shadow);
+}
+
+.profile-card__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 7vw, 2rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #fff;
+  word-break: break-word;
+  text-shadow: var(--profile-text-shadow);
+}
+
+.profile-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-card__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #fff;
+  text-shadow: var(--profile-text-shadow);
+}
+
+.profile-card__stat-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--card-accent, var(--profile-muted));
+  filter: var(--profile-icon-shadow);
+}
+
+/* PNG avatars: one light shadow (parent filter doubles on raster alpha) */
+.profile-card__stat-icon:has(.profile-card__stat-skzoo-icon) {
+  filter: none;
+}
+
+.profile-card__stat-skzoo-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  object-fit: contain;
+  border-radius: 2px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+}
+
+.profile-card__stat-value {
+  word-break: break-word;
+}
+
+.profile-card__about {
+  flex: 1;
+  margin: 0;
+  padding-top: 0.15rem;
+  border-top: 1px solid var(--profile-line);
+}
+
+.profile-card__about-heading {
+  margin: 0.85rem 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: var(--profile-text-shadow);
+}
+
+.profile-card__bio {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--profile-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-shadow: var(--profile-text-shadow);
+}
+
+.profile-card__bio--empty {
+  color: color-mix(in srgb, #fff 45%, var(--card-primary, #5865f2));
+  font-style: italic;
+}
+
+.profile-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  text-align: right;
+}
+
+.profile-card__footer-mark {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: color-mix(in srgb, #fff 55%, var(--card-primary, #5865f2));
+  text-shadow: var(--profile-text-shadow);
+}
+
+/* ─── Portrait card (taller) ─── */
+.profile-card--portrait .profile-card__frame {
+  min-height: 26rem;
+}
+
+.profile-card--portrait .profile-card__content {
+  min-height: 26rem;
+}
+
+/* ─── Banner (wide) — text anchored to bottom; hero is SKZOO-only (no flex gap) ─── */
+.profile-card--banner .profile-card__frame {
+  width: 100%;
+  min-height: unset;
+  aspect-ratio: 21 / 10;
+}
+
+.profile-card--banner .profile-card__content {
+  position: relative;
+  min-height: unset;
+  height: 100%;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.profile-card--banner .profile-card__hero {
+  display: none;
+}
+
+.profile-card--banner .profile-card__body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: 100%;
+  max-width: 82%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0.9rem 1.35rem;
+  margin-top: 0;
+}
+
+.profile-card--banner .profile-card__identity {
+  flex-shrink: 0;
+  margin-bottom: 0.3rem;
+}
+
+.profile-card--banner .profile-card__kind {
+  margin-bottom: 0.15rem;
+  font-size: 0.6rem;
+}
+
+.profile-card--banner .profile-card__title {
+  font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+}
+
+.profile-card--banner .profile-card__stats {
+  flex-shrink: 0;
+  margin-bottom: 0.35rem;
+  gap: 0.25rem 0.55rem;
+}
+
+.profile-card--banner .profile-card__stat {
+  font-size: 0.7rem;
+}
+
+.profile-card__about-split--portrait {
+  display: contents;
+}
+
+.profile-card--banner .profile-card__about-split {
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--profile-line);
+}
+
+.profile-card--banner .profile-card__skzoo--banner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin: 0;
+  object-fit: contain;
+  object-position: center;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
+.profile-card--banner .profile-card__about {
+  flex: 0 0 auto;
+  min-height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-right: 4.75rem;
+  border-top: none;
+  overflow: hidden;
+}
+
+.profile-card--banner .profile-card__about-heading {
+  flex-shrink: 0;
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+}
+
+.profile-card--banner .profile-card__bio {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.profile-card--banner .profile-card__footer--banner-corner {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.32rem;
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-card--banner .profile-card__footer-mark {
+  font-size: 0.5rem;
+  line-height: 1.2;
+}
+
+.profile-card__frame--exporting .profile-card__footer--banner-corner .profile-card__footer-mark {
+  font-size: 8px;
+}

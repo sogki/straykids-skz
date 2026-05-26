@@ -1,0 +1,31 @@
+/* React Bits–style card chrome (header bar + body) */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.bar {
+  flex-shrink: 0;
+  border-bottom: 1px solid #fff;
+  background: linear-gradient(to top, #1b1722, #060606);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #0a0a0b;
+}
+
+.bodyInner {
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}

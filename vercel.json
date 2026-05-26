@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/jype-image/:path*",
+      "destination": "https://d1al7qj7ydfbpt.cloudfront.net/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

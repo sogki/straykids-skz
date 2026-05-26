@@ -1,0 +1,279 @@
+/* Scroll-reactive pill navbar (inside .site-chrome) */
+
+.navbar-shell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-height: 4rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0.45rem 0.6rem 0.45rem 1rem;
+  transition:
+    background-color 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navbar-shell--scrolled {
+  border-color: color-mix(in srgb, var(--color-skz-border, #3a3a3c) 70%, transparent);
+  background: color-mix(in srgb, var(--color-skz-bg, #121213) 88%, transparent);
+  box-shadow:
+    0 4px 24px -8px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+}
+
+.navbar-logo {
+  flex-shrink: 0;
+  min-width: 0;
+  align-self: center;
+}
+
+/* ─── Desktop bar (lg+) ─── */
+.navbar-desktop {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .navbar-desktop {
+    display: flex;
+  }
+
+  .navbar-mobile {
+    display: none !important;
+  }
+}
+
+.navbar-menu {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.navbar-menu-list {
+  justify-content: flex-start;
+  gap: 0.15rem;
+}
+
+.navbar-desktop__actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Play random — inline with nav links (no box when pill / on desktop) */
+.navbar-cta-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.navbar-cta-play__sep {
+  margin-right: -0.05rem;
+  font-weight: 300;
+  opacity: 0.45;
+  user-select: none;
+}
+
+.navbar-desktop__actions .navbar-cta-play {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-desktop__actions .navbar-cta-play {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-shell--scrolled .navbar-desktop__actions .navbar-cta-play {
+  color: #ececee;
+  text-shadow: none;
+}
+
+.navbar-desktop__actions .navbar-cta-play:hover {
+  color: #fff;
+  background: color-mix(in srgb, #fff 10%, transparent);
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-desktop__actions .navbar-cta-play:hover {
+  background: color-mix(in srgb, #000 35%, transparent);
+}
+
+.navbar-cta-play--mobile {
+  width: 100%;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ─── Mobile toggle (below lg only) ─── */
+.navbar-mobile {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.navbar-mobile-trigger {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 0.5rem !important;
+  border-color: var(--color-skz-border, #3a3a3c) !important;
+  background: color-mix(in srgb, var(--color-skz-bg, #121213) 65%, transparent) !important;
+}
+
+.navbar-mobile-trigger svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+/* ─── Nav links ─── */
+.navbar-nav-link {
+  display: inline-flex;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 0 0.9rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f0f0f2;
+  text-decoration: none;
+  background: transparent;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+
+/* Over hero / busy backgrounds — full white for contrast */
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-nav-link {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-nav-link:hover,
+.navbar-nav-link--trigger[data-popup-open],
+.navbar-nav-link--trigger[data-open] {
+  color: #fff;
+  background: color-mix(in srgb, #fff 10%, transparent);
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-nav-link:hover,
+.navbar-shell:not(.navbar-shell--scrolled)
+  .navbar-nav-link--trigger[data-popup-open],
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-nav-link--trigger[data-open] {
+  background: color-mix(in srgb, #000 35%, transparent);
+}
+
+.navbar-shell--scrolled .navbar-nav-link {
+  color: #ececee;
+  text-shadow: none;
+}
+
+/* Mobile menu trigger on transparent bar */
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-mobile-trigger {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  background: rgba(0, 0, 0, 0.22) !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-mobile-trigger:hover {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(0, 0, 0, 0.38) !important;
+}
+
+/* ─── Dropdown panel (Games, etc.) ─── */
+.navbar-dropdown-panel {
+  background: #272729 !important;
+  color: #fff !important;
+  border: 1px solid #3a3a3c !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65) !important;
+}
+
+.navbar-dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Portaled navigation menu popup (viewport wrapper) */
+.navbar-menu ~ [data-base-ui-portal] .rounded-lg.bg-popover,
+[data-slot='navigation-menu'] + * .bg-popover {
+  background-color: #272729 !important;
+  color: #fff !important;
+  border: 1px solid #3a3a3c !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65) !important;
+}
+
+.navbar-submenu-link {
+  display: flex;
+  min-width: 18rem;
+  flex-direction: row;
+  gap: 0.85rem;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  text-decoration: none;
+  color: #fff;
+  outline: none;
+  transition: background-color 0.15s;
+}
+
+.navbar-submenu-link:hover {
+  background: #1a1a1b;
+}
+
+.navbar-submenu-link__icon {
+  color: #b5bac1;
+  flex-shrink: 0;
+}
+
+.navbar-submenu-link__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.navbar-submenu-link__desc {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: #818384;
+}
+
+/* ─── Mobile sheet ─── */
+.navbar-sheet {
+  background: #1a1a1b !important;
+  color: #fff;
+  border-left: 1px solid #3a3a3c;
+}
+
+.navbar-mobile-link {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar-mobile-link:hover {
+  opacity: 0.85;
+}

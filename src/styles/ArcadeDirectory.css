@@ -1,0 +1,128 @@
+.arcade-dir {
+  width: 100%;
+  padding-top: 0.25rem;
+}
+
+.arcade-dir__home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.55rem 1rem 0.55rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid var(--color-skz-border, #3a3a3c);
+  border-radius: 9999px;
+  background: var(--color-skz-surface, #1a1a1b);
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+
+.arcade-dir__home-link:hover {
+  border-color: #565758;
+  background: #222224;
+}
+
+.arcade-dir__heading {
+  margin-bottom: 1.5rem !important;
+}
+
+.arcade-dir__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.arcade-dir__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-skz-muted, #818384);
+  background: var(--color-skz-bg, #121213);
+  border: 1px solid var(--color-skz-border, #3a3a3c);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.arcade-dir__filter:hover {
+  color: #fff;
+  border-color: #565758;
+}
+
+.arcade-dir__filter--active {
+  color: #fff;
+  background: color-mix(in srgb, #fff 10%, #1a1a1b);
+  border-color: color-mix(in srgb, #fff 35%, #3a3a3c);
+}
+
+.arcade-dir__filter-count {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.arcade-dir__notice {
+  margin: -0.75rem 0 1.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-skz-muted, #818384);
+  border: 1px solid color-mix(in srgb, var(--color-skz-border, #3a3a3c) 90%, #a855f7);
+  border-radius: var(--radius-sm, 10px);
+  background: color-mix(in srgb, #a855f7 6%, var(--color-skz-surface, #1a1a1b));
+}
+
+.arcade-dir__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .arcade-dir__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .arcade-dir__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.arcade-dir__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+  color: var(--color-skz-muted, #818384);
+}
+
+.arcade-dir__spin {
+  animation: arcade-dir-spin 0.8s linear infinite;
+}
+
+@keyframes arcade-dir-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

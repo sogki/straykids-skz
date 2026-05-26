@@ -1,0 +1,128 @@
+{
+  "stay": {
+    "primary": "#878787",
+    "accent": "#1d1d1d",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/c0/e0/cc/c0e0cc62-2ee8-4e53-2e87-379e14278650/8809928958309_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "STAY - Single"
+  },
+  "endless-sun": {
+    "primary": "#afccec",
+    "accent": "#456fa9",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/a3/16/1e/a3161ee4-b09b-8a32-5589-36b35d0c46f0/8809928958316_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Endless Sun - Single"
+  },
+  "do-it": {
+    "primary": "#d195a5",
+    "accent": "#a5868e",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/72/33/69/7233691c-aefe-252d-678b-faa9b3455200/8809928958965_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "DO IT - EP"
+  },
+  "karma": {
+    "primary": "#beaaa6",
+    "accent": "#1e2032",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/38/22/ee/3822ee8e-c8f6-bb12-10ca-dcfd27dd166b/8809928955230_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "KARMA"
+  },
+  "ceremony": {
+    "primary": "#bdaac7",
+    "accent": "#ce750f",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/c7/66/55/c766553a-41ec-9d35-4175-408bcfb9704b/8809928954899_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "CEREMONY (Celebrate Remixes) - EP"
+  },
+  "hollow": {
+    "primary": "#c1ad80",
+    "accent": "#6d4d31",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/c2/52/b1/c252b1ef-863a-ec99-98a2-74d98b9731f6/4547366755893.jpg/600x600bb.jpg",
+    "sourceAlbum": "Hollow - EP"
+  },
+  "dominate": {
+    "primary": "#427aae",
+    "accent": "#1e3549",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/92/51/8a/92518ab3-5447-9fc1-57b2-206e2dc48e8a/8809928953489_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Mixtape : dominATE - EP"
+  },
+  "hop": {
+    "primary": "#bcb49d",
+    "accent": "#30211c",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b3/e2/83/b3e28373-7aad-03c0-b8ec-9b1d9e706989/8809928953014_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "HOP"
+  },
+  "giant": {
+    "primary": "#a0abc2",
+    "accent": "#3b4653",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/fc/c7/d7/fcc7d70e-ef18-1586-3269-d9881acbea9e/4547366717150.jpg/600x600bb.jpg",
+    "sourceAlbum": "GIANT"
+  },
+  "night": {
+    "primary": "#a0abc2",
+    "accent": "#3b4653",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/ea/27/f4/ea27f48b-7eb9-4617-12f1-7d5bd970de40/4547366713435.jpg/600x600bb.jpg",
+    "sourceAlbum": "NIGHT -English ver.- - Single"
+  },
+  "slash": {
+    "primary": "#482a7c",
+    "accent": "#500d04",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f2/55/55/f2555576-4b7e-e0ad-79aa-3ed7572a0ecd/8809928952147_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "SLASH - Single"
+  },
+  "ate": {
+    "primary": "#b9babc",
+    "accent": "#40454c",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/24/c1/47/24c147fc-cf70-0a4e-3e21-bd9a42617572/8809928952123_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "ATE"
+  },
+  "five-star": {
+    "primary": "#7a7a7a",
+    "accent": "#030303",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5a/3b/1e/5a3b1e2f-1b70-a4b0-6d4d-a33a770f361f/738676860696_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "5-STAR"
+  },
+  "rockstar": {
+    "primary": "#5ab2c4",
+    "accent": "#87206a",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/36/cc/6d/36cc6d5f-1be5-188e-ce54-80f57b023791/8809928950532_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "ROCK-STAR"
+  },
+  "time-out": {
+    "primary": "#aecdc8",
+    "accent": "#0bb391",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3c/4f/67/3c4f671b-1b52-ce05-b618-a3d8054ff3c8/738676859928_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Mixtape : Time Out - Single"
+  },
+  "mixtape-oh": {
+    "primary": "#a7b3d5",
+    "accent": "#816f8a",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/df/74/29/df742996-843d-101e-fe9b-483ea1376a70/738676858266_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Mixtape : OH - Single"
+  },
+  "in-life": {
+    "primary": "#fb4113",
+    "accent": "#9a4631",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a8/99/a9/a899a9bb-bddc-1ce6-61d0-bea282420aa3/192641939464_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "IN LIFE"
+  },
+  "levanter": {
+    "primary": "#a8a6be",
+    "accent": "#393391",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/59/5b/c6/595bc697-c42f-7f17-a09d-9e0c6e87063e/738676860856_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Clé : LEVANTER"
+  },
+  "yellow-wood": {
+    "primary": "#b49b23",
+    "accent": "#3c3720",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/2b/56/98/2b5698c2-decb-5922-7c01-173db876982a/192641939389_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "Clé 2 : Yellow Wood"
+  },
+  "i-am-you": {
+    "primary": "#b17767",
+    "accent": "#393a4b",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/00/ed/a6/00eda672-576a-a929-c948-bda3d590a887/192641939358_Cover.jpg/600x600bb.jpg",
+    "sourceAlbum": "I am YOU"
+  },
+  "the-sound": {
+    "primary": "#bdafb4",
+    "accent": "#3d4441",
+    "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e7/1b/5b/e71b5b60-4df8-5b1f-ec11-f30e1f177220/4547366611182.jpg/600x600bb.jpg",
+    "sourceAlbum": "THE SOUND"
+  }
+}

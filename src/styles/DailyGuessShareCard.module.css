@@ -1,0 +1,118 @@
+.card {
+  --share-accent: #a855f7;
+  box-sizing: border-box;
+  width: 420px;
+  padding: 1.35rem 1.4rem 1.25rem;
+  border-radius: 16px;
+  background: #121213;
+  border: 1px solid #3a3a3c;
+  color: #fff;
+  font-family:
+    'Geist',
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.logo {
+  display: block;
+  width: auto;
+  height: 28px;
+  object-fit: contain;
+}
+
+.brandName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.separator {
+  height: 1px;
+  margin: 1rem 0 1.05rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--share-accent) 55%, #3a3a3c),
+    transparent
+  );
+}
+
+.panel {
+  padding: 1.15rem 1.1rem 1.05rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--share-accent) 42%, #1a1a1b) 0%,
+    #141415 48%,
+    #0c0c0d 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--share-accent) 28%, #3a3a3c);
+}
+
+.gameTitle {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.date {
+  margin: 0 0 0.95rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #a1a1aa;
+}
+
+.tiles {
+  display: flex;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.tile {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 2px solid #3a3a3c;
+}
+
+.tileEmpty {
+  background: #1c1c1e;
+}
+
+.tileMiss {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.tileWin {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.score {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+.footer {
+  margin-top: 0.95rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #71717a;
+}

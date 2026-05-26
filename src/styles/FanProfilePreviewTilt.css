@@ -1,0 +1,38 @@
+.fan-profile-preview-tilt {
+  position: relative;
+  width: 100%;
+  perspective: 880px;
+}
+
+.fan-profile-preview-tilt__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  transform: rotateX(var(--preview-tilt-x, 0deg)) rotateY(var(--preview-tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.fan-profile-preview-tilt--hover .fan-profile-preview-tilt__inner {
+  transition: transform 0.1s ease-out;
+}
+
+.fan-profile-preview-tilt--hover .fan-profile-preview-tilt__inner .fan-profile-preview-shell {
+  box-shadow:
+    0 24px 48px -22px rgba(0, 0, 0, 0.88),
+    0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 14px 36px -16px color-mix(in srgb, var(--game-accent, #ef4444) 22%, transparent);
+}
+
+.fan-profile-preview-tilt--disabled .fan-profile-preview-tilt__inner {
+  transform: none !important;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fan-profile-preview-tilt__inner {
+    transform: none !important;
+    transition: none;
+  }
+}

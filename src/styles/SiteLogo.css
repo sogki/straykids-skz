@@ -1,0 +1,38 @@
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.site-logo:hover {
+  opacity: 0.88;
+}
+
+.site-logo__img {
+  display: block;
+  width: auto;
+  height: 1.75rem;
+  max-width: min(9.5rem, 42vw);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.site-logo__img--navbar {
+  height: 3.5rem;
+  max-width: 18rem;
+}
+
+.site-logo__img--footer {
+  height: 5rem;
+  max-width: 20rem;
+}
+
+.site-logo__title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}

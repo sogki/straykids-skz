@@ -1,0 +1,5 @@
+{
+  "_comment": "Optional fallback if .env is not used. Prefer .env — see .env.example",
+  "supabaseUrl": "https://YOUR_PROJECT_REF.supabase.co",
+  "bootstrapAnonKey": "YOUR_SUPABASE_ANON_KEY"
+}
