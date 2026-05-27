@@ -578,6 +578,116 @@
   font-weight: 700;
 }
 
+/* ─── Audio-Guess-style answer hero ─── */
+.answerHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 2rem 1.5rem 1.6rem;
+  text-align: center;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--game-accent, #a855f7) 32%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--game-accent, #a855f7) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--game-accent, #a855f7) 4%, var(--surface)) 55%,
+    var(--surface) 100%
+  );
+  box-shadow: var(--game-shadow);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.statusPillWon {
+  background: color-mix(in srgb, var(--correct-bg, #22c55e) 22%, transparent);
+  color: color-mix(in srgb, var(--correct-bg, #22c55e) 85%, #fff);
+  border: 1px solid color-mix(in srgb, var(--correct-bg, #22c55e) 40%, transparent);
+}
+
+.statusPillLost {
+  background: color-mix(in srgb, var(--wrong-bg, #d93b3b) 22%, transparent);
+  color: color-mix(in srgb, var(--wrong-bg, #d93b3b) 80%, #fff);
+  border: 1px solid color-mix(in srgb, var(--wrong-bg, #d93b3b) 40%, transparent);
+}
+
+.answerEyebrow {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.answerHeadline {
+  margin: 0;
+  font-size: clamp(1.85rem, 4.5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.answerSubline {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.answerLoseLead {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.tryDotsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tryDotShell {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--border, rgba(255, 255, 255, 0.1));
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tryDotShellWrong {
+  background: var(--wrong-bg, #d93b3b);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wrong-bg, #d93b3b) 22%, transparent);
+}
+
+.tryDotShellCorrect {
+  background: var(--correct-bg, #22c55e);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--correct-bg, #22c55e) 28%, transparent);
+}
+
+.answerFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: 0.4rem 0 0;
+}
+
 /* ─── Unlimited completion screen ─── */
 .unlimitedStats {
   display: grid;

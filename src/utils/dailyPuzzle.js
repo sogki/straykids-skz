@@ -6,8 +6,63 @@ const STORAGE_PREFIXES = {
   lyric: 'skz-daily-lyric-',
 }
 
+const HISTORY_KEYS = {
+  song: 'skz-daily-history-song',
+  member: 'skz-daily-history-member',
+  lyric: 'skz-daily-history-lyric',
+}
+
+// Don't repeat the daily within this many recent picks. Tuned vs. typical
+// pool size (~60) so most of the catalog cycles before any repeats.
+const DAILY_RECENT_WINDOW = 21
+
 function storagePrefix(game = 'song') {
   return STORAGE_PREFIXES[game] ?? STORAGE_PREFIXES.song
+}
+
+function safeGet(key) {
+  try {
+    if (typeof window === 'undefined') return null
+    return window.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeSet(key, value) {
+  try {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(key, value)
+  } catch {
+    /* storage may be blocked */
+  }
+}
+
+function readPickHistory(game) {
+  const key = HISTORY_KEYS[game] ?? HISTORY_KEYS.song
+  const raw = safeGet(key)
+  if (!raw) return []
+  try {
+    const arr = JSON.parse(raw)
+    if (!Array.isArray(arr)) return []
+    return arr.filter((id) => typeof id === 'string')
+  } catch {
+    return []
+  }
+}
+
+function writePickHistory(game, ids) {
+  const key = HISTORY_KEYS[game] ?? HISTORY_KEYS.song
+  safeSet(key, JSON.stringify(ids.slice(0, DAILY_RECENT_WINDOW * 2)))
+}
+
+/** Record that a puzzle was picked for the user — used to avoid repeats. */
+export function recordDailyPick(game, puzzleId) {
+  if (!puzzleId) return
+  const current = readPickHistory(game)
+  if (current[0] === puzzleId) return // already at the top, no-op
+  const next = [puzzleId, ...current.filter((id) => id !== puzzleId)]
+  writePickHistory(game, next)
 }
 
 const HINT_TYPE_LABELS = {
@@ -15,7 +70,6 @@ const HINT_TYPE_LABELS = {
   emoji: 'Emoji clue',
   category: 'Category',
   hint: 'Written hint',
-  letters: 'Letter reveal',
   year: 'Release year',
   era: 'Comeback era',
   lyric: 'Lyric',
@@ -44,13 +98,50 @@ function storageKey(dateKey, game = 'song') {
   return `${storagePrefix(game)}${dateKey}`
 }
 
-/** Pick puzzle from a local pool (same date → same index). */
-export function getDailyPuzzleFromPool(pool, dateKey = getTodayKey()) {
+/**
+ * Pick today's puzzle from a pool, walking past anything in the user's recent
+ * history so the same answer doesn't pop up day after day.
+ *
+ * Uses a stable ID-sorted order so the same hash always points to the same
+ * puzzle even if the pool reorders between deploys.
+ */
+export function getDailyPuzzleFromPool(pool, dateKey = getTodayKey(), game = 'song') {
   if (!pool?.length) return null
-  const index = getDailyIndex(dateKey, pool.length)
-  const puzzle = pool[index]
-  if (!puzzle) return null
-  return { ...puzzle, dateKey }
+
+  const ordered = [...pool].sort((a, b) => String(a.id).localeCompare(String(b.id)))
+  const startIndex = getDailyIndex(dateKey, ordered.length)
+  const recent = new Set(readPickHistory(game).slice(0, DAILY_RECENT_WINDOW))
+
+  for (let i = 0; i < ordered.length; i++) {
+    const candidate = ordered[(startIndex + i) % ordered.length]
+    if (!recent.has(candidate.id)) {
+      return { ...candidate, dateKey }
+    }
+  }
+
+  return { ...ordered[startIndex], dateKey }
+}
+
+/**
+ * Resolve today's puzzle for the daily-guess hook.
+ *
+ * - If the user has saved state for today AND that puzzle is still in the
+ *   pool, returns that puzzle. This keeps progress intact across deploys
+ *   that may add/remove/reorder puzzles.
+ * - Otherwise picks a fresh puzzle with variety + records it in history.
+ */
+export function resolveDailyPuzzle(pool, dateKey, game) {
+  if (!pool?.length) return null
+
+  const saved = loadDailyState(dateKey, game)
+  if (saved?.puzzleId) {
+    const locked = pool.find((p) => p.id === saved.puzzleId)
+    if (locked) return { ...locked, dateKey }
+  }
+
+  const picked = getDailyPuzzleFromPool(pool, dateKey, game)
+  if (picked) recordDailyPick(game, picked.id)
+  return picked
 }
 
 export function loadDailyState(dateKey = getTodayKey(), game = 'song') {
@@ -84,41 +175,7 @@ export function isAnswerCorrect(input, puzzle) {
   )
 }
 
-/** Letter mask — reveals more letters after each wrong guess */
-export function getLetterHint(answer, revealLevel) {
-  const clean = normalizeAnswer(answer).replace(/\s/g, '')
-  if (revealLevel <= 0) return null
-
-  const chars = clean.split('')
-  const revealCount = Math.min(
-    chars.length,
-    Math.ceil((revealLevel / 5) * chars.length) + 1
-  )
-  const indices = new Set()
-  for (let i = 0; i < revealCount; i++) {
-    indices.add(i % chars.length)
-    indices.add(Math.floor((i * chars.length) / revealCount) % chars.length)
-  }
-
-  return chars
-    .map((c, i) => (indices.has(i) ? c.toUpperCase() : '_'))
-    .join(' ')
-}
-
-/**
- * Cap how far the letter hint progresses. After 3 wrong guesses the answer
- * becomes trivial if we keep exposing more letters, and most players don't
- * benefit from a 5th-tier reveal because they're already on (or past) their
- * final guess.
- */
-const LETTER_HINT_WRONG_CAP = 3
-
-function resolveHintContent(reveal, puzzle, wrongCount) {
-  if (reveal.type === 'letters') {
-    const name = puzzle.displayAnswer || puzzle.answers[0]
-    const cappedWrong = Math.min(wrongCount, LETTER_HINT_WRONG_CAP)
-    return getLetterHint(name, cappedWrong + 1) || '—'
-  }
+function resolveHintContent(reveal, puzzle) {
   if (reveal.type === 'prompt' && puzzle.prompt) {
     return puzzle.prompt
   }
@@ -140,7 +197,7 @@ export function getHintLadder(puzzle, wrongCount, revealAll = false) {
       index,
       type: reveal.type,
       label: reveal.label || HINT_TYPE_LABELS[reveal.type] || 'Hint',
-      content: resolveHintContent(reveal, puzzle, wrongCount),
+      content: resolveHintContent(reveal, puzzle),
       unlocked,
       unlocksAfterMiss,
       unlockLabel:

@@ -13,7 +13,7 @@ const SONG_LADDER = [
   { index: 0, label: 'Clue', unlocked: true, type: 'emoji', content: '🔥🚪' },
   { index: 1, label: 'Type', unlocked: true, type: 'category', content: 'Title track' },
   { index: 2, label: 'Hint', unlocked: false, type: 'hint', content: '—' },
-  { index: 3, label: 'Letters', unlocked: false, type: 'letters', content: '' },
+  { index: 3, label: 'Era', unlocked: false, type: 'era', content: '—' },
   { index: 4, label: 'Year', unlocked: false, type: 'year', content: '—' },
 ]
 

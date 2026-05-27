@@ -36,7 +36,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '🎹🫡💪' },
       { type: 'hint', label: 'Hint', content: 'Leader who produces tracks in the studio' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Leader · rapper · producer' },
       { type: 'hint', label: 'Extra', content: 'Often called the “dad” of the group' },
     ],
@@ -50,7 +49,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '🤪💃😹' },
       { type: 'hint', label: 'Hint', content: 'Main dancer with deadpan humor' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Dancer · vocalist' },
       { type: 'hint', label: 'Extra', content: 'Known for silly faces and perfect footwork' },
     ],
@@ -64,7 +62,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '🔥💪🎤' },
       { type: 'hint', label: 'Hint', content: '3RACHA rapper — intense stage presence' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Rapper · producer' },
       { type: 'hint', label: 'Extra', content: 'All caps energy on stage' },
     ],
@@ -78,7 +75,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '✨🎨💅' },
       { type: 'hint', label: 'Hint', content: 'Visual dancer — dramatic performances' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Dancer · rapper' },
       { type: 'hint', label: 'Extra', content: 'Main-character stage presence' },
     ],
@@ -92,7 +88,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '😭🎸✍️' },
       { type: 'hint', label: 'Hint', content: '3RACHA all-rounder, emotional lyricist' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Rapper · vocalist · producer' },
       { type: 'hint', label: 'Extra', content: 'Variety chaos energy' },
     ],
@@ -106,7 +101,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '☀️😁🍞' },
       { type: 'hint', label: 'Hint', content: 'Deep voice, sunshine personality' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Dancer · rapper · vocalist' },
       { type: 'hint', label: 'Extra', content: 'Australian member, iconic laugh' },
     ],
@@ -120,7 +114,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '📚🎯🎤' },
       { type: 'hint', label: 'Hint', content: 'Vocalist known for steady high notes' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
       { type: 'hint', label: 'Extra', content: 'Disciplined, secretly competitive' },
     ],
@@ -134,7 +127,6 @@ const dailyMembersBase = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '😌🌙🎹' },
       { type: 'hint', label: 'Hint', content: 'Maknae vocalist with calm charm' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist · maknae' },
       { type: 'hint', label: 'Extra', content: 'Quiet wit, youngest in the group' },
     ],
@@ -149,7 +141,6 @@ const dailyMembersBase = [
     answers: ['bang chan', 'bangchan', 'chan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'The group’s leader and “Chan’s Room” host' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Leader · producer' },
       { type: 'emoji', label: 'Vibe', content: '🎹🫡' },
     ],
@@ -162,7 +153,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Also known for a surprisingly deep voice' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Born in', content: 'Sydney, Australia (2000)' },
       { type: 'emoji', label: 'Vibe', content: '☀️🇦🇺' },
     ],
@@ -175,7 +165,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '3RACHA rapper and songwriter' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Also', content: 'Writes many SKZ lyrics' },
       { type: 'emoji', label: 'Vibe', content: '😭✍️' },
     ],
@@ -188,7 +177,6 @@ const dailyMembersBase = [
     answers: ['lee know', 'leeknow', 'know'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer, former backup dancer' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Nickname', content: 'Fans call him a cat often' },
       { type: 'emoji', label: 'Vibe', content: '😼💃' },
     ],
@@ -201,7 +189,6 @@ const dailyMembersBase = [
     answers: ['changbin', 'seo changbin', 'bin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Part of 3RACHA with Bang Chan and Han' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Track', content: 'Famous for intense rap in “God’s Menu”' },
       { type: 'emoji', label: 'Vibe', content: '🔥🐶' },
     ],
@@ -214,7 +201,6 @@ const dailyMembersBase = [
     answers: ['seungmin', 'kim seungmin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main vocal line, steady high notes' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
       { type: 'emoji', label: 'Vibe', content: '📚🎤' },
     ],
@@ -227,7 +213,6 @@ const dailyMembersBase = [
     answers: ['i.n', 'in', 'yang jeongin', 'jeongin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Born in 2001 — youngest member' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
       { type: 'emoji', label: 'Vibe', content: '🦊✨' },
     ],
@@ -240,7 +225,6 @@ const dailyMembersBase = [
     answers: ['hyunjin', 'hwang hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Visual, dancer, “Love Stay” fan art energy' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Dancer · rapper' },
       { type: 'emoji', label: 'Vibe', content: '🎨✨' },
     ],
@@ -255,7 +239,6 @@ const dailyMembersBase = [
     answers: ['changbin', 'seo changbin', 'bin', 'bang chan', 'bangchan', 'han'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Known for powerful, fast flow on this track' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Unit', content: '3RACHA' },
       { type: 'era', label: 'Era', content: 'GO LIVE (2020)' },
     ],
@@ -268,7 +251,6 @@ const dailyMembersBase = [
     answers: ['bang chan', 'bangchan', 'chan', 'han', 'changbin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Leader — credited often as producer “CB97”' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'ODDINARY (2022)' },
       { type: 'emoji', label: 'Vibe', content: '🎹🔥' },
     ],
@@ -281,7 +263,6 @@ const dailyMembersBase = [
     answers: ['seungmin', 'kim seungmin', 'han', 'felix'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Vocal line member — clear, stable tone' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'STAR (2023)' },
       { type: 'emoji', label: 'Vibe', content: '🎤⭐' },
     ],
@@ -294,7 +275,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok', 'seungmin', 'han'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Also famous for deep voice contrast' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'CASE 143' },
       { type: 'year', label: 'Year', content: '2022' },
     ],
@@ -307,7 +287,6 @@ const dailyMembersBase = [
     answers: ['hyunjin', 'hwang hyunjin', 'lee know', 'leeknow'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer with dramatic stage presence' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: '5-STAR' },
       { type: 'emoji', label: 'Vibe', content: '💃✨' },
     ],
@@ -320,7 +299,6 @@ const dailyMembersBase = [
     answers: ['lee know', 'leeknow', 'know', 'hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer of the group' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'Thunderous' },
       { type: 'era', label: 'Era', content: 'NOEASY' },
     ],
@@ -333,7 +311,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung', 'changbin', 'bang chan', 'bangchan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '3RACHA — fast rap and rock vibe' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'ROCK-STAR' },
       { type: 'emoji', label: 'Vibe', content: '🎸🔥' },
     ],
@@ -346,7 +323,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung', 'seungmin', 'bang chan', 'bangchan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Vocal + rap all-rounder' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'Clé : LEVANTER' },
       { type: 'emoji', label: 'Vibe', content: '🌬️😭' },
     ],
@@ -359,7 +335,6 @@ const dailyMembersBase = [
     answers: ['i.n', 'in', 'jeongin', 'yang jeongin', 'seungmin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Maknae with a warm vocal colour' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'NOEASY' },
       { type: 'emoji', label: 'Vibe', content: '🎤🁫' },
     ],
@@ -372,7 +347,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok', 'changbin', 'han'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Deep tone + sharp delivery' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'ATE' },
       { type: 'emoji', label: 'Vibe', content: '💥🎤' },
     ],
@@ -387,7 +361,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Quokka — rapper, producer, vocalist' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Unit name', content: '3RACHA (CB97, SPEARB, J.ONE)' },
       { type: 'emoji', label: 'Vibe', content: '🎤🔥' },
     ],
@@ -400,7 +373,6 @@ const dailyMembersBase = [
     answers: ['lee know', 'leeknow', 'know'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer duo sub-unit' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Partner', content: 'Hyunjin' },
       { type: 'emoji', label: 'Vibe', content: '💃💃' },
     ],
@@ -413,7 +385,6 @@ const dailyMembersBase = [
     answers: ['i.n', 'in', 'jeongin', 'yang jeongin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Maknae vocalist pair' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Partner', content: 'Seungmin' },
       { type: 'emoji', label: 'Vibe', content: '🎤🎤' },
     ],
@@ -426,7 +397,6 @@ const dailyMembersBase = [
     answers: ['bang chan', 'bangchan', 'chan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Australian-Korean leader' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Unit', content: '3RACHA' },
       { type: 'emoji', label: 'Vibe', content: '🎹' },
     ],
@@ -439,7 +409,6 @@ const dailyMembersBase = [
     answers: ['hyunjin', 'hwang hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Visual + performance duo' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Partner', content: 'Lee Know' },
       { type: 'emoji', label: 'Vibe', content: '✨💃' },
     ],
@@ -454,7 +423,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung', 'hyunjin', 'changbin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'ODDINARY album era (2022)' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Title track', content: 'MANIAC' },
       { type: 'emoji', label: 'Vibe', content: '🌀😵' },
     ],
@@ -467,7 +435,6 @@ const dailyMembersBase = [
     answers: ['lee know', 'leeknow', 'know', 'hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '2021 comeback' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Album', content: 'NOEASY' },
       { type: 'emoji', label: 'Vibe', content: '⚡💃' },
     ],
@@ -480,7 +447,6 @@ const dailyMembersBase = [
     answers: ['bang chan', 'bangchan', 'chan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'First full album — 2020' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Hit', content: 'God’s Menu · Back Door' },
       { type: 'emoji', label: 'Vibe', content: '🎹👑' },
     ],
@@ -493,7 +459,6 @@ const dailyMembersBase = [
     answers: ['hyunjin', 'hwang hyunjin', 'felix', 'han'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '2023 comeback era' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Title', content: 'S-Class' },
       { type: 'emoji', label: 'Vibe', content: '✨📀' },
     ],
@@ -506,7 +471,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung', 'changbin', 'felix'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'ROCK-STAR album (2023)' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Vibe', content: 'Band / rock performance' },
       { type: 'emoji', label: 'Vibe', content: '🎸🤘' },
     ],
@@ -519,7 +483,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok', 'changbin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '2024 era' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Title', content: 'Chk Chk Boom' },
       { type: 'emoji', label: 'Vibe', content: '💥' },
     ],
@@ -534,7 +497,6 @@ const dailyMembersBase = [
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '3RACHA rapper — born in Incheon, studied abroad briefly' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Background', content: 'Born in Incheon, South Korea' },
       { type: 'emoji', label: 'Vibe', content: '✈️📚' },
     ],
@@ -547,7 +509,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Bang Chan is Korean-Australian but born in Korea' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'City', content: 'Sydney' },
       { type: 'emoji', label: 'Vibe', content: '🇦🇺☀️' },
     ],
@@ -560,7 +521,6 @@ const dailyMembersBase = [
     answers: ['felix', 'lee felix', 'yongbok'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Contrast with cute personality' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Nickname', content: '“Yongbok” · sunshine' },
       { type: 'emoji', label: 'Vibe', content: '🎤⬇️' },
     ],
@@ -573,7 +533,6 @@ const dailyMembersBase = [
     answers: ['bang chan', 'bangchan', 'chan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Oldest member, producer' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Born', content: '1997' },
       { type: 'emoji', label: 'Vibe', content: '🫡🎹' },
     ],
@@ -586,7 +545,6 @@ const dailyMembersBase = [
     answers: ['i.n', 'in', 'jeongin', 'yang jeongin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Born in 2001' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
       { type: 'emoji', label: 'Vibe', content: '🦊✨' },
     ],
@@ -599,7 +557,6 @@ const dailyMembersBase = [
     answers: ['lee know', 'leeknow', 'know'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Also in Dance Racha with Hyunjin' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Former', content: 'Backup dancer before debut' },
       { type: 'emoji', label: 'Vibe', content: '💃' },
     ],
@@ -622,7 +579,6 @@ const dailyMembersBase = [
     ],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Rap / producer sub-unit' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Others', content: 'Changbin · Han' },
       { type: 'emoji', label: 'Vibe', content: '3️⃣🎤' },
     ],
@@ -635,7 +591,6 @@ const dailyMembersBase = [
     answers: ['seungmin', 'kim seungmin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Vocal Racha with I.N' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
       { type: 'emoji', label: 'Vibe', content: '🎤📚' },
     ],

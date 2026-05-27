@@ -254,12 +254,9 @@ export function useAudioGuess({ mode }) {
   function handleGuess() {
     if (!input.trim() || !playing || !state || !track) return
     const guess = input.trim()
-
-    if (state.guesses.some((g) => normalizeAnswer(g) === normalizeAnswer(guess))) {
-      setToast('Already guessed')
-      setTimeout(() => setToast(null), 1800)
-      return
-    }
+    const isDuplicate = state.guesses.some(
+      (g) => normalizeAnswer(g) === normalizeAnswer(guess)
+    )
 
     if (isCorrect(guess, track)) {
       const next = {
@@ -290,7 +287,12 @@ export function useAudioGuess({ mode }) {
       const next = { ...state, guesses: nextGuesses }
       if (isUnlimited) writeUnlimitedPending(true)
       persistDaily(next)
-      showWrongToast()
+      if (isDuplicate) {
+        setToast('You already tried that — pick a new answer')
+        setTimeout(() => setToast(null), 2200)
+      } else {
+        showWrongToast()
+      }
       setShake(true)
       setTimeout(() => setShake(false), 400)
     }

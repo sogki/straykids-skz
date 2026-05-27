@@ -4,7 +4,9 @@ import { getHintLadder, isAnswerCorrect } from '@/utils/dailyPuzzle'
 const HISTORY_PREFIX = 'skz-unlimited-history-'
 const STATS_PREFIX = 'skz-unlimited-stats-'
 const PENDING_PREFIX = 'skz-unlimited-pending-'
-const RECENT_LIMIT = 8
+// How many recent rounds to exclude from the picker. Tuned vs. typical pool
+// size (~60) so a player runs through most of the catalog before any repeats.
+const RECENT_LIMIT = 24
 
 function safeLocalGet(key) {
   try {
@@ -166,6 +168,9 @@ export function useUnlimitedGuessGame({
     setStatus('playing')
     setInput('')
     initialisedRef.current = true
+    // Mark seen up-front so reload/refresh doesn't immediately re-serve the
+    // same puzzle the user just bailed on.
+    pushRecent(picked.id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool, excludeKey])
 
@@ -227,11 +232,9 @@ export function useUnlimitedGuessGame({
     if (!input.trim() || !playing || !puzzle) return
 
     const guess = input.trim()
-    if (guesses.some((g) => g.toLowerCase() === guess.toLowerCase())) {
-      setToast('Already guessed')
-      setTimeout(() => setToast(null), 2000)
-      return
-    }
+    const isDuplicate = guesses.some(
+      (g) => g.toLowerCase() === guess.toLowerCase()
+    )
 
     if (isAnswerCorrect(guess, puzzle)) {
       setGuesses((g) => [...g, guess])
@@ -255,7 +258,12 @@ export function useUnlimitedGuessGame({
       // this flag still set will zero out the streak.
       writePending(storageGame, true)
       setGuesses(nextGuesses)
-      showWrongToast(nextGuesses.length)
+      if (isDuplicate) {
+        setToast('You already tried that — pick a new answer')
+        setTimeout(() => setToast(null), 2200)
+      } else {
+        showWrongToast(nextGuesses.length)
+      }
       setShake(true)
       setTimeout(() => setShake(false), 400)
     }
@@ -280,7 +288,8 @@ export function useUnlimitedGuessGame({
     setInput('')
     setToast(null)
     writePending(storageGame, false)
-  }, [pool, excludeIds, puzzle, storageGame])
+    pushRecent(picked.id)
+  }, [pool, excludeIds, puzzle, storageGame, pushRecent])
 
   // Mirror the daily-hook shape (state object) so shared UI components keep working.
   const state = puzzle

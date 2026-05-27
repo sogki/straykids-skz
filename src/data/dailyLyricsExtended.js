@@ -10,7 +10,6 @@ function lyric(id, song, displayAnswer, answers, line, hint, extra = {}) {
     reveals: [
       { type: 'lyric', label: 'Lyric', content: line },
       { type: 'hint', label: 'Hint', content: hint },
-      { type: 'letters', label: 'Letters', content: '' },
       {
         type: extra.type || 'category',
         label: extra.label || 'Song',

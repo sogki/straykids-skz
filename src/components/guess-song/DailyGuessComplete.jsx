@@ -9,9 +9,9 @@ import {
   Share2,
   XCircle,
 } from 'lucide-react'
-import GuessSlots from '../GuessSlots'
 import GuessHistoryList from '@/components/daily/GuessHistoryList'
 import DailyGuessShareCard from '@/components/share/DailyGuessShareCard'
+import { isAnswerCorrect } from '@/utils/dailyPuzzle'
 import { buildDailyGuessShare, copyDailyGuessLink } from '@/utils/dailyGuessShare'
 import {
   captureDailyGuessShareCard,
@@ -72,21 +72,29 @@ export default function DailyGuessComplete({
     }
   }, [enableShare, share, todayKey, state.guesses, state.status, maxGuesses, won, kind])
 
-  const loseLead =
+  const eyebrow =
     kind === 'member'
-      ? puzzle.prompt
-        ? `The answer was ${answer}.`
-        : `It was ${answer}.`
+      ? "Today's member"
       : kind === 'lyric'
-        ? `The word was “${answer}”${puzzle.song ? ` (${puzzle.song})` : ''}.`
-        : `The answer was ${answer}.`
+        ? "Today's lyric"
+        : "Today's track"
 
-  const winLead =
-    kind === 'member'
-      ? `Correct — ${answer} in ${state.guesses.length} of ${maxGuesses} tries.`
-      : kind === 'lyric'
-        ? `You filled the blank in ${state.guesses.length} of ${maxGuesses} tries.`
-        : `Nice work — you found the song in ${state.guesses.length} of ${maxGuesses} tries.`
+  const subline =
+    kind === 'lyric' && puzzle.song
+      ? `From “${puzzle.song}”`
+      : kind === 'member' && puzzle.prompt
+        ? puzzle.prompt
+        : null
+
+  const winText =
+    state.guesses.length === 1
+      ? 'First-try solve'
+      : `Solved in ${state.guesses.length} of ${maxGuesses}`
+
+  const loseText =
+    kind === 'lyric'
+      ? `You used all ${maxGuesses} tries — the word was “${answer}”.`
+      : `You used all ${maxGuesses} tries.`
 
   function flash(msg) {
     setCopyMsg(msg)
@@ -158,31 +166,49 @@ export default function DailyGuessComplete({
 
   return (
     <div className={styles.completedScreen}>
-      <div className={styles.completedHero}>
-        <div
-          className={`${styles.completedIcon} ${
-            won ? styles.completedIconWin : styles.completedIconLoss
+      <div className={styles.answerHero}>
+        <span
+          className={`${styles.statusPill} ${
+            won ? styles.statusPillWon : styles.statusPillLost
           }`}
-          aria-hidden="true"
         >
-          {won ? <CheckCircle2 size={32} strokeWidth={2.25} /> : <XCircle size={32} strokeWidth={2.25} />}
-        </div>
+          {won ? (
+            <CheckCircle2 size={14} aria-hidden="true" />
+          ) : (
+            <XCircle size={14} aria-hidden="true" />
+          )}
+          {won ? 'Got it' : 'Out of tries'}
+        </span>
 
-        <p className={styles.completedKicker}>Today&apos;s puzzle</p>
-        <h2 className={styles.completedTitle}>
-          {won ? 'You already solved today!' : "You're done for today"}
-        </h2>
-        <p className={styles.completedLead}>
-          {won ? winLead : `${loseLead} Come back tomorrow for a new puzzle.`}
+        <p className={styles.answerEyebrow}>{eyebrow}</p>
+        <h2 className={styles.answerHeadline}>{answer}</h2>
+        {subline && <p className={styles.answerSubline}>{subline}</p>}
+        <p className={won ? styles.answerSubline : styles.answerLoseLead}>
+          {won ? winText : loseText}
         </p>
 
-        <div className={styles.completedMeta}>
-          <GuessSlots
-            guesses={state.guesses}
-            max={maxGuesses}
-            status={state.status}
-            showLabel
-          />
+        <ul className={styles.tryDotsRow} aria-label="Guess history">
+          {Array.from({ length: maxGuesses }).map((_, i) => {
+            const guess = state.guesses[i]
+            const filled = i < state.guesses.length
+            const correct = filled && isAnswerCorrect(guess, puzzle)
+            let cls = ''
+            if (filled) {
+              cls = correct ? styles.tryDotShellCorrect : styles.tryDotShellWrong
+            }
+            return (
+              <li
+                key={i}
+                className={`${styles.tryDotShell} ${cls}`}
+                aria-label={
+                  !filled ? 'Unused' : correct ? 'Correct' : 'Wrong'
+                }
+              />
+            )
+          })}
+        </ul>
+
+        <div className={styles.answerFooter}>
           <div className={styles.completedCountdown}>
             <Clock size={15} aria-hidden="true" />
             <span>
@@ -198,17 +224,15 @@ export default function DailyGuessComplete({
             </Link>
           )}
         </div>
-
-        {state.guesses.length > 0 && (
-          <div className={styles.completedHistory}>
-            <GuessHistoryList
-              guesses={state.guesses}
-              puzzle={puzzle}
-              title="Your guesses"
-            />
-          </div>
-        )}
       </div>
+
+      {state.guesses.length > 0 && (
+        <GuessHistoryList
+          guesses={state.guesses}
+          puzzle={puzzle}
+          title="Your guesses"
+        />
+      )}
 
       {enableShare && share ? (
         <div className={styles.sharePanel}>

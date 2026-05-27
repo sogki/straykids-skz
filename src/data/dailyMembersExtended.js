@@ -25,7 +25,6 @@ export const dailyMembersExtended = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '📚🎤🐶' },
       { type: 'hint', label: 'Hint', content: 'Main vocalist, studious image' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
     ],
   }),
@@ -37,7 +36,6 @@ export const dailyMembersExtended = [
     answers: ['felix', 'lee felix', 'yongbok'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Australian member, deep voice' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Vibe', content: 'Sunshine personality' },
     ],
   }),
@@ -49,7 +47,6 @@ export const dailyMembersExtended = [
     answers: ['hyunjin', 'hwang hyunjin', 'han', 'felix'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'ODDINARY unit song' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'Red Lights' },
     ],
   }),
@@ -61,7 +58,6 @@ export const dailyMembersExtended = [
     answers: ['han', 'han jisung', 'jisung', 'changbin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'ROCK-STAR album' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'Social Path' },
     ],
   }),
@@ -73,7 +69,6 @@ export const dailyMembersExtended = [
     answers: ['hyunjin', 'hwang hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Born 2000' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Born', content: 'I.N · 2001' },
     ],
   }),
@@ -85,7 +80,6 @@ export const dailyMembersExtended = [
     answers: ['han', 'han jisung', 'jisung', 'seungmin', 'felix'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'MAXIDENT album — who fits the “crush” concept most in MV?' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Era', content: 'MAXIDENT (2022)' },
     ],
   }),
@@ -97,7 +91,6 @@ export const dailyMembersExtended = [
     answers: ['changbin', 'seo changbin', 'bin', 'hyunjin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '3RACHA rapper' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Also 1998', content: 'Hyunjin' },
     ],
   }),
@@ -109,7 +102,6 @@ export const dailyMembersExtended = [
     answers: ['hyunjin', 'hwang hyunjin', 'felix'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'emoji', label: 'Vibe', content: '✨' },
     ],
   }),
@@ -121,7 +113,6 @@ export const dailyMembersExtended = [
     answers: ['bang chan', 'bangchan', 'chan'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Leader and producer' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Show', content: 'Chan’s Room' },
     ],
   }),
@@ -133,7 +124,6 @@ export const dailyMembersExtended = [
     answers: ['seungmin', 'kim seungmin', 'i.n', 'in'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '5-STAR album b-side' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'Waiting For Us' },
     ],
   }),
@@ -146,7 +136,6 @@ export const dailyMembersExtended = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '🦊✨🎤' },
       { type: 'hint', label: 'Hint', content: 'Maknae, fox nickname' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Vocalist' },
     ],
   }),
@@ -158,7 +147,6 @@ export const dailyMembersExtended = [
     answers: ['changbin', 'seo changbin', 'bin'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Also part of 3RACHA' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'emoji', label: 'Vibe', content: '🔥' },
     ],
   }),
@@ -170,7 +158,6 @@ export const dailyMembersExtended = [
     answers: ['felix', 'lee felix', 'yongbok'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'GO LIVE era' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'Starter' },
     ],
   }),
@@ -182,7 +169,6 @@ export const dailyMembersExtended = [
     answers: ['han', 'han jisung', 'jisung'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Rap · vocal · produce' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Unit', content: '3RACHA' },
     ],
   }),
@@ -194,7 +180,6 @@ export const dailyMembersExtended = [
     answers: ['changbin', 'seo changbin', 'bin', 'han'],
     reveals: [
       { type: 'hint', label: 'Hint', content: '5-STAR era' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Song', content: 'MEGAVERSE' },
     ],
   }),
@@ -206,7 +191,6 @@ export const dailyMembersExtended = [
     answers: ['lee know', 'leeknow', 'know'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Main dancer' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'emoji', label: 'Vibe', content: '🐱' },
     ],
   }),
@@ -218,7 +202,6 @@ export const dailyMembersExtended = [
     answers: ['lee know', 'leeknow', 'know'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Dance Racha' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'emoji', label: 'Vibe', content: '😐' },
     ],
   }),
@@ -231,7 +214,6 @@ export const dailyMembersExtended = [
     reveals: [
       { type: 'emoji', label: 'Vibe', content: '💪🐶🔥' },
       { type: 'hint', label: 'Hint', content: 'Muscular rapper, puppy energy off-stage' },
-      { type: 'letters', label: 'Letters', content: '' },
       { type: 'category', label: 'Role', content: 'Rapper' },
     ],
   }),

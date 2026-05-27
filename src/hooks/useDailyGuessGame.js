@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useMidnightCountdown } from '@/hooks/useMidnightCountdown'
 import {
   createInitialState,
-  getDailyPuzzleFromPool,
   getHintLadder,
   getTodayKey,
   isAnswerCorrect,
   loadDailyState,
+  resolveDailyPuzzle,
   saveDailyState,
 } from '@/utils/dailyPuzzle'
 
@@ -33,9 +33,9 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
       setPuzzle(null)
       return
     }
-    const p = getDailyPuzzleFromPool(pool, todayKey)
+    const p = resolveDailyPuzzle(pool, todayKey, storageGame)
     setPuzzle(p)
-  }, [pool, puzzleProp, todayKey])
+  }, [pool, puzzleProp, todayKey, storageGame])
 
   useEffect(() => {
     if (!puzzle) return
@@ -86,11 +86,9 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
     if (!input.trim() || !playing || !state || !puzzle) return
 
     const guess = input.trim()
-    if (state.guesses.some((g) => g.toLowerCase() === guess.toLowerCase())) {
-      setToast('Already guessed')
-      setTimeout(() => setToast(null), 2000)
-      return
-    }
+    const isDuplicate = state.guesses.some(
+      (g) => g.toLowerCase() === guess.toLowerCase()
+    )
 
     if (isAnswerCorrect(guess, puzzle)) {
       persist({
@@ -103,13 +101,20 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
       return
     }
 
+    // Duplicate WRONG guess: commit so the game progresses (no silent stall)
+    // and the player loses the try they just spent.
     const nextGuesses = [...state.guesses, guess]
     if (nextGuesses.length >= maxGuesses) {
       persist({ ...state, guesses: nextGuesses, status: 'lost' })
       setToast(null)
     } else {
       persist({ ...state, guesses: nextGuesses })
-      showWrongToast(nextGuesses.length)
+      if (isDuplicate) {
+        setToast('You already tried that — pick a new answer')
+        setTimeout(() => setToast(null), 2200)
+      } else {
+        showWrongToast(nextGuesses.length)
+      }
       setShake(true)
       setTimeout(() => setShake(false), 400)
     }
