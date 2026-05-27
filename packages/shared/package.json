@@ -1,0 +1,13 @@
+{
+  "name": "@skz/shared",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Game logic shared by the web app and the Discord bot. Pure JS/TS — no React, no DOM, no Node-only APIs.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./puzzle": "./src/puzzle.js",
+    "./answer": "./src/answer.js"
+  }
+}

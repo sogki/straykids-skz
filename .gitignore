@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Turborepo
+.turbo
+
 # Environment (never commit real keys)
 .env
 .env.*
