@@ -38,4 +38,17 @@ Admin actions **Sync Discord dropdowns** and **Publish** write to `skz_bot_outbo
 
 ## Railway
 
-Root directory: `apps/bot`. Optional env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` for bootstrap. All Discord secrets from the admin panel / DB.
+Root directory: `apps/bot`.
+
+**Required env vars** (even if the same values are already in `skz_bot_settings`):
+
+| Variable | Purpose |
+| -------- | ------- |
+| `SUPABASE_URL` | Bootstrap connect — then DB row can take over |
+| `SUPABASE_SERVICE_ROLE_KEY` | Bootstrap connect — then DB row can take over |
+
+The bot cannot read the database on first boot without these. Copy them from Supabase → Project Settings → API (service_role key, not anon).
+
+Discord token / client ID stay in `skz_bot_settings` only (Admin → Credentials). Do not commit `.env` to git.
+
+The `ws` package is required on Node 20 (Railway) so Supabase Realtime can connect for the deploy outbox.

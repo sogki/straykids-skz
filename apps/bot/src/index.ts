@@ -16,9 +16,15 @@ import {
   cleanupOrphanedTempChannels,
   registerVoiceHub,
 } from './handlers/voiceHub.js'
-import { startOutboxPoller, processOutbox, startOutboxRealtime } from './services/outboxWorker.js'
+import {
+  startOutboxPoller,
+  processOutbox,
+  startOutboxRealtime,
+  stopOutboxRealtime,
+} from './services/outboxWorker.js'
 import { syncDiscordCache } from './services/syncDiscordCache.js'
 import { startDailyQuestionPoller } from './services/dailyQuestionWorker.js'
+import { startRotatingPresence, stopRotatingPresence } from './services/rotatingPresence.js'
 
 // GuildMembers is a privileged intent — not requested here. Individual
 // member fetches via REST still work for role assignment. If you need
@@ -39,6 +45,7 @@ registerVoiceHub(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)
+  startRotatingPresence(client, discordApplicationId)
   try {
     const cfg = await reloadBotConfig()
     console.log(
@@ -79,20 +86,43 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 })
 
-process.on('SIGINT', () => {
-  console.log('[skz-bot] shutting down')
-  client.destroy()
+let outboxPollerTimer: ReturnType<typeof setInterval> | undefined
+let dailyQuestionPollerTimer: ReturnType<typeof setInterval> | undefined
+let discordApplicationId = ''
+let shuttingDown = false
+
+async function shutdown(signal: string) {
+  if (shuttingDown) return
+  shuttingDown = true
+  console.log(`[skz-bot] shutting down (${signal})`)
+  stopRotatingPresence()
+  if (outboxPollerTimer) clearInterval(outboxPollerTimer)
+  if (dailyQuestionPollerTimer) clearInterval(dailyQuestionPollerTimer)
+  stopOutboxRealtime()
+  try {
+    await client.destroy()
+  } catch (err) {
+    console.warn('[skz-bot] destroy failed:', err)
+  }
   process.exit(0)
+}
+
+process.on('SIGINT', () => {
+  void shutdown('SIGINT')
+})
+process.on('SIGTERM', () => {
+  void shutdown('SIGTERM')
 })
 
 // ── Bootstrap: Supabase (env one-time) → all secrets from DB → Discord login ──
 try {
   await bootstrapSupabaseFromDb()
-  await loadCredentialsFromDb()
+  const creds = await loadCredentialsFromDb()
+  discordApplicationId = creds.discordClientId
   await loginFromDatabase(client)
-  startOutboxPoller(client)
+  outboxPollerTimer = startOutboxPoller(client)
   startOutboxRealtime(client)
-  startDailyQuestionPoller(client)
+  dailyQuestionPollerTimer = startDailyQuestionPoller(client)
 } catch (err) {
   const errCode =
     err && typeof err === 'object' && 'code' in err

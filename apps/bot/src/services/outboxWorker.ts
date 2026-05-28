@@ -87,8 +87,19 @@ export async function processOutbox(client: Client): Promise<number> {
   return processed
 }
 
+let outboxRealtimeChannel: ReturnType<ReturnType<typeof getSupabase>['channel']> | null = null
+
+export function stopOutboxRealtime() {
+  const channel = outboxRealtimeChannel
+  outboxRealtimeChannel = null
+  if (channel) {
+    void channel.unsubscribe()
+  }
+}
+
 /** Process outbox jobs as soon as admin queues them (poll remains as fallback). */
 export function startOutboxRealtime(client: Client) {
+  stopOutboxRealtime()
   const db = getSupabase()
   const channel = db
     .channel('skz_bot_outbox')
@@ -114,6 +125,7 @@ export function startOutboxRealtime(client: Client) {
       }
     })
 
+  outboxRealtimeChannel = channel
   return channel
 }
 
