@@ -111,7 +111,7 @@ export default function Footer() {
               <div>
                 <h3 className="skz-footer__col-title">Support</h3>
                 <p className="mb-3 text-sm leading-relaxed text-skz-muted">
-                  Enjoy SKZ Arcade? A coffee helps keep new games and puzzles
+                  Enjoy the SKZ Arcade? A coffee helps keep new games and puzzles
                   coming.
                 </p>
                 <a
