@@ -8,7 +8,7 @@ import {
   type VoiceState,
 } from 'discord.js'
 import { getBotConfig } from '../db/botConfig.js'
-import { supabase } from '../db/supabase.js'
+import { getSupabase } from '../db/supabase.js'
 
 /**
  * "Join to create" voice channels.
@@ -36,7 +36,7 @@ async function trackTempChannel(
   channelId: string,
   ownerUserId: string,
 ) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('skz_bot_temp_voice_channels')
     .insert({
       guild_id: guildId,
@@ -51,7 +51,7 @@ async function trackTempChannel(
 }
 
 async function untrackTempChannel(channelId: string) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('skz_bot_temp_voice_channels')
     .delete()
     .eq('channel_id', channelId)
@@ -63,7 +63,7 @@ async function untrackTempChannel(channelId: string) {
 }
 
 async function isTrackedChannel(channelId: string): Promise<boolean> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('skz_bot_temp_voice_channels')
     .select('channel_id')
     .eq('channel_id', channelId)
@@ -173,7 +173,7 @@ export function registerVoiceHub(client: Client) {
  * floating in the server forever.
  */
 export async function cleanupOrphanedTempChannels(client: Client) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('skz_bot_temp_voice_channels')
     .select('guild_id, channel_id')
 

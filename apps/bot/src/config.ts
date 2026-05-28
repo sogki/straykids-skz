@@ -2,40 +2,20 @@ import { config as loadEnv } from 'dotenv'
 
 loadEnv()
 
-function required(name: string): string {
-  const value = process.env[name]
-  if (!value) {
-    throw new Error(
-      `Missing required env var: ${name}. Copy .env.example to .env and fill it in.`,
-    )
-  }
-  return value
-}
+/**
+ * Optional bootstrap credentials — used ONLY on first connect when the DB
+ * row is empty. Once `supabase_url` + `supabase_service_role_key` are set
+ * in skz_bot_settings (via the admin panel), the bot reads them from there
+ * on every /reload and reconnects without touching .env.
+ *
+ * Discord token + client ID also live in the DB. No Discord secrets in .env.
+ */
+export const bootstrap = {
+  supabaseUrl: optional('SUPABASE_URL'),
+  supabaseServiceRoleKey: optional('SUPABASE_SERVICE_ROLE_KEY'),
+} as const
 
 function optional(name: string): string | undefined {
   const value = process.env[name]
   return value && value.length > 0 ? value : undefined
 }
-
-/**
- * Bootstrap config — env-only.
- *
- * Anything operational (guild ID, channel IDs, reaction-role mappings,
- * voice-hub settings) lives in the database and is loaded at runtime via
- * `src/db/botConfig.ts`. Only the four credentials below are required to
- * even reach the database, so they stay here.
- */
-export const config = {
-  discord: {
-    token: required('DISCORD_TOKEN'),
-    clientId: required('DISCORD_CLIENT_ID'),
-    /** When set, slash commands register to this guild only (instant updates). */
-    devGuildId: optional('DISCORD_GUILD_ID'),
-  },
-  supabase: {
-    url: required('SUPABASE_URL'),
-    serviceRoleKey: required('SUPABASE_SERVICE_ROLE_KEY'),
-  },
-} as const
-
-export type AppConfig = typeof config

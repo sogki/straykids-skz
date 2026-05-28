@@ -1,4 +1,5 @@
-import { supabase } from './supabase.js'
+import { getSupabase } from './supabase.js'
+import { normalizeEmojiKey } from '../utils/discordEmoji.js'
 
 /**
  * Operational config the bot loads from the database. Hot-reloadable —
@@ -19,21 +20,37 @@ export interface BotSettings {
 
 export interface ReactionRoleRow {
   id: string
+  botMessageId: string | null
   channelId: string
   messageId: string
   emoji: string
+  buttonEmoji: string
   roleId: string
   category: 'verify' | 'pronouns' | 'colors' | 'general' | 'other'
   label: string
+  buttonStyle: string | null
   removeOnUnreact: boolean
   sortOrder: number
   isActive: boolean
 }
 
+export interface BotMessageRow {
+  id: string
+  slug: string
+  label: string
+  kind: 'verify' | 'reaction_roles' | 'general'
+  channelId: string
+  discordMessageId: string | null
+  embed: Record<string, unknown>
+  interactionMode: 'reaction' | 'button' | 'both'
+  isActive: boolean
+  sortOrder: number
+}
+
 export interface BotConfig {
   settings: BotSettings
+  messages: BotMessageRow[]
   reactionRoles: ReactionRoleRow[]
-  /** Lookup: messageId → emoji → reaction-role row. */
   reactionRolesIndex: Map<string, Map<string, ReactionRoleRow>>
   loadedAt: Date
 }
@@ -54,6 +71,7 @@ let cached: BotConfig = makeEmptyConfig()
 function makeEmptyConfig(): BotConfig {
   return {
     settings: { ...DEFAULT_SETTINGS },
+    messages: [],
     reactionRoles: [],
     reactionRolesIndex: new Map(),
     loadedAt: new Date(0),
@@ -90,29 +108,71 @@ function parseSettings(raw: Record<string, string> | null): BotSettings {
 function parseReactionRole(row: Record<string, unknown>): ReactionRoleRow {
   return {
     id: String(row['id']),
+    botMessageId: row['bot_message_id'] ? String(row['bot_message_id']) : null,
     channelId: String(row['channel_id']),
     messageId: String(row['message_id']),
     emoji: String(row['emoji']),
+    buttonEmoji: String(row['button_emoji'] ?? ''),
     roleId: String(row['role_id']),
     category: (row['category'] as ReactionRoleRow['category']) ?? 'general',
     label: String(row['label'] ?? ''),
+    buttonStyle: row['button_style'] ? String(row['button_style']) : null,
     removeOnUnreact: Boolean(row['remove_on_unreact']),
     sortOrder: Number(row['sort_order'] ?? 0),
     isActive: Boolean(row['is_active'] ?? true),
   }
 }
 
-function buildIndex(rows: ReactionRoleRow[]) {
+function parseBotMessage(row: Record<string, unknown>): BotMessageRow {
+  return {
+    id: String(row['id']),
+    slug: String(row['slug']),
+    label: String(row['label'] ?? ''),
+    kind: (row['kind'] as BotMessageRow['kind']) ?? 'reaction_roles',
+    channelId: String(row['channel_id'] ?? ''),
+    discordMessageId: row['discord_message_id']
+      ? String(row['discord_message_id'])
+      : null,
+    embed: (row['embed'] as Record<string, unknown>) ?? {},
+    interactionMode:
+      (row['interaction_mode'] as BotMessageRow['interactionMode']) ?? 'reaction',
+    isActive: Boolean(row['is_active'] ?? true),
+    sortOrder: Number(row['sort_order'] ?? 0),
+  }
+}
+
+function buildIndex(rows: ReactionRoleRow[], messages: BotMessageRow[]) {
+  const discordIdByPanel = new Map<string, string>()
+  for (const message of messages) {
+    if (message.discordMessageId) {
+      discordIdByPanel.set(message.id, message.discordMessageId)
+    }
+  }
+
   const idx = new Map<string, Map<string, ReactionRoleRow>>()
-  for (const row of rows) {
-    if (!row.isActive) continue
-    let inner = idx.get(row.messageId)
+
+  const register = (messageId: string, emoji: string, row: ReactionRoleRow) => {
+    if (!messageId) return
+    let inner = idx.get(messageId)
     if (!inner) {
       inner = new Map()
-      idx.set(row.messageId, inner)
+      idx.set(messageId, inner)
     }
-    inner.set(row.emoji, row)
+    inner.set(normalizeEmojiKey(emoji), row)
+    if (emoji !== normalizeEmojiKey(emoji)) {
+      inner.set(emoji, row)
+    }
   }
+
+  for (const row of rows) {
+    if (!row.isActive) continue
+    register(row.messageId, row.emoji, row)
+    if (row.botMessageId) {
+      const discordId = discordIdByPanel.get(row.botMessageId)
+      if (discordId) register(discordId, row.emoji, row)
+    }
+  }
+
   return idx
 }
 
@@ -121,9 +181,11 @@ function buildIndex(rows: ReactionRoleRow[]) {
  * them into the cache atomically.
  */
 export async function reloadBotConfig(): Promise<BotConfig> {
-  const [settingsRes, rolesRes] = await Promise.all([
-    supabase.from('skz_bot_settings').select('key, value'),
-    supabase.from('skz_bot_reaction_roles').select('*'),
+  const db = getSupabase()
+  const [settingsRes, rolesRes, messagesRes] = await Promise.all([
+    db.from('skz_bot_settings').select('key, value'),
+    db.from('skz_bot_reaction_roles').select('*'),
+    db.from('skz_bot_messages').select('*'),
   ])
 
   if (settingsRes.error) {
@@ -134,6 +196,9 @@ export async function reloadBotConfig(): Promise<BotConfig> {
       `Failed to load reaction roles: ${rolesRes.error.message}`,
     )
   }
+  if (messagesRes.error) {
+    throw new Error(`Failed to load bot messages: ${messagesRes.error.message}`)
+  }
 
   const settingsMap: Record<string, string> = {}
   for (const row of settingsRes.data ?? []) {
@@ -141,11 +206,13 @@ export async function reloadBotConfig(): Promise<BotConfig> {
   }
 
   const reactionRoles = (rolesRes.data ?? []).map(parseReactionRole)
+  const messages = (messagesRes.data ?? []).map(parseBotMessage)
 
   cached = {
     settings: parseSettings(settingsMap),
+    messages,
     reactionRoles,
-    reactionRolesIndex: buildIndex(reactionRoles),
+    reactionRolesIndex: buildIndex(reactionRoles, messages),
     loadedAt: new Date(),
   }
 
@@ -160,5 +227,20 @@ export function findReactionRole(
   messageId: string,
   emoji: string,
 ): ReactionRoleRow | undefined {
-  return cached.reactionRolesIndex.get(messageId)?.get(emoji)
+  const inner = cached.reactionRolesIndex.get(messageId)
+  const key = normalizeEmojiKey(emoji)
+  const fromIndex = inner?.get(key) ?? inner?.get(emoji)
+  if (fromIndex) return fromIndex
+
+  for (const row of cached.reactionRoles) {
+    if (!row.isActive) continue
+    if (normalizeEmojiKey(row.emoji) !== key && row.emoji !== emoji) continue
+    if (row.messageId === messageId) return row
+    const panel = row.botMessageId
+      ? cached.messages.find((m) => m.id === row.botMessageId)
+      : undefined
+    if (panel?.discordMessageId === messageId) return row
+  }
+
+  return undefined
 }

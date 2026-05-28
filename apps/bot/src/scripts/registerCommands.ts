@@ -1,35 +1,44 @@
 /**
  * Registers slash commands with Discord.
  *
- *   - With DISCORD_GUILD_ID set, commands update instantly in that guild
- *     (use this during development).
- *   - Without DISCORD_GUILD_ID, commands register globally and can take up
- *     to an hour to propagate on first deploy.
+ * Reads discord_client_id, discord_token, and guild_id from skz_bot_settings.
  *
- * Run with: `npm run register --workspace=@skz/bot`
+ * Run: npm run register --workspace=@skz/bot
  */
 import { REST, Routes } from 'discord.js'
-import { config } from '../config.js'
+import { config as loadEnv } from 'dotenv'
+import { loadCredentialsFromDb } from '../db/credentials.js'
+import { reloadBotConfig } from '../db/botConfig.js'
+import { bootstrapSupabaseFromDb } from '../db/supabase.js'
 import { commands } from '../commands/index.js'
 
-const rest = new REST({ version: '10' }).setToken(config.discord.token)
-const body = commands.map((c) =>
-  'toJSON' in c.data ? (c.data as { toJSON: () => unknown }).toJSON() : c.data,
-)
+loadEnv()
 
 async function main() {
-  const route = config.discord.devGuildId
-    ? Routes.applicationGuildCommands(
-        config.discord.clientId,
-        config.discord.devGuildId,
-      )
-    : Routes.applicationCommands(config.discord.clientId)
+  await bootstrapSupabaseFromDb()
+  const creds = await loadCredentialsFromDb()
+  const config = await reloadBotConfig()
+
+  if (!creds.discordClientId) {
+    throw new Error(
+      'discord_client_id is not set in skz_bot_settings. Add it in Admin → Discord bot.',
+    )
+  }
+
+  const guildId = config.settings.guildId?.trim()
+
+  const rest = new REST({ version: '10' }).setToken(creds.discordToken)
+  const body = commands.map((c) =>
+    'toJSON' in c.data ? (c.data as { toJSON: () => unknown }).toJSON() : c.data,
+  )
+
+  const route = guildId
+    ? Routes.applicationGuildCommands(creds.discordClientId, guildId)
+    : Routes.applicationCommands(creds.discordClientId)
 
   console.log(
-    `[skz-bot] registering ${commands.length} command${commands.length === 1 ? '' : 's'} to ${
-      config.discord.devGuildId
-        ? `guild ${config.discord.devGuildId}`
-        : 'globally'
+    `[skz-bot] registering ${commands.length} command(s) ${
+      guildId ? `to guild ${guildId} (from skz_bot_settings)` : 'globally'
     }`,
   )
 

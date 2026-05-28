@@ -29,7 +29,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { clearStoredAdminCode } from '@/services/skzAdmin'
+import { getStoredAdminAccess, signOutAdminAuth } from '@/services/skzAdmin'
 import { cn } from '@/lib/utils'
 import '@/styles/Admin.css'
 
@@ -46,6 +46,12 @@ const NAV = [
 export default function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const access = getStoredAdminAccess()
+  const permission = access?.permission_level ?? 'none'
+  const isFullAdmin = permission === 'full_admin'
+  const navItems = isFullAdmin
+    ? NAV
+    : NAV.filter((item) => item.to === '/admin/bot')
 
   useEffect(() => {
     document.documentElement.classList.add('dark')
@@ -53,8 +59,7 @@ export default function AdminLayout() {
   }, [])
 
   function handleLogout() {
-    clearStoredAdminCode()
-    navigate('/admin/login', { replace: true })
+    signOutAdminAuth().finally(() => navigate('/admin/login', { replace: true }))
   }
 
   const pageTitle =
@@ -80,9 +85,11 @@ export default function AdminLayout() {
         <Sidebar variant="inset" collapsible="icon">
           <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-1 py-0.5">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <LayoutDashboard className="size-4" />
-              </div>
+              <img
+                src="https://vwdrdqkzjkfdmycomfvf.supabase.co/storage/v1/object/public/skz_arcade/skz-admin-panel-icon.png"
+                alt="SKZ Admin Panel"
+                className="size-8 rounded-md object-cover"
+              />
               <div className="flex flex-col group-data-[collapsible=icon]:hidden">
                 <span className="text-sm font-semibold">SKZ Admin</span>
                 <span className="text-xs text-muted-foreground">Staff panel</span>
@@ -94,7 +101,7 @@ export default function AdminLayout() {
               <SidebarGroupLabel>Manage</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {NAV.map(({ to, end, label, icon: Icon }) => (
+                  {navItems.map(({ to, end, label, icon: Icon }) => (
                     <SidebarMenuItem key={to}>
                       <SidebarMenuButton
                         render={

@@ -8,23 +8,8 @@ import {
   type User,
 } from 'discord.js'
 import { findReactionRole, type ReactionRoleRow } from '../db/botConfig.js'
-
-/**
- * Discord emojis can be Unicode (e.g. ✅) or custom (e.g. <:name:id>).
- * Reaction events give us a `ReactionEmoji` — we normalise it into the
- * same string form admins type into the settings table.
- *
- *   Unicode:  "✅"
- *   Custom:   "<:name:12345>"  (or "<a:name:12345>" if animated)
- */
-function emojiKey(reaction: MessageReaction | PartialMessageReaction): string {
-  const e = reaction.emoji
-  if (e.id) {
-    const prefix = e.animated ? 'a' : ''
-    return `<${prefix}:${e.name ?? ''}:${e.id}>`
-  }
-  return e.name ?? ''
-}
+import { emojiKeyFromReaction } from '../utils/discordEmoji.js'
+import { applyReactionRoleChange } from '../utils/roleFeedback.js'
 
 async function hydrateReaction(
   reaction: MessageReaction | PartialMessageReaction,
@@ -52,7 +37,7 @@ async function fetchMember(
   }
 }
 
-async function applyRole(
+async function handleReactionRole(
   reaction: MessageReaction,
   user: User | PartialUser,
   match: ReactionRoleRow,
@@ -63,27 +48,12 @@ async function applyRole(
   const member = await fetchMember(reaction, user)
   if (!member) return
 
-  try {
-    if (action === 'add') {
-      if (member.roles.cache.has(match.roleId)) return
-      await member.roles.add(match.roleId, `reaction-role: ${match.label || match.category}`)
-      console.log(
-        `[skz-bot] +role ${match.roleId} → ${user.id} (${match.category}/${match.label || '—'})`,
-      )
-    } else {
-      if (!member.roles.cache.has(match.roleId)) return
-      await member.roles.remove(
-        match.roleId,
-        `reaction-role removed: ${match.label || match.category}`,
-      )
-      console.log(
-        `[skz-bot] -role ${match.roleId} → ${user.id} (${match.category}/${match.label || '—'})`,
-      )
-    }
-  } catch (err) {
-    console.error(
-      `[skz-bot] could not ${action} role ${match.roleId} on ${user.id}:`,
-      err,
+  const label = match.label || match.category
+  const result = await applyReactionRoleChange(member, match.roleId, label, action)
+
+  if (result === 'added' || result === 'removed') {
+    console.log(
+      `[skz-bot] ${result === 'added' ? '+' : '-'}role ${match.roleId} → ${user.id} (${match.category}/${label})`,
     )
   }
 }
@@ -93,22 +63,23 @@ export function registerReactionRoles(client: Client) {
     const hydrated = await hydrateReaction(reaction)
     if (!hydrated) return
 
-    const match = findReactionRole(hydrated.message.id, emojiKey(hydrated))
+    const match = findReactionRole(hydrated.message.id, emojiKeyFromReaction(hydrated))
     if (!match) return
 
-    await applyRole(hydrated, user, match, 'add')
+    await handleReactionRole(hydrated, user, match, 'add')
   })
 
   client.on(Events.MessageReactionRemove, async (reaction, user) => {
     const hydrated = await hydrateReaction(reaction)
     if (!hydrated) return
 
-    const match = findReactionRole(hydrated.message.id, emojiKey(hydrated))
+    const match = findReactionRole(hydrated.message.id, emojiKeyFromReaction(hydrated))
     if (!match) return
 
-    // Verify roles + any role flagged `remove_on_unreact = false` are sticky.
+    if (match.category === 'verify') return
+
     if (!match.removeOnUnreact) return
 
-    await applyRole(hydrated, user, match, 'remove')
+    await handleReactionRole(hydrated, user, match, 'remove')
   })
 }

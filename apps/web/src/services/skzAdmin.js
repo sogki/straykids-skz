@@ -1,6 +1,8 @@
 import { getSupabaseClient } from '@/lib/supabase/client'
 
 const ADMIN_SESSION_KEY = 'skz_admin_staff_session'
+const ADMIN_ACCESS_KEY = 'skz_admin_access_v1'
+const ADMIN_WEB_SESSION_KEY = 'skz_admin_web_session_v1'
 
 export function getStoredAdminCode() {
   try {
@@ -16,6 +18,120 @@ export function setStoredAdminCode(code) {
 
 export function clearStoredAdminCode() {
   sessionStorage.removeItem(ADMIN_SESSION_KEY)
+}
+
+export function getStoredAdminAccess() {
+  try {
+    const raw = sessionStorage.getItem(ADMIN_ACCESS_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+export function setStoredAdminAccess(access) {
+  sessionStorage.setItem(ADMIN_ACCESS_KEY, JSON.stringify(access))
+}
+
+export function clearStoredAdminAccess() {
+  sessionStorage.removeItem(ADMIN_ACCESS_KEY)
+}
+
+export function getStoredAdminWebSession() {
+  try {
+    return sessionStorage.getItem(ADMIN_WEB_SESSION_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function setStoredAdminWebSession(token) {
+  sessionStorage.setItem(ADMIN_WEB_SESSION_KEY, token)
+}
+
+export function clearStoredAdminWebSession() {
+  sessionStorage.removeItem(ADMIN_WEB_SESSION_KEY)
+}
+
+export async function exchangeDiscordLoginCode(loginCode) {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_exchange_discord_login', {
+    p_login_code: String(loginCode || '').trim().toUpperCase(),
+  })
+  if (error) throw error
+  if (data?.session_token) setStoredAdminWebSession(data.session_token)
+  if (data) setStoredAdminAccess(data)
+  return data
+}
+
+export async function validateAdminWebSession(sessionToken) {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_validate_web_session', {
+    p_session_token: sessionToken,
+  })
+  if (error) throw error
+  return data || null
+}
+
+export async function bootstrapAdminSession() {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) {
+    clearStoredAdminCode()
+    clearStoredAdminAccess()
+    return { session: null, access: null }
+  }
+
+  const access = await validateAdminWebSession(sessionToken)
+  if (!access) {
+    clearStoredAdminCode()
+    clearStoredAdminAccess()
+    clearStoredAdminWebSession()
+    return { session: null, access: null }
+  }
+
+  setStoredAdminAccess(access)
+
+  if (access?.permission_level === 'full_admin') {
+    const supabase = await getSupabaseClient()
+    const { data, error } = await supabase.rpc('skz_admin_get_staff_code_from_session', {
+      p_session_token: sessionToken,
+    })
+    if (error) throw error
+    if (data) setStoredAdminCode(String(data))
+  } else {
+    clearStoredAdminCode()
+  }
+
+  return { session: sessionToken, access }
+}
+
+export async function signOutAdminAuth() {
+  const sessionToken = getStoredAdminWebSession()
+  if (sessionToken) {
+    try {
+      const supabase = await getSupabaseClient()
+      await supabase.rpc('skz_admin_revoke_web_session', {
+        p_session_token: sessionToken,
+      })
+    } catch {
+      // best effort revoke
+    }
+  }
+  clearStoredAdminCode()
+  clearStoredAdminAccess()
+  clearStoredAdminWebSession()
+}
+
+export async function fetchAdminSessionLogs(limit = 200) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_list_web_sessions', {
+    p_session_token: sessionToken,
+    p_limit: limit,
+  })
+  if (error) throw error
+  return Array.isArray(data) ? data : []
 }
 
 export async function verifyStaffCode(code) {

@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.js",
     "./puzzle": "./src/puzzle.js",
-    "./answer": "./src/answer.js"
+    "./answer": "./src/answer.js",
+    "./embedPlaceholders": "./src/embedPlaceholders.js"
   }
 }

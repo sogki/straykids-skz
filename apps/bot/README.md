@@ -2,51 +2,40 @@
 
 The SKZ Arcade Discord bot. Built with [discord.js](https://discord.js.org/) v14 and TypeScript.
 
-## Status
+## Features
 
-Minimal scaffold. Currently ships one `/ping` command to prove the wiring end-to-end. Add real commands under `src/commands/`.
+- **Verify on react** — embed panels with reaction/button role grants
+- **Reaction roles** — pronouns, colors, etc. (managed in Admin → Discord bot)
+- **Join to create** — personal voice channels from a hub VC
+- **DB-backed config** — credentials + settings in `skz_bot_settings` (admin panel)
 
-## Local development
+## First-time setup
 
-1. **Create a Discord app + bot** at https://discord.com/developers/applications. Grab the bot token (Bot tab) and the application ID (General Information tab).
-2. **Copy env**: `cp .env.example .env` and fill in `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`. Set `DISCORD_GUILD_ID` to a test server's ID so slash commands update instantly.
-3. **Install** from the repo root: `npm install`
-4. **Register slash commands**: `npm run register --workspace=@skz/bot`
-5. **Run**: `npm run dev --workspace=@skz/bot` (or from root: `npm run dev:bot`)
-6. **Invite the bot** to your test server. From the Developer Portal → OAuth2 → URL Generator, pick `bot` + `applications.commands` scopes and the permissions you need (typically just `Send Messages`).
+1. Apply Supabase migrations `20260528000001` through `20260528000004`.
+2. **Bootstrap Supabase** (one-time): set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `apps/bot/.env` *or* insert them into `skz_bot_settings` via SQL.
+3. Open **Admin → Discord bot → Credentials** and save:
+   - `discord_token`
+   - `discord_client_id`
+   - `supabase_url` + `supabase_service_role_key` (if not already in DB)
+4. Set **Guild ID**, create embed panels, add reaction options, click **Deploy to Discord**.
+5. Register slash commands: `npm run register --workspace=@skz/bot`
+6. Run: `npm run dev:bot`
 
-## Adding a command
+Discord token and Supabase service role **do not belong in `.env` long-term** — the admin panel is the source of truth. `.env` bootstrap is only to reach the database the first time.
 
-Create `src/commands/myCommand.ts`, export an object that matches the `SlashCommand` interface from `src/commands/index.ts`, then add it to the `commands` array in `src/commands/index.ts`. Re-run `npm run register` whenever you change a command's `data` (name, description, options).
+## Intents
 
-```ts
-import { SlashCommandBuilder } from 'discord.js'
-import type { SlashCommand } from './index.js'
+The bot uses **Guilds**, **GuildMessageReactions**, and **GuildVoiceStates** only (no privileged intents). If you see `Used disallowed intents`, remove any extra intents you added in code or enable them in the [Discord Developer Portal](https://discord.com/developers/applications) → Bot → Privileged Gateway Intents.
 
-export const helloCommand: SlashCommand = {
-  data: new SlashCommandBuilder()
-    .setName('hello')
-    .setDescription('Say hi.'),
-  async execute(interaction) {
-    await interaction.reply(`Hey ${interaction.user.username}!`)
-  },
-}
-```
+## Commands
 
-## Deploying to Railway
+- `/ping` — latency check
+- `/reload` — reload DB config, sync channel/role dropdown cache, process deploy queue
 
-1. Create a new project from this repo on [Railway](https://railway.app).
-2. Set the **Root Directory** to `apps/bot`. (Railway also supports monorepos via the `RAILWAY_DOCKERFILE_PATH` or `nixpacks.toml`, but root-directory is simplest.)
-3. Set env vars in Railway: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, and any optional ones.
-4. Railway will detect Node, run `npm install`, then `npm run build`, then `npm run start`.
-5. **First deploy**: SSH into the Railway shell (or run locally with prod env) and execute `npm run register --workspace=@skz/bot` once to push commands to Discord.
+## Deploy queue
 
-The bot uses a persistent Discord gateway connection — Railway's default web service is appropriate. No HTTP port is exposed.
+Admin actions **Sync Discord dropdowns** and **Publish** write to `skz_bot_outbox`. The bot processes jobs immediately via Supabase Realtime (with a 2s poll fallback) and also on `/reload`.
 
-## Sharing logic with the web app
+## Railway
 
-This package depends on `@skz/shared` (see `packages/shared/`). That's where pure game logic lives — answer normalization, daily puzzle picking, etc. Don't duplicate; import from `@skz/shared`.
-
-```ts
-import { isAnswerCorrect, pickDailyPuzzle, getTodayKey } from '@skz/shared'
-```
+Root directory: `apps/bot`. Optional env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` for bootstrap. All Discord secrets from the admin panel / DB.

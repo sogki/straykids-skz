@@ -8,7 +8,7 @@ export function getSupabaseClient() {
     clientPromise = (async () => {
       const { url, anonKey } = await resolveSupabaseCredentials()
       return createClient(url, anonKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
+        auth: { persistSession: true, autoRefreshToken: true },
       })
     })()
   }
