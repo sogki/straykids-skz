@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
+  Bot,
   Gamepad2,
   Home,
   LayoutDashboard,
@@ -39,6 +40,7 @@ const NAV = [
   { to: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
   { to: '/admin/games', label: 'Games', icon: Gamepad2 },
   { to: '/admin/requests', label: 'Requests', icon: Inbox },
+  { to: '/admin/bot', label: 'Discord bot', icon: Bot },
 ]
 
 export default function AdminLayout() {
@@ -62,9 +64,15 @@ export default function AdminLayout() {
         ? 'Leaderboard'
         : pathname === '/admin/analytics'
           ? 'Analytics'
-          : pathname === '/admin'
-            ? 'Dashboard'
-            : 'Admin'
+          : pathname === '/admin/games'
+            ? 'Games'
+            : pathname === '/admin/requests'
+              ? 'Requests'
+              : pathname === '/admin/bot'
+                ? 'Discord bot'
+                : pathname === '/admin'
+                  ? 'Dashboard'
+                  : 'Admin'
 
   return (
     <TooltipProvider>

@@ -25,6 +25,7 @@ import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminLeaderboardPage from './pages/admin/AdminLeaderboardPage'
 import AdminGamesPage from './pages/admin/AdminGamesPage'
 import AdminRequestsPage from './pages/admin/AdminRequestsPage'
+import AdminBotPage from './pages/admin/AdminBotPage'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import Contact from './pages/Contact'
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="leaderboard" element={<AdminLeaderboardPage />} />
             <Route path="games" element={<AdminGamesPage />} />
             <Route path="requests" element={<AdminRequestsPage />} />
+            <Route path="bot" element={<AdminBotPage />} />
           </Route>
         </Route>
 
