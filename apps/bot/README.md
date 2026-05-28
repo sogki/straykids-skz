@@ -8,10 +8,11 @@ The SKZ Arcade Discord bot. Built with [discord.js](https://discord.js.org/) v14
 - **Reaction roles** — pronouns, colors, etc. (managed in Admin → Discord bot)
 - **Join to create** — personal voice channels from a hub VC
 - **DB-backed config** — credentials + settings in `skz_bot_settings` (admin panel)
+- **Moderation logs** — customizable embed templates (admin panel), member join / account info, message edit & delete (single + bulk), `/info` for mods
 
 ## First-time setup
 
-1. Apply Supabase migrations `20260528000001` through `20260528000004`.
+1. Apply Supabase migrations `20260528000001` through `20260528000022`.
 2. **Bootstrap Supabase** (one-time): set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `apps/bot/.env` *or* insert them into `skz_bot_settings` via SQL.
 3. Open **Admin → Discord bot → Credentials** and save:
    - `discord_token`
@@ -25,12 +26,15 @@ Discord token and Supabase service role **do not belong in `.env` long-term** �
 
 ## Intents
 
-The bot uses **Guilds**, **GuildMessageReactions**, and **GuildVoiceStates** only (no privileged intents). If you see `Used disallowed intents`, remove any extra intents you added in code or enable them in the [Discord Developer Portal](https://discord.com/developers/applications) → Bot → Privileged Gateway Intents.
+The bot requests **Guilds**, **GuildMembers**, **GuildMessages**, **MessageContent**, **GuildMessageReactions**, and **GuildVoiceStates**.
+
+Enable **Server Members Intent** and **Message Content Intent** in the [Discord Developer Portal](https://discord.com/developers/applications) → Bot → Privileged Gateway Intents (required for moderation logging and reliable edit/delete content).
 
 ## Commands
 
 - `/ping` — latency check
 - `/reload` — reload DB config, sync channel/role dropdown cache, process deploy queue
+- `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
 
 ## Deploy queue
 

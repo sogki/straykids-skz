@@ -16,6 +16,17 @@ const OPERATIONAL_KEYS = [
   'qotd_post_hour_utc',
   'qotd_post_minute_utc',
   'qotd_thread_name_format',
+  'mod_log_enabled',
+  'mod_log_join_channel_id',
+  'mod_log_message_channel_id',
+  'mod_log_member_join',
+  'mod_log_message_edits',
+  'mod_log_message_deletes',
+  'mod_log_message_bulk_deletes',
+  'mod_log_embed_member',
+  'mod_log_embed_message_delete',
+  'mod_log_embed_message_edit',
+  'mod_log_embed_message_bulk_delete',
 ]
 
 const SECRET_KEYS = [
@@ -27,7 +38,7 @@ const SECRET_KEYS = [
 
 const ALL_SETTING_KEYS = [...SECRET_KEYS, ...OPERATIONAL_KEYS]
 
-const SETTING_DEFAULTS = {
+export const SETTING_DEFAULTS = {
   discord_token: '',
   discord_client_id: '',
   supabase_url: '',
@@ -45,7 +56,23 @@ const SETTING_DEFAULTS = {
   qotd_post_hour_utc: '12',
   qotd_post_minute_utc: '0',
   qotd_thread_name_format: 'QOTD • {date}',
+  mod_log_enabled: 'false',
+  mod_log_join_channel_id: '',
+  mod_log_message_channel_id: '',
+  mod_log_member_join: 'true',
+  mod_log_message_edits: 'true',
+  mod_log_message_deletes: 'true',
+  mod_log_message_bulk_deletes: 'true',
 }
+
+export const MOD_LOG_EVENT_TYPES = [
+  { value: '', label: 'All events' },
+  { value: 'member_join', label: 'Member join' },
+  { value: 'member_info', label: 'Account lookup (/info)' },
+  { value: 'message_delete', label: 'Message deleted' },
+  { value: 'message_edit', label: 'Message edited' },
+  { value: 'message_bulk_delete', label: 'Bulk delete' },
+]
 
 export const EMPTY_EMBED = {
   title: '',
@@ -57,6 +84,171 @@ export const EMPTY_EMBED = {
   image: { url: '' },
   footer: { text: '', icon_url: '' },
   fields: [],
+}
+
+export const MOD_LOG_EMBED_SETTING_KEYS = {
+  member: 'mod_log_embed_member',
+  message_delete: 'mod_log_embed_message_delete',
+  message_edit: 'mod_log_embed_message_edit',
+  message_bulk_delete: 'mod_log_embed_message_bulk_delete',
+}
+
+export const MOD_LOG_EMBED_TEMPLATES = [
+  {
+    id: 'member',
+    settingKey: MOD_LOG_EMBED_SETTING_KEYS.member,
+    label: 'Member join & /info',
+    description: 'Posted when someone joins or a mod runs /info.',
+  },
+  {
+    id: 'message_delete',
+    settingKey: MOD_LOG_EMBED_SETTING_KEYS.message_delete,
+    label: 'Message deleted',
+    description: 'Single message delete events.',
+  },
+  {
+    id: 'message_edit',
+    settingKey: MOD_LOG_EMBED_SETTING_KEYS.message_edit,
+    label: 'Message edited',
+    description: 'Before/after edit events.',
+  },
+  {
+    id: 'message_bulk_delete',
+    settingKey: MOD_LOG_EMBED_SETTING_KEYS.message_bulk_delete,
+    label: 'Bulk delete',
+    description: 'Moderator bulk purge events.',
+  },
+]
+
+export const DEFAULT_MOD_LOG_EMBEDS = {
+  member: {
+    title: '{event_title}',
+    description: '',
+    color: 0x5865f2,
+    url: '',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '{avatar_url}' },
+    image: { url: '' },
+    footer: { text: 'Requested by {requested_by}', icon_url: '' },
+    fields: [
+      { name: 'User', value: '{tag}\n{mention}', inline: true },
+      { name: 'Display name', value: '{displayname}', inline: true },
+      { name: 'User ID', value: '`{user_id}`', inline: true },
+      { name: 'Account created', value: '{account_created}', inline: false },
+      { name: 'Joined server', value: '{joined_at}', inline: false },
+      { name: 'Bot account', value: '{is_bot}', inline: true },
+      { name: 'Roles', value: '{roles}', inline: false },
+    ],
+  },
+  message_delete: {
+    title: '{event_title}',
+    description: '',
+    color: 0xed4245,
+    url: '',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '' },
+    image: { url: '' },
+    footer: { text: '', icon_url: '' },
+    fields: [
+      { name: 'Author', value: '{author_tag} ({author_mention})', inline: true },
+      { name: 'Channel', value: '{channel}', inline: true },
+      { name: 'Message ID', value: '`{message_id}`', inline: true },
+      { name: 'Content', value: '{content}', inline: false },
+    ],
+  },
+  message_edit: {
+    title: '{event_title}',
+    description: '',
+    color: 0xfee75c,
+    url: '{url}',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '' },
+    image: { url: '' },
+    footer: { text: '', icon_url: '' },
+    fields: [
+      { name: 'Author', value: '{author_tag} ({author_mention})', inline: true },
+      { name: 'Channel', value: '{channel}', inline: true },
+      { name: 'Message ID', value: '`{message_id}`', inline: true },
+      { name: 'Before', value: '{before}', inline: false },
+      { name: 'After', value: '{after}', inline: false },
+    ],
+  },
+  message_bulk_delete: {
+    title: '{event_title}',
+    description: '',
+    color: 0xed4245,
+    url: '',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '' },
+    image: { url: '' },
+    footer: { text: '', icon_url: '' },
+    fields: [
+      { name: 'Channel', value: '{channel}', inline: true },
+      { name: 'Count', value: '{count}', inline: true },
+      { name: 'Sample messages', value: '{samples}', inline: false },
+    ],
+  },
+}
+
+function normaliseEmbedShape(raw, fallback) {
+  if (!raw || typeof raw !== 'object') {
+    return {
+      ...fallback,
+      author: { ...EMPTY_EMBED.author, ...fallback.author },
+      thumbnail: { ...EMPTY_EMBED.thumbnail, ...fallback.thumbnail },
+      image: { ...EMPTY_EMBED.image, ...fallback.image },
+      footer: { ...EMPTY_EMBED.footer, ...fallback.footer },
+      fields: [...(fallback.fields || [])],
+    }
+  }
+  return {
+    ...fallback,
+    ...raw,
+    author: { ...EMPTY_EMBED.author, ...fallback.author, ...(raw.author || {}) },
+    thumbnail: { ...EMPTY_EMBED.thumbnail, ...fallback.thumbnail, ...(raw.thumbnail || {}) },
+    image: { ...EMPTY_EMBED.image, ...fallback.image, ...(raw.image || {}) },
+    footer: { ...EMPTY_EMBED.footer, ...fallback.footer, ...(raw.footer || {}) },
+    fields: Array.isArray(raw.fields) ? [...raw.fields] : [...(fallback.fields || [])],
+  }
+}
+
+export function parseModLogEmbedJson(value, templateId) {
+  const fallback = DEFAULT_MOD_LOG_EMBEDS[templateId] ?? EMPTY_EMBED
+  if (!value?.trim()) return normaliseEmbedShape(null, fallback)
+  try {
+    return normaliseEmbedShape(JSON.parse(value), fallback)
+  } catch {
+    return normaliseEmbedShape(null, fallback)
+  }
+}
+
+export function parseModLogEmbedsFromSettings(settings = {}) {
+  const out = {}
+  for (const t of MOD_LOG_EMBED_TEMPLATES) {
+    out[t.id] = parseModLogEmbedJson(settings[t.settingKey], t.id)
+  }
+  return out
+}
+
+export function modLogEmbedsToSettingsPayload(embeds) {
+  const payload = {}
+  for (const t of MOD_LOG_EMBED_TEMPLATES) {
+    const embed = embeds[t.id] ?? DEFAULT_MOD_LOG_EMBEDS[t.id]
+    payload[t.settingKey] = JSON.stringify(embed)
+  }
+  return payload
+}
+
+/** Merge saved/partial embed with defaults so the editor never shows a blank template. */
+export function mergeModLogEmbedForEditor(embed, templateId) {
+  return normaliseEmbedShape(embed, DEFAULT_MOD_LOG_EMBEDS[templateId] ?? EMPTY_EMBED)
+}
+
+export function modLogEmbedsEqual(a, b) {
+  for (const t of MOD_LOG_EMBED_TEMPLATES) {
+    if (JSON.stringify(a[t.id]) !== JSON.stringify(b[t.id])) return false
+  }
+  return true
 }
 
 function normaliseConfig(raw) {

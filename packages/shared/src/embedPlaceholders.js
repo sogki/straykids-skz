@@ -21,16 +21,11 @@ export const PREVIEW_PLACEHOLDER_CONTEXT = {
 
 export function resolvePlaceholders(text, ctx) {
   if (!text) return ''
-  return String(text)
-    .replaceAll('{username}', ctx.username ?? 'Username')
-    .replaceAll('{displayname}', ctx.displayname ?? 'Display Name')
-    .replaceAll('{mention}', ctx.mention ?? '@User')
-    .replaceAll('{server}', ctx.server ?? 'Server')
-    .replaceAll(
-      '{member_count}',
-      ctx.member_count != null ? String(ctx.member_count) : '0',
-    )
-    .replaceAll('{role}', ctx.role ?? 'Role')
+  let out = String(text)
+  for (const [key, val] of Object.entries(ctx ?? {})) {
+    out = out.replaceAll(`{${key}}`, val != null ? String(val) : '')
+  }
+  return out
 }
 
 export function resolveEmbedPlaceholders(embed, ctx) {

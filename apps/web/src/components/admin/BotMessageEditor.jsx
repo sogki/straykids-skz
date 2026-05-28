@@ -5,6 +5,7 @@ import DiscordButtonChip from '@/components/admin/DiscordButtonChip'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import DiscordMessagePreview from '@/components/admin/DiscordMessagePreview'
 import EmbedColorPicker from '@/components/admin/EmbedColorPicker'
+import EmbedFieldsEditor from '@/components/admin/EmbedFieldsEditor'
 import EmojiPickerField from '@/components/admin/EmojiPickerField'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import {
@@ -566,62 +567,15 @@ export default function BotMessageEditor({
                 />
               </div>
 
-              <div className="space-y-3 border-t border-zinc-800 pt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-500">Fields</span>
-                  <button
-                    type="button"
-                    onClick={addField}
-                    className="inline-flex items-center gap-1 rounded-md bg-violet-500/15 px-2 py-1 text-xs font-medium text-violet-200 hover:bg-violet-500/25"
-                  >
-                    <Plus className="size-3.5" />
-                    Add field
-                  </button>
-                </div>
-                {(draft.embed.fields || []).length === 0 ? (
-                  <p className="text-xs text-zinc-600">No fields — optional structured rows.</p>
-                ) : (
-                  (draft.embed.fields || []).map((field, index) => (
-                    <div
-                      key={index}
-                      className="space-y-2 rounded-lg bg-[#18181b] p-3 ring-1 ring-zinc-800"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-zinc-500">Field {index + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeField(index)}
-                          className="text-xs text-red-400 hover:underline"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <Field
-                        label="Name"
-                        value={field.name || ''}
-                        onChange={(v) => updateField(index, 'name', v)}
-                      />
-                      <label className="block space-y-1.5">
-                        <span className="text-xs text-zinc-500">Value</span>
-                        <textarea
-                          rows={2}
-                          className="w-full rounded-lg bg-[#0c0c0e] px-3 py-2 text-sm text-zinc-100 ring-1 ring-zinc-800"
-                          value={field.value || ''}
-                          onChange={(e) => updateField(index, 'value', e.target.value)}
-                        />
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={!!field.inline}
-                          onChange={(e) => updateField(index, 'inline', e.target.checked)}
-                          className="rounded border-zinc-700"
-                        />
-                        <span className="text-sm text-zinc-400">Inline (up to 3 per row)</span>
-                      </label>
-                    </div>
-                  ))
-                )}
+              <div className="space-y-2 border-t border-zinc-800 pt-4">
+                <span className="text-xs font-medium text-zinc-500">Fields</span>
+                <EmbedFieldsEditor
+                  fields={draft.embed.fields || []}
+                  onAdd={addField}
+                  onUpdate={updateField}
+                  onRemove={removeField}
+                  emptyHint="No fields — optional structured rows."
+                />
               </div>
             </div>
           )}

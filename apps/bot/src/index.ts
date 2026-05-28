@@ -11,6 +11,7 @@ import { loadCredentialsFromDb } from './db/credentials.js'
 import { loginFromDatabase } from './discordSession.js'
 import { bootstrapSupabaseFromDb } from './db/supabase.js'
 import { registerButtonRoles } from './handlers/buttonRoles.js'
+import { registerModLogs } from './handlers/modLogs.js'
 import { registerReactionRoles } from './handlers/reactionRoles.js'
 import {
   cleanupOrphanedTempChannels,
@@ -33,15 +34,25 @@ import { startRotatingPresence, stopRotatingPresence } from './services/rotating
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildVoiceStates,
   ],
-  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+  partials: [
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction,
+    Partials.GuildMember,
+    Partials.User,
+  ],
 })
 
 registerReactionRoles(client)
 registerButtonRoles(client)
 registerVoiceHub(client)
+registerModLogs(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)
@@ -139,12 +150,12 @@ If you recently reset the token in the Discord Developer Portal, update the DB v
     console.error(`
 [skz-bot] Discord rejected the connection: disallowed intents.
 
-Enable these in the Discord Developer Portal → your app → Bot:
-  • Server Members Intent   (only if you add GuildMembers intent in code)
-  • (not needed for current build — reactions + voice work without it)
+Enable these in the Discord Developer Portal → your app → Bot → Privileged Gateway Intents:
+  • Server Members Intent   (member join logs, /info)
+  • Message Content Intent  (reliable edit/delete log content)
 
-If you recently added intents in code, either enable them in the portal
-or remove them from src/index.ts.
+If you do not want moderation logs yet, remove GuildMembers, GuildMessages,
+and MessageContent from src/index.ts and unregister mod log handlers.
 `)
   }
   console.error('[skz-bot] startup failed:', err)

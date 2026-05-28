@@ -4,6 +4,7 @@ import { loadCredentialsFromDb } from '../db/credentials.js'
 import { refreshDiscordSession } from '../discordSession.js'
 import { processOutbox } from '../services/outboxWorker.js'
 import { syncDiscordCache } from '../services/syncDiscordCache.js'
+import { invalidateModLogSettingsCache } from '../services/modLogSettings.js'
 import type { SlashCommand } from './index.js'
 
 export const reloadCommand: SlashCommand = {
@@ -18,6 +19,7 @@ export const reloadCommand: SlashCommand = {
     try {
       await loadCredentialsFromDb()
       const reconnected = await refreshDiscordSession(interaction.client)
+      invalidateModLogSettingsCache()
       const config = await reloadBotConfig()
       const synced = await syncDiscordCache(interaction.client)
       const outbox = await processOutbox(interaction.client)

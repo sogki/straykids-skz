@@ -10,9 +10,13 @@ import {
   Loader2,
   Plus,
   RefreshCw,
+  ScrollText,
   Server,
+  Shield,
 } from 'lucide-react'
+import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
+import ModLogEmbedEditor from '@/components/admin/ModLogEmbedEditor'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import {
@@ -32,9 +36,16 @@ import {
   deleteRolePermission,
   deleteUserPermission,
   fetchBotConfig,
+  MOD_LOG_EMBED_TEMPLATES,
+  MOD_LOG_EVENT_TYPES,
+  DEFAULT_MOD_LOG_EMBEDS,
+  modLogEmbedsEqual,
+  modLogEmbedsToSettingsPayload,
+  parseModLogEmbedsFromSettings,
   queueBotAction,
   saveBotSettings,
   SECRET_PLACEHOLDER,
+  SETTING_DEFAULTS,
   upsertRolePermission,
   upsertUserPermission,
   updateReactionRole,
@@ -42,13 +53,14 @@ import {
   upsertBotMessage,
 } from '@/services/skzAdminBot'
 import {
+  fetchAdminModLogs,
   fetchAdminSessionLogs,
   getStoredAdminAccess,
   getStoredAdminCode,
 } from '@/services/skzAdmin'
 
 const MIGRATION_HINT =
-  'Run migrations 20260528000001 through 20260528000004 in Supabase, then Refresh.'
+  'Run migrations 20260528000001 through 20260528000023 in Supabase, then Refresh.'
 
 const UI_INPUT =
   'h-10 w-full rounded-xl border border-zinc-700/80 bg-[#0d0d11] px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20'
@@ -66,7 +78,7 @@ function isMigrationError(message) {
   return m.includes('skz_admin_bot_') || m.includes('skz_bot_')
 }
 
-/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions'} BotSection */
+/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs'} BotSection */
 
 function BotBreadcrumb({ items }) {
   return (
@@ -161,11 +173,59 @@ function SubCard({ title, description, actions = null, children }) {
   )
 }
 
+function AdminDataTable({ columns, rows, emptyMessage, loading }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead className="bg-[#1a1a21] text-xs uppercase tracking-wide text-zinc-500">
+            <tr>
+              {columns.map((col) => (
+                <th key={col.key} className="px-3 py-2 text-left font-medium">
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-800/80 bg-[#121218]">
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length} className="px-3 py-8 text-center text-zinc-500">
+                  <Loader2 className="mx-auto size-5 animate-spin" />
+                </td>
+              </tr>
+            ) : rows.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-3 py-6 text-center text-zinc-500">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              rows.map((row) => (
+                <tr key={row.key}>
+                  {columns.map((col) => (
+                    <td key={col.key} className="px-3 py-2 align-top text-zinc-300">
+                      {col.render(row)}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 export default function BotAdmin() {
   const access = getStoredAdminAccess()
   const isFullAdmin = access?.permission_level === 'full_admin'
   const featureAccess = access?.allowed_bot_features ?? {}
   const code = getStoredAdminCode()
+  const hasStaffCode = Boolean(code?.trim())
+  const moderatorOnly =
+    !hasStaffCode && access?.permission_level === 'moderator'
   const [config, setConfig] = useState({
     settings: null,
     reactionRoles: [],
@@ -201,22 +261,53 @@ export default function BotAdmin() {
     permission_level: 'moderator',
   })
   const [newOwnerUser, setNewOwnerUser] = useState({ discord_user_id: '', label: '' })
+  const [modLogs, setModLogs] = useState([])
+  const [modLogsLoading, setModLogsLoading] = useState(false)
+  const [modLogEventFilter, setModLogEventFilter] = useState('')
+  const [modLogEmbedTab, setModLogEmbedTab] = useState('member')
+  const [modLogEmbeds, setModLogEmbeds] = useState(() =>
+    parseModLogEmbedsFromSettings(SETTING_DEFAULTS),
+  )
+  const [savedModLogEmbeds, setSavedModLogEmbeds] = useState(() =>
+    parseModLogEmbedsFromSettings(SETTING_DEFAULTS),
+  )
+
+  const canModLogsConfig = isFullAdmin && featureAccess.mod_logs_config !== false
+  const canModLogsView = isFullAdmin || Boolean(featureAccess.mod_logs_view)
 
   const load = useCallback(async () => {
     setLoading(true)
     setError('')
     setShowHint(false)
     try {
-      const data = await fetchBotConfig(code)
-      setConfig(data)
-      setDraft(data.settings)
+      if (hasStaffCode) {
+        const data = await fetchBotConfig(code)
+        setConfig(data)
+        setDraft(data.settings)
+        const embeds = parseModLogEmbedsFromSettings(data.settings)
+        setModLogEmbeds(embeds)
+        setSavedModLogEmbeds(embeds)
+      } else if (canModLogsView) {
+        setConfig({
+          settings: { ...SETTING_DEFAULTS },
+          reactionRoles: [],
+          messages: [],
+          discordCache: [],
+          dailyQuestions: [],
+          rolePermissions: [],
+          userPermissions: [],
+        })
+        setDraft(null)
+      } else {
+        setError('You do not have access to the Discord bot admin.')
+      }
     } catch (err) {
       setError(err.message || 'Could not load bot config')
       setShowHint(isMigrationError(err.message))
     } finally {
       setLoading(false)
     }
-  }, [code])
+  }, [code, hasStaffCode, canModLogsView])
 
   useEffect(() => {
     load()
@@ -253,10 +344,16 @@ export default function BotAdmin() {
     )
   }, [draft, config.settings])
 
+  const modLogEmbedsDirty = useMemo(
+    () => !modLogEmbedsEqual(modLogEmbeds, savedModLogEmbeds),
+    [modLogEmbeds, savedModLogEmbeds],
+  )
+
   const isDirty = useMemo(() => {
     if (!draft || !config.settings) return false
-    return Object.keys(draft).some((k) => draft[k] !== config.settings[k])
-  }, [draft, config.settings])
+    const settingsDirty = Object.keys(draft).some((k) => draft[k] !== config.settings[k])
+    return settingsDirty || modLogEmbedsDirty
+  }, [draft, config.settings, modLogEmbedsDirty])
 
   const voiceChannels = useMemo(
     () => channelsFromCache(config.discordCache, 'voice'),
@@ -395,9 +492,15 @@ export default function BotAdmin() {
     setError('')
     setMessage('')
     try {
-      const next = await saveBotSettings(code, draft)
+      const next = await saveBotSettings(code, {
+        ...draft,
+        ...modLogEmbedsToSettingsPayload(modLogEmbeds),
+      })
       setConfig(next)
       setDraft(next.settings)
+      const embeds = parseModLogEmbedsFromSettings(next.settings)
+      setModLogEmbeds(embeds)
+      setSavedModLogEmbeds(embeds)
       setMessage(
         'Settings saved to skz_bot_settings. Run /reload in Discord (or wait for the outbox poll) to apply.',
       )
@@ -555,6 +658,20 @@ export default function BotAdmin() {
     }
   }
 
+  async function loadModLogs(eventType = modLogEventFilter) {
+    if (!canModLogsView) return
+    setModLogsLoading(true)
+    try {
+      const rows = await fetchAdminModLogs(150, eventType || null)
+      setModLogs(rows)
+    } catch (err) {
+      setError(err.message || 'Could not load moderation logs')
+      setShowHint(isMigrationError(err.message))
+    } finally {
+      setModLogsLoading(false)
+    }
+  }
+
   async function persistPanel({ panel, roles }, deploy = false) {
     setBusy(true)
     setError('')
@@ -687,6 +804,12 @@ export default function BotAdmin() {
     if (section === 'permissions') {
       return [root, { key: 'permissions', label: 'Role permissions' }]
     }
+    if (section === 'mod_config') {
+      return [root, { key: 'mod_config', label: 'Moderation logging' }]
+    }
+    if (section === 'mod_logs') {
+      return [root, { key: 'mod_logs', label: 'Moderation logs' }]
+    }
     return [root]
   }
 
@@ -731,11 +854,19 @@ export default function BotAdmin() {
     }
   }, [serverSubsection, qotdSubsection])
 
-  if (loading || !draft) {
+  if (loading || (hasStaffCode && !draft)) {
     return (
       <div className="flex items-center gap-2 text-sm text-zinc-500">
         <Loader2 className="size-4 animate-spin" />
         Loading bot config…
+      </div>
+    )
+  }
+
+  if (!hasStaffCode && !canModLogsView) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-[#121214] p-6 text-sm text-zinc-400">
+        Your account does not have permission to view the Discord bot admin.
       </div>
     )
   }
@@ -746,8 +877,9 @@ export default function BotAdmin() {
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">Discord bot</h2>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500">
-            Configure credentials, server options, and reaction panels — all stored in
-            Supabase.
+            {moderatorOnly
+              ? 'Moderator access — view moderation logs as allowed by your role.'
+              : 'Configure credentials, server options, reaction panels, and moderation logging — all stored in Supabase.'}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -864,6 +996,35 @@ export default function BotAdmin() {
                 tag={`${(config.rolePermissions || []).length} mapped`}
                 tagColor="text-fuchsia-300 bg-fuchsia-500/15"
                 onClick={() => goSection('permissions')}
+              />
+            )}
+            {canModLogsConfig && (
+              <HubCard
+                icon={Shield}
+                iconBg="bg-rose-500/15 text-rose-400"
+                title="Moderation logging"
+                description="Join logs, message edits/deletes, and log channels."
+                tag={draft?.mod_log_enabled === 'true' ? 'Enabled' : 'Disabled'}
+                tagColor={
+                  draft?.mod_log_enabled === 'true'
+                    ? 'text-emerald-400 bg-emerald-500/10'
+                    : 'text-zinc-400 bg-zinc-500/10'
+                }
+                onClick={() => goSection('mod_config')}
+              />
+            )}
+            {canModLogsView && (
+              <HubCard
+                icon={ScrollText}
+                iconBg="bg-orange-500/15 text-orange-400"
+                title="Moderation logs"
+                description="Browse join, edit, and delete events recorded by the bot."
+                tag="View history"
+                tagColor="text-orange-300 bg-orange-500/15"
+                onClick={() => {
+                  goSection('mod_logs')
+                  loadModLogs()
+                }}
               />
             )}
           </div>
@@ -1656,6 +1817,243 @@ export default function BotAdmin() {
         </>
       )}
 
+      {section === 'mod_config' && canModLogsConfig && draft && (
+        <SectionShell>
+          <BotBreadcrumb items={breadcrumbItems} />
+          <div className="mb-6">
+            <h3 className="text-xl font-bold tracking-tight text-white">Moderation logging</h3>
+            <p className="mt-1 text-sm text-zinc-500">
+              Full-admin only. The bot mirrors events to Discord channels and stores them for
+              the admin panel. Enable{' '}
+              <strong className="font-medium text-zinc-300">Server Members</strong> and{' '}
+              <strong className="font-medium text-zinc-300">Message Content</strong> intents in
+              the Discord Developer Portal.
+            </p>
+          </div>
+          <SubCard title="Master switch" description="Turn all moderation logging on or off.">
+            <ToggleField
+              label="Enable moderation logging"
+              checked={draft.mod_log_enabled === 'true'}
+              onChange={(next) =>
+                setDraft((p) => ({ ...p, mod_log_enabled: next ? 'true' : 'false' }))
+              }
+            />
+          </SubCard>
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <SubCard
+              title="Member events"
+              description="Join logs and /info lookups post here."
+            >
+              <DiscordEntitySelect
+                label="Join / account log channel"
+                value={draft.mod_log_join_channel_id}
+                onChange={(v) => setDraft((p) => ({ ...p, mod_log_join_channel_id: v }))}
+                options={channelsFromCache(config.discordCache, 'text')}
+                placeholder="Select channel"
+              />
+              <div className="mt-3 space-y-2">
+                <ToggleField
+                  label="Log member joins"
+                  checked={draft.mod_log_member_join === 'true'}
+                  onChange={(next) =>
+                    setDraft((p) => ({ ...p, mod_log_member_join: next ? 'true' : 'false' }))
+                  }
+                />
+              </div>
+            </SubCard>
+            <SubCard
+              title="Message events"
+              description="Edits, single deletes, and bulk deletes post here."
+            >
+              <DiscordEntitySelect
+                label="Message log channel"
+                value={draft.mod_log_message_channel_id}
+                onChange={(v) => setDraft((p) => ({ ...p, mod_log_message_channel_id: v }))}
+                options={channelsFromCache(config.discordCache, 'text')}
+                placeholder="Select channel"
+              />
+              <div className="mt-3 space-y-2">
+                <ToggleField
+                  label="Log message edits"
+                  checked={draft.mod_log_message_edits === 'true'}
+                  onChange={(next) =>
+                    setDraft((p) => ({
+                      ...p,
+                      mod_log_message_edits: next ? 'true' : 'false',
+                    }))
+                  }
+                />
+                <ToggleField
+                  label="Log message deletes"
+                  checked={draft.mod_log_message_deletes === 'true'}
+                  onChange={(next) =>
+                    setDraft((p) => ({
+                      ...p,
+                      mod_log_message_deletes: next ? 'true' : 'false',
+                    }))
+                  }
+                />
+                <ToggleField
+                  label="Log bulk deletes"
+                  checked={draft.mod_log_message_bulk_deletes === 'true'}
+                  onChange={(next) =>
+                    setDraft((p) => ({
+                      ...p,
+                      mod_log_message_bulk_deletes: next ? 'true' : 'false',
+                    }))
+                  }
+                />
+              </div>
+            </SubCard>
+          </div>
+
+          <div className="mt-8">
+            <SubCard
+              title="Log embed appearance"
+              description="Customize Discord embeds for each log type — same structure as reaction panels. Placeholders are filled when the bot posts."
+            >
+              <div
+                className="mb-4 flex justify-center rounded-xl border border-zinc-700/80 bg-[#0f0f14] p-2"
+                role="tablist"
+                aria-label="Log embed templates"
+              >
+                <div className="inline-flex flex-wrap items-center justify-center gap-1.5">
+                  {MOD_LOG_EMBED_TEMPLATES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={modLogEmbedTab === t.id}
+                      onClick={() => setModLogEmbedTab(t.id)}
+                      className={`shrink-0 rounded-lg px-3 py-1.5 text-center text-sm whitespace-nowrap transition ${
+                        modLogEmbedTab === t.id
+                          ? 'bg-violet-500/20 font-semibold text-violet-100 ring-1 ring-violet-500/40'
+                          : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {MOD_LOG_EMBED_TEMPLATES.filter((t) => t.id === modLogEmbedTab).map((t) => (
+                <div key={t.id}>
+                  <p className="mb-4 text-sm text-zinc-500">{t.description}</p>
+                  <ModLogEmbedEditor
+                    templateId={t.id}
+                    embed={modLogEmbeds[t.id]}
+                    onChange={(next) =>
+                      setModLogEmbeds((prev) => ({ ...prev, [t.id]: next }))
+                    }
+                  />
+                </div>
+              ))}
+            </SubCard>
+          </div>
+
+          <SettingsActions
+            isDirty={isDirty}
+            busy={busy}
+            onReset={() => {
+              setDraft(config.settings)
+              setModLogEmbeds(savedModLogEmbeds)
+            }}
+            onSave={handleSaveSettings}
+          />
+        </SectionShell>
+      )}
+
+      {section === 'mod_logs' && canModLogsView && (
+        <SectionShell>
+          <BotBreadcrumb items={breadcrumbItems} />
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-bold tracking-tight text-white">Moderation logs</h3>
+              <p className="mt-1 text-sm text-zinc-500">
+                Persisted events from the bot. Mods need{' '}
+                <strong className="font-medium text-zinc-300">Mod logs view</strong> on their
+                role (Role permissions).
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                className={`${UI_SELECT} h-9 w-auto min-w-[10rem]`}
+                value={modLogEventFilter}
+                onChange={(e) => setModLogEventFilter(e.target.value)}
+              >
+                {MOD_LOG_EVENT_TYPES.map((t) => (
+                  <option key={t.value || 'all'} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => loadModLogs(modLogEventFilter)}
+                className={UI_BUTTON_SECONDARY}
+              >
+                <RefreshCw className={`size-4 ${modLogsLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
+          </div>
+          <AdminDataTable
+            loading={modLogsLoading}
+            emptyMessage="No moderation events yet."
+            columns={[
+              {
+                key: 'time',
+                label: 'Time',
+                render: (row) => (
+                  <span className="text-zinc-400">{formatDateTime(row.created_at)}</span>
+                ),
+              },
+              {
+                key: 'type',
+                label: 'Event',
+                render: (row) => (
+                  <span className="font-medium text-zinc-200">
+                    {formatModLogEventType(row.event_type)}
+                  </span>
+                ),
+              },
+              {
+                key: 'target',
+                label: 'Target',
+                render: (row) => (
+                  <span className="font-mono text-xs text-zinc-400">
+                    {row.target_user_id ? (
+                      <span>{row.target_user_id}</span>
+                    ) : row.message_id ? (
+                      <span>msg {row.message_id}</span>
+                    ) : (
+                      '—'
+                    )}
+                  </span>
+                ),
+              },
+              {
+                key: 'channel',
+                label: 'Channel',
+                render: (row) => (
+                  <span className="text-zinc-400">
+                    {row.channel_id ? `#${row.channel_id}` : '—'}
+                  </span>
+                ),
+              },
+              {
+                key: 'summary',
+                label: 'Summary',
+                render: (row) => (
+                  <span className="max-w-md text-zinc-300">{summarizeModLogPayload(row)}</span>
+                ),
+              },
+            ]}
+            rows={modLogs.map((row) => ({ ...row, key: row.id }))}
+          />
+        </SectionShell>
+      )}
+
       {section === 'logs' && canSessionLogs && (
         <SectionShell>
           <BotBreadcrumb
@@ -1680,64 +2078,62 @@ export default function BotAdmin() {
               Refresh logs
             </button>
           </div>
-          <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-[#1a1a21] text-xs uppercase tracking-wide text-zinc-500">
-                  <tr>
-                    <th className="px-3 py-2 text-left">Staff</th>
-                    <th className="px-3 py-2 text-left">Discord ID</th>
-                    <th className="px-3 py-2 text-left">Permission</th>
-                    <th className="px-3 py-2 text-left">Started</th>
-                    <th className="px-3 py-2 text-left">Ended</th>
-                    <th className="px-3 py-2 text-left">Duration</th>
-                    <th className="px-3 py-2 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/80 bg-[#121218]">
-                  {sessionLogs.length === 0 && !logsLoading ? (
-                    <tr>
-                      <td colSpan={7} className="px-3 py-6 text-center text-zinc-500">
-                        No session logs yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    sessionLogs.map((row) => (
-                      <tr key={row.session_token}>
-                        <td className="px-3 py-2 text-zinc-200">{row.display_name || 'Unknown'}</td>
-                        <td className="px-3 py-2 font-mono text-xs text-zinc-400">
-                          {row.discord_user_id}
-                        </td>
-                        <td className="px-3 py-2 text-zinc-300">{row.permission_level}</td>
-                        <td className="px-3 py-2 text-zinc-400">
-                          {formatDateTime(row.created_at)}
-                        </td>
-                        <td className="px-3 py-2 text-zinc-400">
-                          {row.ended_at ? formatDateTime(row.ended_at) : '—'}
-                        </td>
-                        <td className="px-3 py-2 text-zinc-300">
-                          {formatDuration(row.duration_seconds)}
-                        </td>
-                        <td className="px-3 py-2">
-                          <span
-                            className={`inline-flex rounded px-2 py-0.5 text-xs font-semibold ${
-                              row.status === 'active'
-                                ? 'bg-emerald-500/15 text-emerald-300'
-                                : row.status === 'revoked'
-                                  ? 'bg-amber-500/15 text-amber-300'
-                                  : 'bg-zinc-700/60 text-zinc-300'
-                            }`}
-                          >
-                            {row.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <AdminDataTable
+            loading={logsLoading}
+            emptyMessage="No session logs yet."
+            columns={[
+              {
+                key: 'staff',
+                label: 'Staff',
+                render: (row) => row.display_name || 'Unknown',
+              },
+              {
+                key: 'id',
+                label: 'Discord ID',
+                render: (row) => (
+                  <span className="font-mono text-xs text-zinc-400">{row.discord_user_id}</span>
+                ),
+              },
+              {
+                key: 'perm',
+                label: 'Permission',
+                render: (row) => row.permission_level,
+              },
+              {
+                key: 'started',
+                label: 'Started',
+                render: (row) => formatDateTime(row.created_at),
+              },
+              {
+                key: 'ended',
+                label: 'Ended',
+                render: (row) => (row.ended_at ? formatDateTime(row.ended_at) : '—'),
+              },
+              {
+                key: 'duration',
+                label: 'Duration',
+                render: (row) => formatDuration(row.duration_seconds),
+              },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (row) => (
+                  <span
+                    className={`inline-flex rounded px-2 py-0.5 text-xs font-semibold ${
+                      row.status === 'active'
+                        ? 'bg-emerald-500/15 text-emerald-300'
+                        : row.status === 'revoked'
+                          ? 'bg-amber-500/15 text-amber-300'
+                          : 'bg-zinc-700/60 text-zinc-300'
+                    }`}
+                  >
+                    {row.status}
+                  </span>
+                ),
+              },
+            ]}
+            rows={sessionLogs.map((row) => ({ ...row, key: row.session_token }))}
+          />
         </SectionShell>
       )}
 
@@ -1749,10 +2145,12 @@ export default function BotAdmin() {
               { key: 'permissions', label: 'Role permissions' },
             ]}
           />
-          <div className="mb-4">
+          <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">Role permissions</h3>
             <p className="mt-1 text-sm text-zinc-500">
-              Full-admin only. Owner user IDs always receive full admin; roles control everyone else.
+              Full-admin only. Owner user IDs always receive full admin; roles control everyone
+              else. Grant moderators <strong className="text-zinc-300">Mod logs view</strong> to
+              browse moderation history in this panel.
             </p>
           </div>
           <SubCard
@@ -1913,31 +2311,28 @@ export default function BotAdmin() {
           </SubCard>
           </div>
 
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-3">
             {(config.rolePermissions || []).length === 0 ? (
-              <div className="rounded-xl border border-zinc-800/90 bg-[#121218] px-4 py-6 text-sm text-zinc-500">
-                No mapped roles yet. Add a Discord role above to start controlling admin access.
-              </div>
+              <SubCard title="No roles mapped">
+                <p className="text-sm text-zinc-500">
+                  Add a Discord role above to control moderator access and bot features.
+                </p>
+              </SubCard>
             ) : (
               (config.rolePermissions || []).map((rp) => {
                 const roleEntity = (config.discordCache || []).find(
                   (e) => e.entity_type === 'role' && e.entity_id === rp.discord_role_id,
                 )
                 const isExpanded = expandedRolePermissionId === rp.discord_role_id
+                const roleTitle = rp.label || roleEntity?.name || rp.discord_role_id
                 return (
-                  <div
+                  <SubCard
                     key={rp.discord_role_id}
-                    className="rounded-xl border border-zinc-800/90 bg-[#121218] p-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <div className="text-sm font-semibold text-zinc-200">
-                          {rp.label || roleEntity?.name || rp.discord_role_id}
-                        </div>
-                        <div className="font-mono text-xs text-zinc-500">{rp.discord_role_id}</div>
-                      </div>
+                    title={roleTitle}
+                    description={`Role ID ${rp.discord_role_id}`}
+                    actions={
                       <div className="flex items-center gap-2">
-                        <span className="rounded bg-zinc-800 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-zinc-300">
+                        <span className="rounded-full border border-zinc-700/80 bg-zinc-800/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-300">
                           {rp.permission_level}
                         </span>
                         <button
@@ -1947,7 +2342,7 @@ export default function BotAdmin() {
                           }
                           className={`${UI_BUTTON_SECONDARY} h-8 px-2 text-xs`}
                         >
-                          {isExpanded ? 'Hide details' : 'Manage access'}
+                          {isExpanded ? 'Collapse' : 'Edit access'}
                         </button>
                         <button
                           type="button"
@@ -1956,62 +2351,54 @@ export default function BotAdmin() {
                               .then(setConfig)
                               .catch((err) => setError(err.message))
                           }
-                          className="h-8 rounded bg-red-500/20 px-2 text-xs font-medium text-red-300"
+                          className="h-8 rounded-lg bg-red-500/15 px-2.5 text-xs font-medium text-red-300 transition hover:bg-red-500/25"
                         >
                           Remove
                         </button>
                       </div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="mt-3 space-y-3 border-t border-zinc-800 pt-3">
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2">
-                            <div className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-                              Discord role
-                            </div>
-                            <div className="mt-1 text-sm text-zinc-200">
-                              {roleEntity?.name || rp.label || rp.discord_role_id}
-                            </div>
-                          </div>
-                          <label className="block space-y-1">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                              Permission level
-                            </span>
-                            <select
-                              className={UI_SELECT}
-                              value={rp.permission_level}
-                              onChange={(e) =>
-                                upsertRolePermission(code, {
-                                  discord_role_id: rp.discord_role_id,
-                                  label: rp.label,
-                                  permission_level: e.target.value,
-                                  is_active: rp.is_active !== false,
-                                  bot_feature_access: rp.bot_feature_access || {},
-                                })
-                                  .then(setConfig)
-                                  .catch((err) => setError(err.message))
-                              }
-                            >
-                              <option value="full_admin">full_admin</option>
-                              <option value="moderator">moderator</option>
-                              <option value="member">member</option>
-                            </select>
-                          </label>
-                        </div>
+                    }
+                  >
+                    {isExpanded ? (
+                      <div className="space-y-4">
+                        <label className="block space-y-1.5">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                            Permission level
+                          </span>
+                          <select
+                            className={UI_SELECT}
+                            value={rp.permission_level}
+                            onChange={(e) =>
+                              upsertRolePermission(code, {
+                                discord_role_id: rp.discord_role_id,
+                                label: rp.label,
+                                permission_level: e.target.value,
+                                is_active: rp.is_active !== false,
+                                bot_feature_access: rp.bot_feature_access || {},
+                              })
+                                .then(setConfig)
+                                .catch((err) => setError(err.message))
+                            }
+                          >
+                            <option value="full_admin">full_admin</option>
+                            <option value="moderator">moderator</option>
+                            <option value="member">member</option>
+                          </select>
+                        </label>
 
                         {rp.permission_level === 'full_admin' ? (
-                          <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-xs text-zinc-400">
-                            Full admin always has access to all bot admin features.
-                          </div>
+                          <p className="rounded-xl border border-zinc-800/80 bg-[#0d0d11] px-3 py-2 text-xs text-zinc-400">
+                            Full admin always has access to all bot admin features, including
+                            moderation log configuration.
+                          </p>
                         ) : (
-                          <div className="grid gap-2 sm:grid-cols-3">
+                          <div className="grid gap-2 sm:grid-cols-2">
                             {[
                               ['credentials', 'Credentials'],
                               ['server', 'Server'],
                               ['panels', 'Panels'],
                               ['qotd', 'QOTD'],
                               ['session_logs', 'Session logs'],
+                              ['mod_logs_view', 'Mod logs view'],
                             ].map(([key, label]) => (
                               <ToggleField
                                 key={key}
@@ -2037,8 +2424,12 @@ export default function BotAdmin() {
                           </div>
                         )}
                       </div>
+                    ) : (
+                      <p className="text-sm text-zinc-500">
+                        Expand to edit permission level and feature access for this role.
+                      </p>
                     )}
-                  </div>
+                  </SubCard>
                 )
               })
             )}
@@ -2047,6 +2438,28 @@ export default function BotAdmin() {
       )}
     </div>
   )
+}
+
+function formatModLogEventType(type) {
+  const found = MOD_LOG_EVENT_TYPES.find((t) => t.value === type)
+  return found?.label ?? type ?? '—'
+}
+
+function summarizeModLogPayload(row) {
+  const p = row.payload && typeof row.payload === 'object' ? row.payload : {}
+  if (row.event_type === 'member_join' || row.event_type === 'member_info') {
+    return p.tag || p.username || row.target_user_id || '—'
+  }
+  if (row.event_type === 'message_edit') {
+    return p.before && p.after ? `${String(p.before).slice(0, 40)} → ${String(p.after).slice(0, 40)}` : '—'
+  }
+  if (row.event_type === 'message_delete') {
+    return p.content ? String(p.content).slice(0, 80) : '—'
+  }
+  if (row.event_type === 'message_bulk_delete') {
+    return p.count ? `${p.count} messages` : '—'
+  }
+  return '—'
 }
 
 function formatDateTime(value) {
@@ -2131,21 +2544,11 @@ function ToggleField({ label, checked, onChange }) {
   return (
     <label className="flex items-center justify-between rounded-xl border border-zinc-800/90 bg-[#14141a] px-3 py-2.5">
       <span className="text-sm text-zinc-300">{label}</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 rounded-full transition-colors ${
-          checked ? 'bg-violet-500' : 'bg-zinc-700'
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 size-5 rounded-full bg-white transition-transform ${
-            checked ? 'left-[22px]' : 'left-0.5'
-          }`}
-        />
-      </button>
+      <AdminSwitch
+        checked={checked}
+        onChange={onChange}
+        aria-label={label}
+      />
     </label>
   )
 }

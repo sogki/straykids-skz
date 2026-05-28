@@ -1,9 +1,31 @@
 /* Admin panel — shared chrome */
 
-.admin-shell [data-slot='sidebar-inset'] {
+.admin-shell [data-slot='sidebar-inset'],
+.admin-shell-inset {
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.12), transparent),
     #09090b;
+}
+
+/* Gap between inset sidebar and main content (inset variant sets ml-0 by default). */
+.admin-shell-inset {
+  margin-left: 0.75rem !important;
+}
+
+@media (min-width: 768px) {
+  .admin-shell-inset {
+    margin-left: 1rem !important;
+  }
+}
+
+.admin-shell-content {
+  padding: 1rem 1rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .admin-shell-content {
+    padding: 1.25rem 1.5rem 2rem;
+  }
 }
 
 .admin-shell [data-slot='sidebar'] {

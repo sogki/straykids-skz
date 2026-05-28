@@ -33,15 +33,48 @@ import { getStoredAdminAccess, signOutAdminAuth } from '@/services/skzAdmin'
 import { cn } from '@/lib/utils'
 import '@/styles/Admin.css'
 
-const NAV = [
+const SITE_NAV = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/banner', label: 'Site banner', icon: Megaphone },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/leaderboard', label: 'Leaderboard', icon: Trophy },
   { to: '/admin/games', label: 'Games', icon: Gamepad2 },
   { to: '/admin/requests', label: 'Requests', icon: Inbox },
-  { to: '/admin/bot', label: 'Discord bot', icon: Bot },
-]
+] as const
+
+const BOT_NAV = [{ to: '/admin/bot', label: 'Discord bot', icon: Bot }] as const
+
+function NavGroup({
+  label,
+  items,
+  pathname,
+}: {
+  label: string
+  items: ReadonlyArray<{ to: string; end?: boolean; label: string; icon: typeof Bot }>
+  pathname: string
+}) {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map(({ to, end, label, icon: Icon }) => (
+            <SidebarMenuItem key={to}>
+              <SidebarMenuButton
+                render={<NavLink to={to} end={end} />}
+                isActive={end ? pathname === '/admin' : pathname.startsWith(to)}
+                tooltip={label}
+              >
+                <Icon />
+                <span>{label}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}
 
 export default function AdminLayout() {
   const navigate = useNavigate()
@@ -49,9 +82,8 @@ export default function AdminLayout() {
   const access = getStoredAdminAccess()
   const permission = access?.permission_level ?? 'none'
   const isFullAdmin = permission === 'full_admin'
-  const navItems = isFullAdmin
-    ? NAV
-    : NAV.filter((item) => item.to === '/admin/bot')
+  const siteNavItems = isFullAdmin ? SITE_NAV : []
+  const showBotNav = isFullAdmin || permission === 'moderator'
 
   useEffect(() => {
     document.documentElement.classList.add('dark')
@@ -97,40 +129,18 @@ export default function AdminLayout() {
             </div>
           </SidebarHeader>
           <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Manage</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navItems.map(({ to, end, label, icon: Icon }) => (
-                    <SidebarMenuItem key={to}>
-                      <SidebarMenuButton
-                        render={
-                          <NavLink to={to} end={end} />
-                        }
-                        isActive={
-                          end
-                            ? pathname === '/admin'
-                            : pathname.startsWith(to)
-                        }
-                        tooltip={label}
-                      >
-                        <Icon />
-                        <span>{label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {siteNavItems.length > 0 ? (
+              <NavGroup label="Website" items={siteNavItems} pathname={pathname} />
+            ) : null}
+            {showBotNav ? (
+              <NavGroup label="Discord bot" items={BOT_NAV} pathname={pathname} />
+            ) : null}
           </SidebarContent>
           <SidebarFooter>
             <SidebarSeparator />
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={<Link to="/" />}
-                  tooltip="Back to main site"
-                >
+                <SidebarMenuButton render={<Link to="/" />} tooltip="Back to main site">
                   <Home />
                   <span>View site</span>
                 </SidebarMenuButton>
@@ -146,15 +156,15 @@ export default function AdminLayout() {
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarInset className="admin-shell-inset">
+          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:px-6">
             <SidebarTrigger className="-ml-1" />
             <div className="flex flex-1 items-center justify-between gap-4">
               <h1 className="text-sm font-semibold">{pageTitle}</h1>
               <span
                 className={cn(
                   'hidden items-center gap-1.5 rounded-full border border-emerald-500/30',
-                  'bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 sm:inline-flex'
+                  'bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 sm:inline-flex',
                 )}
               >
                 <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
@@ -162,7 +172,7 @@ export default function AdminLayout() {
               </span>
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+          <div className="admin-shell-content flex flex-1 flex-col gap-4">
             <Outlet />
           </div>
         </SidebarInset>

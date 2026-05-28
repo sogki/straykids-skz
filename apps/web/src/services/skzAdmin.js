@@ -125,6 +125,19 @@ export async function signOutAdminAuth() {
   clearStoredAdminWebSession()
 }
 
+export async function fetchAdminModLogs(limit = 100, eventType = null) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_list_mod_logs', {
+    p_session_token: sessionToken,
+    p_limit: limit,
+    p_event_type: eventType || null,
+  })
+  if (error) throw error
+  return Array.isArray(data) ? data : []
+}
+
 export async function fetchAdminSessionLogs(limit = 200) {
   const sessionToken = getStoredAdminWebSession()
   if (!sessionToken) throw new Error('No admin session token')
