@@ -21,6 +21,9 @@ function gameMainClass(pathname) {
   if (pathname === '/arcade') {
     return 'mx-auto w-full max-w-[1140px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }
+  if (pathname === '/leaderboard') {
+    return 'mx-auto w-full max-w-[1140px] flex-1 px-5 pb-10 pt-4 md:px-8 md:pb-14'
+  }
   if (LEGAL_PATHS.includes(pathname)) {
     return 'mx-auto w-full max-w-[960px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }

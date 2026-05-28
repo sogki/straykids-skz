@@ -31,6 +31,12 @@ const ROUTES = [
     description: 'Browse all SKZ Arcade minigames for Stray Kids fans.',
   },
   {
+    path: '/leaderboard',
+    title: 'Leaderboard · SKZ Arcade',
+    description:
+      'Global player leaderboard and country rankings for daily Stray Kids puzzles.',
+  },
+  {
     path: '/guess-song',
     title: 'Daily Song Guess · SKZ Arcade',
     description:

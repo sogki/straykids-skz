@@ -7,6 +7,11 @@ export const NAV_HOME = {
   url: '/',
 }
 
+export const NAV_LEADERBOARD = {
+  title: 'Leaderboard',
+  url: '/leaderboard',
+}
+
 export const NAV_GAMES_SECTION = {
   title: 'Games',
   url: '/arcade',

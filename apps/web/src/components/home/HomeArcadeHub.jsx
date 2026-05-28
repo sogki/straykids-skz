@@ -201,6 +201,12 @@ export default function HomeArcadeHub({ games, loading }) {
           aria-label="Global leaderboard"
         >
           <ArcadeLeaderboard />
+          <p className="arcade-hub__leaderboard-more">
+            <Link to="/leaderboard" className="arcade-hub__leaderboard-link">
+              Full leaderboard
+              <ArrowRight size={14} aria-hidden="true" />
+            </Link>
+          </p>
         </aside>
       </div>
     </SectionShell>

@@ -1,20 +1,38 @@
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { getStoredPlayerSession } from '@/services/skzPlayerAuth'
 
-export async function fetchGlobalPlayerLeaderboard(days = null, limit = 25) {
+/**
+ * @param {number|null} days - filter to last N days, or null for all time
+ * @param {{ limit?: number, offset?: number, gameSlug?: string|null }} [opts]
+ */
+export async function fetchGlobalPlayerLeaderboard(days = null, opts = {}) {
+  const limit = opts.limit ?? 10
+  const offset = opts.offset ?? 0
+  const gameSlug = opts.gameSlug ?? null
+
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase.rpc('skz_get_global_player_leaderboard', {
       p_days: days,
       p_limit: limit,
+      p_game_slug: gameSlug,
+      p_offset: offset,
     })
     if (error) throw error
-    return data ?? { days, entries: [] }
+    return (
+      data ?? {
+        days,
+        entries: [],
+        total_count: 0,
+        limit,
+        offset,
+      }
+    )
   } catch (err) {
     if (import.meta.env.DEV) {
       console.warn('[skz player leaderboard]', err.message)
     }
-    return { days, entries: [] }
+    return { days, entries: [], total_count: 0, limit, offset }
   }
 }
 

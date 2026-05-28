@@ -33,13 +33,23 @@ function filterExcludedEntries(board, excluded) {
   return { ...board, entries }
 }
 
-export async function fetchPublicLeaderboard(days = 30, gameSlug = 'guess-song') {
+/**
+ * @param {number} days
+ * @param {string} gameSlug
+ * @param {{ limit?: number, offset?: number }} [opts]
+ */
+export async function fetchPublicLeaderboard(days = 30, gameSlug = 'guess-song', opts = {}) {
+  const limit = opts.limit ?? 10
+  const offset = opts.offset ?? 0
+
   try {
     const supabase = await getSupabaseClient()
     const [boardResult, excluded] = await Promise.all([
       supabase.rpc('skz_get_public_leaderboard', {
         p_days: days,
         p_game_slug: gameSlug,
+        p_limit: limit,
+        p_offset: offset,
       }),
       fetchExcludedCountryCodes(),
     ])
@@ -47,12 +57,19 @@ export async function fetchPublicLeaderboard(days = 30, gameSlug = 'guess-song')
     const { data, error } = boardResult
     if (error) throw error
 
-    const board = data ?? { days, game_slug: gameSlug, entries: [] }
+    const board = data ?? {
+      days,
+      game_slug: gameSlug,
+      entries: [],
+      total_count: 0,
+      limit,
+      offset,
+    }
     return filterExcludedEntries(board, excluded)
   } catch (err) {
     if (import.meta.env.DEV) {
       console.warn('[skz leaderboard]', err.message)
     }
-    return { days, game_slug: gameSlug, entries: [] }
+    return { days, game_slug: gameSlug, entries: [], total_count: 0, limit, offset }
   }
 }

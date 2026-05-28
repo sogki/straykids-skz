@@ -6,6 +6,7 @@ import {
   buildGamesMenuItems,
   NAV_DISCORD,
   NAV_HOME,
+  NAV_LEADERBOARD,
   NAV_PLAY_RANDOM_LABEL,
 } from '@/data/navMenu'
 import { pickRandomGame } from '@/utils/randomGame'
@@ -227,7 +228,7 @@ export default function Navbar() {
   const isHome = pathname === '/'
 
   const menu = useMemo(
-    () => [NAV_HOME, buildGamesMenuItems(games), NAV_DISCORD],
+    () => [NAV_HOME, buildGamesMenuItems(games), NAV_LEADERBOARD, NAV_DISCORD],
     [games]
   )
 

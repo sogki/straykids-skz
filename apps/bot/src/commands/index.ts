@@ -6,6 +6,7 @@ import type {
 import { reloadCommand } from './reload.js'
 import { panelCommand } from './panel.js'
 import { leaderboardCommand } from './leaderboard.js'
+import { profileCommand } from './profile.js'
 import { infoCommand } from './info.js'
 
 export interface SlashCommand {
@@ -30,7 +31,7 @@ export const guildCommands: SlashCommand[] = [
 ]
 
 /** Global commands (DM + any server) — player leaderboard. */
-export const globalCommands: SlashCommand[] = [leaderboardCommand]
+export const globalCommands: SlashCommand[] = [leaderboardCommand, profileCommand]
 
 export const commands: SlashCommand[] = [...guildCommands, ...globalCommands]
 

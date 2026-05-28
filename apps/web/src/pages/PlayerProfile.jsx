@@ -253,10 +253,10 @@ export default function PlayerProfile() {
                   )}
 
                   <Link
-                    to="/"
+                    to="/leaderboard"
                     className="inline-block text-sm text-violet-400 hover:underline"
                   >
-                    View global leaderboard on home →
+                    View global leaderboard →
                   </Link>
                 </>
               )}

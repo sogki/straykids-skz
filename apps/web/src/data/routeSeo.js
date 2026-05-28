@@ -18,6 +18,12 @@ export const ROUTE_SEO = [
       'Browse all SKZ Arcade minigames — daily puzzles, bias quiz, and fan profile maker for Stray Kids fans.',
   },
   {
+    path: '/leaderboard',
+    title: 'Leaderboard',
+    description:
+      'SKZ Arcade global player leaderboard and country rankings for daily song, member, and lyric guesses.',
+  },
+  {
     path: '/guess-song',
     title: 'Daily Song Guess',
     description:

@@ -2,6 +2,7 @@
 export const SITE_INTERNAL_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Browse arcade', path: '/arcade' },
+  { label: 'Leaderboard', path: '/leaderboard' },
   { label: 'Daily Song Guess', path: '/guess-song' },
   { label: 'Daily Member Guess', path: '/guess-member' },
   { label: 'Daily Lyric Guess', path: '/guess-lyric' },
