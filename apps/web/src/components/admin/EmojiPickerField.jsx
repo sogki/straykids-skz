@@ -102,7 +102,7 @@ export default function EmojiPickerField({
         <div
           role="dialog"
           aria-label="Emoji picker"
-          className="absolute left-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-zinc-800 bg-[#18181b] shadow-xl shadow-black/40"
+          className="admin-dropdown absolute left-0 top-full z-50 mt-2"
         >
           {picker ? (
             <picker.Picker
@@ -119,7 +119,7 @@ export default function EmojiPickerField({
               Loading…
             </div>
           )}
-          <div className="border-t border-zinc-800 p-2">
+          <div className="border-t border-white/[0.06] p-2">
             <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-zinc-600">
               Custom Discord emoji
             </p>

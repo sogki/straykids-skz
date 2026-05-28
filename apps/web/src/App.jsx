@@ -17,7 +17,11 @@ import AudioGuessUnlimited from './pages/AudioGuessUnlimited'
 import ArcadeDirectory from './pages/ArcadeDirectory'
 import GameRouteGuard from './components/GameRouteGuard'
 import AdminLayout from './components/admin/AdminLayout'
-import { AdminFullRoute, AdminProtectedRoute } from './components/admin/AdminRoute'
+import {
+  AdminDeveloperRoute,
+  AdminFullRoute,
+  AdminProtectedRoute,
+} from './components/admin/AdminRoute'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminOverview from './pages/admin/AdminOverview'
 import AdminBannerPage from './pages/admin/AdminBannerPage'
@@ -26,6 +30,7 @@ import AdminLeaderboardPage from './pages/admin/AdminLeaderboardPage'
 import AdminGamesPage from './pages/admin/AdminGamesPage'
 import AdminRequestsPage from './pages/admin/AdminRequestsPage'
 import AdminBotPage from './pages/admin/AdminBotPage'
+import AdminDeveloperPage from './pages/admin/AdminDeveloperPage'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import Contact from './pages/Contact'
@@ -50,6 +55,9 @@ export default function App() {
               <Route path="leaderboard" element={<AdminLeaderboardPage />} />
               <Route path="games" element={<AdminGamesPage />} />
               <Route path="requests" element={<AdminRequestsPage />} />
+            </Route>
+            <Route element={<AdminDeveloperRoute />}>
+              <Route path="developer" element={<AdminDeveloperPage />} />
             </Route>
           </Route>
         </Route>

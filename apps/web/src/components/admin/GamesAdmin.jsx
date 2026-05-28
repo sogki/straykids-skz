@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Gamepad2, Loader2, RefreshCw } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import AdminSwitch from '@/components/admin/AdminSwitch'
+import {
+  adminBtnSecondary,
+  adminCalloutError,
+  adminCalloutInfo,
+  adminCalloutWarn,
+  adminEmpty,
+  adminList,
+  adminListRow,
+  adminPanel,
+} from '@/components/admin/adminUi'
 import {
   fetchAdminGames,
   getStoredAdminCode,
   setGameActive,
 } from '@/services/skzAdmin'
+import { ADMIN_SETUP_INCOMPLETE } from '@/components/admin/adminCopy'
 
-const MIGRATION_HINT =
-  'Run migration 20250526000017_admin_games_toggle.sql in Supabase, then click Refresh.'
+const MIGRATION_HINT = ADMIN_SETUP_INCOMPLETE
 
 function isMigrationError(message) {
   if (!message) return false
@@ -79,34 +89,28 @@ export default function GamesAdmin() {
         </p>
       </div>
 
-      {message && (
-        <p className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200">
-          {message}
-        </p>
-      )}
+      {message && <p className={adminCalloutInfo}>{message}</p>}
 
-      {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          {error}
-        </p>
-      )}
+      {error && <p className={adminCalloutError}>{error}</p>}
 
       {showHint && (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-          <span className="font-semibold">Database migration required: </span>
+        <p className={adminCalloutWarn}>
+          <span className="font-semibold">Setup required: </span>
           {MIGRATION_HINT}
         </p>
       )}
 
-      <Card className="border-white/10 bg-[#111113]">
-        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Gamepad2 className="size-4 text-violet-400" aria-hidden="true" />
-            All games
-          </CardTitle>
+      <div className={adminPanel}>
+        <div className="admin-subsection__head">
+          <div>
+            <h3 className="flex items-center gap-2 text-base font-semibold text-zinc-100">
+              <Gamepad2 className="size-4 text-violet-400" aria-hidden="true" />
+              All games
+            </h3>
+          </div>
           <button
             type="button"
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-medium text-zinc-200 transition-colors hover:border-zinc-500 hover:bg-zinc-800 disabled:opacity-50"
+            className={adminBtnSecondary}
             onClick={load}
             disabled={loading}
           >
@@ -117,93 +121,65 @@ export default function GamesAdmin() {
             )}
             Refresh
           </button>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="mt-4">
           {loading ? (
             <p className="flex items-center gap-2 text-sm text-zinc-500">
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               Loading games…
             </p>
           ) : rows.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-zinc-700/80 py-10 text-center text-sm text-zinc-500">
-              No games found.
-            </p>
+            <p className={adminEmpty}>No games found.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className={adminList}>
               {rows.map((row) => {
                 const enabled = row.is_active !== false
                 const isBusy = busy === row.slug
                 return (
-                  <li
-                    key={row.id || row.slug}
-                    className="flex flex-wrap items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-950/80 p-4"
-                  >
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-2xl">
+                  <li key={row.id || row.slug} className={adminListRow}>
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-zinc-800/80 text-2xl">
                       <span aria-hidden="true">{row.emoji}</span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-white">
-                          {row.title}
-                        </span>
-                        <span className="rounded-md bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-200">
-                          {row.tag || 'Game'}
-                        </span>
-                        <span
-                          className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                            enabled
-                              ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
-                              : 'border-zinc-600/40 bg-zinc-700/15 text-zinc-400'
-                          }`}
-                        >
-                          {enabled ? 'Live' : 'Disabled'}
-                        </span>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-semibold text-white">{row.title}</span>
+                            <span className="rounded-md bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-200">
+                              {row.tag || 'Game'}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-xs text-zinc-500">
+                            {row.path}{' '}
+                            <span className="text-zinc-600">·</span> slug:{' '}
+                            <code className="text-zinc-400">{row.slug}</code>
+                          </p>
+                          {row.description && (
+                            <p className="mt-1 line-clamp-2 text-xs text-zinc-400">
+                              {row.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex shrink-0 flex-col items-end gap-1">
+                          <AdminSwitch
+                            checked={enabled}
+                            disabled={isBusy}
+                            onChange={(next) => handleToggle(row.slug, next)}
+                            aria-label={`${enabled ? 'Disable' : 'Enable'} ${row.title}`}
+                          />
+                          <span className="text-[10px] font-medium text-zinc-500">
+                            {isBusy ? 'Saving…' : enabled ? 'On' : 'Off'}
+                          </span>
+                        </div>
                       </div>
-                      <p className="mt-1 text-xs text-zinc-500">
-                        {row.path}{' '}
-                        <span className="text-zinc-600">·</span> slug:{' '}
-                        <code className="text-zinc-400">{row.slug}</code>
-                      </p>
-                      {row.description && (
-                        <p className="mt-1 line-clamp-2 text-xs text-zinc-400">
-                          {row.description}
-                        </p>
-                      )}
                     </div>
-                    <label className="relative inline-flex shrink-0 cursor-pointer items-center">
-                      <input
-                        type="checkbox"
-                        className="peer sr-only"
-                        checked={enabled}
-                        disabled={isBusy}
-                        onChange={(e) =>
-                          handleToggle(row.slug, e.target.checked)
-                        }
-                      />
-                      <span
-                        className={`relative h-6 w-11 rounded-full border transition-colors ${
-                          enabled
-                            ? 'border-emerald-500/50 bg-emerald-500/40'
-                            : 'border-zinc-700 bg-zinc-800'
-                        } ${isBusy ? 'opacity-50' : ''}`}
-                      >
-                        <span
-                          className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-white transition-transform ${
-                            enabled ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </span>
-                      <span className="ml-3 text-xs font-medium text-zinc-300">
-                        {isBusy ? 'Saving…' : enabled ? 'Enabled' : 'Disabled'}
-                      </span>
-                    </label>
                   </li>
                 )
               })}
             </ul>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

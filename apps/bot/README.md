@@ -19,8 +19,7 @@ The SKZ Arcade Discord bot. Built with [discord.js](https://discord.js.org/) v14
    - `discord_client_id`
    - `supabase_url` + `supabase_service_role_key` (if not already in DB)
 4. Set **Guild ID**, create embed panels, add reaction options, click **Deploy to Discord**.
-5. Register slash commands: `npm run register --workspace=@skz/bot`
-6. Run: `npm run dev:bot`
+5. Run: `npm run dev:bot` (slash commands register automatically on startup; or run `/reload` / `npm run register --workspace=@skz/bot`)
 
 Discord token and Supabase service role **do not belong in `.env` long-term** — the admin panel is the source of truth. `.env` bootstrap is only to reach the database the first time.
 
@@ -32,12 +31,13 @@ Enable **Server Members Intent** and **Message Content Intent** in the [Discord 
 
 ## Commands
 
-- `/reload` — reload DB config, sync channel/role dropdown cache, process deploy queue
+- `/reload` — reload DB config, sync channel/role dropdown cache, re-register slash commands, process deploy queue
 - `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
 
 **Global commands** (DM or any server):
 
-- `/leaderboard [days]` — top players by daily puzzle points
+- `/leaderboard [game] [days]` — top players by daily puzzle points
+- `/profile [user]` — player points, rank, and daily wins (privacy-aware)
 
 Player sign-in uses **Discord OAuth** on the website (`Continue with Discord`). The OAuth HTTP routes run **in this bot process** (`/api/player/*`), reading `discord_client_secret`, `site_url`, etc. from `skz_bot_settings` — there is no separate `apps/api` package.
 

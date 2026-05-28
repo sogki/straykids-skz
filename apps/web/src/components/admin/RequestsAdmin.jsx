@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, Mail, RefreshCw } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import AdminSelect from '@/components/admin/AdminSelect'
+import {
+  adminBtnSecondary,
+  adminCalloutError,
+  adminCalloutInfo,
+  adminCalloutWarn,
+  adminDividerSection,
+  adminEmpty,
+  adminList,
+  adminListRow,
+  adminPanel,
+} from '@/components/admin/adminUi'
 import {
   fetchSiteRequests,
   getStoredAdminCode,
   updateSiteRequest,
 } from '@/services/skzAdmin'
-
-const MIGRATION_SQL = `-- Run in Supabase SQL Editor (migration 20250526000013_site_requests.sql):
--- Creates skz_site_requests + skz_submit_site_request + admin RPCs`
+import { ADMIN_SETUP_INCOMPLETE } from '@/components/admin/adminCopy'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
@@ -113,40 +122,29 @@ export default function RequestsAdmin() {
         </p>
       </div>
 
-      {message && (
-        <p className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200">
-          {message}
-        </p>
-      )}
+      {message && <p className={adminCalloutInfo}>{message}</p>}
 
-      {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          {error}
-        </p>
-      )}
+      {error && <p className={adminCalloutError}>{error}</p>}
 
       {showSql && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-          <p className="mb-2 font-semibold">Database migration required</p>
-          <p className="mb-2 text-amber-200/90">
-            Run migration <code className="text-xs">20250526000013_site_requests.sql</code> in
-            the Supabase SQL Editor, then click Refresh.
-          </p>
-          <pre className="overflow-x-auto rounded bg-black/40 p-3 text-xs text-zinc-300">
-            {MIGRATION_SQL}
-          </pre>
-        </div>
+        <p className={adminCalloutWarn}>
+          <span className="font-semibold">Setup required: </span>
+          {ADMIN_SETUP_INCOMPLETE}
+        </p>
       )}
 
-      <Card className="border-white/10 bg-[#111113]">
-        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0 pb-4">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Mail className="size-4 text-violet-400" aria-hidden="true" />
-            Filter
-          </CardTitle>
+      <div className={adminPanel}>
+        <div className="admin-subsection__head">
+          <div>
+            <h3 className="flex items-center gap-2 text-base font-semibold text-zinc-100">
+              <Mail className="size-4 text-violet-400" aria-hidden="true" />
+              Filter
+            </h3>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              className="admin-select h-9 min-w-[10rem] w-auto"
+            <AdminSelect
+              wrapperClassName="admin-select-wrap--inline min-w-[10rem] w-auto"
+              size="sm"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               aria-label="Filter by status"
@@ -156,10 +154,10 @@ export default function RequestsAdmin() {
                   {o.label}
                 </option>
               ))}
-            </select>
+            </AdminSelect>
             <button
               type="button"
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-sm font-medium text-zinc-200 transition-colors hover:border-zinc-500 hover:bg-zinc-800 disabled:opacity-50"
+              className={adminBtnSecondary}
               onClick={load}
               disabled={loading}
             >
@@ -171,24 +169,19 @@ export default function RequestsAdmin() {
               Refresh
             </button>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="mt-4">
           {loading ? (
             <p className="flex items-center gap-2 text-sm text-zinc-500">
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               Loading requests…
             </p>
           ) : rows.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-zinc-700/80 py-10 text-center text-sm text-zinc-500">
-              No requests in this filter.
-            </p>
+            <p className={adminEmpty}>No requests in this filter.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className={adminList}>
               {rows.map((row) => (
-                <li
-                  key={row.id}
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-4"
-                >
+                <li key={row.id} className={`${adminListRow} flex-col items-stretch`}>
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-md bg-violet-500/15 px-2 py-0.5 text-xs font-semibold text-violet-200">
@@ -239,7 +232,7 @@ export default function RequestsAdmin() {
                     </p>
                   ) : null}
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-800 pt-3">
+                  <div className={`${adminDividerSection} mt-0 flex flex-wrap items-center gap-2`}>
                     <button
                       type="button"
                       className="text-xs font-medium text-zinc-400 hover:text-white"
@@ -247,8 +240,10 @@ export default function RequestsAdmin() {
                     >
                       {expanded === row.id ? 'Show less' : 'Show full message'}
                     </button>
-                    <select
-                      className="admin-select ml-auto h-8 w-auto min-w-[9rem] text-xs"
+                    <AdminSelect
+                      wrapperClassName="admin-select-wrap--inline ml-auto min-w-[9rem] w-auto"
+                      size="sm"
+                      className="text-xs"
                       value={row.status}
                       disabled={busyId === row.id}
                       onChange={(e) => handleStatus(row.id, e.target.value)}
@@ -259,7 +254,7 @@ export default function RequestsAdmin() {
                           {o.label}
                         </option>
                       ))}
-                    </select>
+                    </AdminSelect>
                   </div>
 
                   <label className="mt-3 block">
@@ -280,8 +275,8 @@ export default function RequestsAdmin() {
               ))}
             </ul>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

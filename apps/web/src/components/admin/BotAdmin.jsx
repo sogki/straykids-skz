@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Bot,
   ChevronDown,
@@ -13,9 +14,24 @@ import {
   ScrollText,
   Server,
   Shield,
+  FlaskConical,
 } from 'lucide-react'
 import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
+import { useAdminAccess } from '@/hooks/useAdminAccess'
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb'
+import AdminFeatureRow from '@/components/admin/AdminFeatureRow'
+import AdminHubCategory, { AdminHubCategories } from '@/components/admin/AdminHubCategory'
+import AdminSelect from '@/components/admin/AdminSelect'
+import {
+  ADMIN_SETUP_INCOMPLETE,
+  BOT_HUB_INTRO,
+  BOT_PAGE_INTRO,
+  BOT_SETTINGS_SAVED_SUCCESS,
+  CREDENTIALS_INTRO,
+} from '@/components/admin/adminCopy'
+import AdminSettingsRow from '@/components/admin/AdminSettingsRow'
+import CollapsibleSection from '@/components/admin/CollapsibleSection'
 import ModLogEmbedEditor from '@/components/admin/ModLogEmbedEditor'
 import ModLogsViewer from '@/components/admin/ModLogsViewer'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
@@ -57,22 +73,44 @@ import {
 import {
   fetchAdminModLogs,
   fetchAdminSessionLogs,
-  getStoredAdminAccess,
   getStoredAdminCode,
 } from '@/services/skzAdmin'
+import {
+  adminBtnPrimary,
+  adminBtnSecondary,
+  adminCalloutError,
+  adminCalloutInfo,
+  adminCalloutWarn,
+  adminDebugPanel,
+  adminDebugPanelActions,
+  adminDebugPanelGroupLabel,
+  adminDebugPanelIntro,
+  adminControl,
+  adminControlTextarea,
+  adminCollapsible,
+  adminFeatureList,
+  adminHubGrid,
+  adminHubMain,
+  adminInset,
+  adminListRow,
+  adminModal,
+  adminModalNarrow,
+  adminModalWide,
+  adminPanel,
+  adminSubsection,
+  adminStack,
+  adminSubsectionHead,
+  adminTableWrap,
+  adminToggleRow,
+} from '@/components/admin/adminUi'
 
-const MIGRATION_HINT =
-  'Run migrations 20260528000001 through 20260528000023 in Supabase, then Refresh.'
+const MIGRATION_HINT = ADMIN_SETUP_INCOMPLETE
 
-const UI_INPUT =
-  'h-10 w-full rounded-xl border border-zinc-700/80 bg-[#0d0d11] px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20'
-const UI_TEXTAREA =
-  'w-full rounded-xl border border-zinc-700/80 bg-[#0d0d11] px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20'
-const UI_SELECT = UI_INPUT
-const UI_BUTTON_SECONDARY =
-  'inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-700/80 bg-[#16161c] px-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-[#1c1c24] disabled:opacity-40'
-const UI_BUTTON_PRIMARY =
-  'inline-flex h-9 items-center gap-1.5 rounded-xl bg-violet-500 px-3 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:opacity-40'
+const UI_INPUT = adminControl
+const UI_TEXTAREA = adminControlTextarea
+const UI_SELECT = adminControl
+const UI_BUTTON_SECONDARY = adminBtnSecondary
+const UI_BUTTON_PRIMARY = adminBtnPrimary
 
 function isMigrationError(message) {
   if (!message) return false
@@ -82,105 +120,61 @@ function isMigrationError(message) {
 
 /** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs'} BotSection */
 
-function BotBreadcrumb({ items }) {
-  return (
-    <nav
-      aria-label="Breadcrumb"
-      className="mb-6 flex flex-wrap items-center gap-1 text-sm"
-    >
-      {items.map((item, index) => {
-        const isLast = index === items.length - 1
-        return (
-          <span key={item.key} className="inline-flex items-center gap-1">
-            {index > 0 && (
-              <ChevronRight className="size-3.5 shrink-0 text-zinc-600" aria-hidden />
-            )}
-            {isLast || !item.onClick ? (
-              <span
-                className={
-                  isLast
-                    ? 'font-medium text-zinc-200'
-                    : 'text-zinc-500'
-                }
-                aria-current={isLast ? 'page' : undefined}
-              >
-                {item.label}
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={item.onClick}
-                className="rounded px-0.5 text-zinc-400 transition-colors hover:text-zinc-100"
-              >
-                {item.label}
-              </button>
-            )}
-          </span>
-        )
-      })}
-    </nav>
-  )
-}
-
-function HubCard({ icon: Icon, iconBg, title, description, tag, tagColor, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex items-start gap-4 rounded-xl border border-zinc-800/80 bg-[#18181b] p-4 text-left transition-all hover:border-zinc-700 hover:bg-[#1c1c20]"
-    >
-      <span
-        className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
-      >
-        <Icon className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2">
-          <span className="font-semibold text-zinc-100">{title}</span>
-          <ChevronRight className="size-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-400" />
-        </span>
-        <span className="mt-1 block text-sm leading-snug text-zinc-500">{description}</span>
-        {tag ? (
-          <span
-            className={`mt-3 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${tagColor}`}
-          >
-            {tag}
-          </span>
-        ) : null}
-      </span>
-    </button>
-  )
-}
-
 function SectionShell({ children }) {
-  return (
-    <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-[#15151a] to-[#111115] p-6 shadow-[0_6px_24px_rgba(0,0,0,0.25)] sm:p-8">
-      {children}
-    </div>
-  )
+  return <div className={adminPanel}>{children}</div>
 }
 
-function SubCard({ title, description, actions = null, children }) {
+function SubCard({
+  title,
+  description,
+  actions = null,
+  children,
+  collapsible = false,
+  defaultOpen = false,
+  open,
+  onOpenChange,
+  badge = null,
+  switch: headerSwitch = null,
+}) {
+  if (collapsible && title) {
+    return (
+      <CollapsibleSection
+        title={title}
+        subtitle={description}
+        badge={badge}
+        defaultOpen={defaultOpen}
+        open={open}
+        onOpenChange={onOpenChange}
+        actions={actions}
+        switch={headerSwitch}
+      >
+        {children}
+      </CollapsibleSection>
+    )
+  }
+
   return (
-    <div className="rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-[#15151b] to-[#101016] p-5 shadow-[0_4px_18px_rgba(0,0,0,0.22)]">
-      <div className="mb-5 flex items-start justify-between gap-3 border-b border-zinc-800/70 pb-4">
-        <div>
-          <h4 className="text-base font-semibold text-zinc-100">{title}</h4>
-          {description ? <p className="mt-1 text-sm text-zinc-500">{description}</p> : null}
+    <section className={adminSubsection}>
+      {(title || description || actions) && (
+        <div className={adminSubsectionHead}>
+          <div>
+            {title ? <h4>{title}</h4> : null}
+            {description ? <p>{description}</p> : null}
+          </div>
+          {actions}
         </div>
-        {actions}
-      </div>
+      )}
       {children}
-    </div>
+    </section>
   )
 }
 
 function AdminDataTable({ columns, rows, emptyMessage, loading }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
+    <div className={adminTableWrap}>
       <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-[#1a1a21] text-xs uppercase tracking-wide text-zinc-500">
+        <table className="min-w-full">
+          <thead>
             <tr>
               {columns.map((col) => (
                 <th key={col.key} className="px-3 py-2 text-left font-medium">
@@ -189,7 +183,7 @@ function AdminDataTable({ columns, rows, emptyMessage, loading }) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/80 bg-[#121218]">
+          <tbody>
             {loading ? (
               <tr>
                 <td colSpan={columns.length} className="px-3 py-8 text-center text-zinc-500">
@@ -221,13 +215,17 @@ function AdminDataTable({ columns, rows, emptyMessage, loading }) {
 }
 
 export default function BotAdmin() {
-  const access = getStoredAdminAccess()
-  const isFullAdmin = access?.permission_level === 'full_admin'
-  const featureAccess = access?.allowed_bot_features ?? {}
+  const navigate = useNavigate()
+  const {
+    isFullAdmin,
+    isRealFullAdmin,
+    featureAccess,
+    previewReadOnly,
+    moderatorOnlyView,
+  } = useAdminAccess()
   const code = getStoredAdminCode()
   const hasStaffCode = Boolean(code?.trim())
-  const moderatorOnly =
-    !hasStaffCode && access?.permission_level === 'moderator'
+  const moderatorOnly = moderatorOnlyView
   const [config, setConfig] = useState({
     settings: null,
     reactionRoles: [],
@@ -508,9 +506,7 @@ export default function BotAdmin() {
       const embeds = parseModLogEmbedsFromSettings(next.settings)
       setModLogEmbeds(embeds)
       setSavedModLogEmbeds(embeds)
-      setMessage(
-        'Settings saved to skz_bot_settings. Run /reload in Discord (or wait for the outbox poll) to apply.',
-      )
+      setMessage(BOT_SETTINGS_SAVED_SUCCESS)
     } catch (err) {
       setError(err.message || 'Save failed')
       setShowHint(isMigrationError(err.message))
@@ -857,7 +853,7 @@ export default function BotAdmin() {
     return {
       title: 'Server',
       description:
-        'Guild ID is the source of truth — changing it here updates the table on save. Run Sync Discord dropdowns after setting a guild ID.',
+        'Guild ID is the source of truth — changing it here updates bot settings on save. Run Sync Discord dropdowns after setting a guild ID.',
     }
   }, [serverSubsection, qotdSubsection])
 
@@ -872,7 +868,7 @@ export default function BotAdmin() {
 
   if (!hasStaffCode && !canModLogsView) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-[#121214] p-6 text-sm text-zinc-400">
+      <div className={`${adminPanel} text-sm text-zinc-400`}>
         Your account does not have permission to view the Discord bot admin.
       </div>
     )
@@ -886,14 +882,14 @@ export default function BotAdmin() {
           <p className="mt-1 max-w-2xl text-sm text-zinc-500">
             {moderatorOnly
               ? 'Moderator access — view moderation logs as allowed by your role.'
-              : 'Configure credentials, server options, reaction panels, and moderation logging — all stored in Supabase.'}
+              : BOT_PAGE_INTRO}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={handleSyncDiscord}
-            disabled={busy || !draft.guild_id}
+            disabled={previewReadOnly || busy || !draft?.guild_id}
             className={UI_BUTTON_SECONDARY}
           >
             Sync Discord dropdowns
@@ -901,6 +897,7 @@ export default function BotAdmin() {
           <button
             type="button"
             onClick={load}
+            disabled={previewReadOnly}
             className={UI_BUTTON_SECONDARY}
           >
             <RefreshCw className="size-4" />
@@ -910,144 +907,212 @@ export default function BotAdmin() {
       </div>
 
       {message && (
-        <p className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200">
+        <p className={adminCalloutInfo}>
           {message}
         </p>
       )}
       {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className={adminCalloutError}>
           {error}
         </p>
       )}
       {showHint && (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-          <span className="font-semibold">Migration required: </span>
+        <p className={adminCalloutWarn}>
+          <span className="font-semibold">Setup required: </span>
           {MIGRATION_HINT}
         </p>
       )}
 
       {section === 'hub' && (
         <SectionShell>
-          <div className="mb-8">
-            <h3 className="text-xl font-bold tracking-tight text-white">Bot settings</h3>
-            <p className="mt-1 text-sm text-zinc-500">
-              Choose a section to configure. Changes save to{' '}
-              <code className="rounded bg-zinc-800 px-1 text-xs">skz_bot_settings</code>{' '}
-              and panel tables.
+          <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h3 className="text-xl font-bold tracking-tight text-white">Bot settings</h3>
+              <p className="mt-1 max-w-2xl text-sm text-zinc-500">{BOT_HUB_INTRO}</p>
+            </div>
+            {isRealFullAdmin && draft && !previewReadOnly && (
+              <SettingsActions
+                placement="top"
+                isDirty={isDirty}
+                busy={busy}
+                readOnly={previewReadOnly}
+                onReset={() => setDraft(config.settings)}
+                onSave={handleSaveSettings}
+              />
+            )}
+          </div>
+          <div className={adminHubMain}>
+            <div className={adminHubGrid}>
+              {canPanels && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={LayoutGrid}
+                  iconBg="bg-violet-500/15 text-violet-400"
+                  title="Reaction panels"
+                  description="Verify gates, role menus, and announcement embeds."
+                  meta={
+                    config.messages.length
+                      ? `${config.messages.length} panel${config.messages.length === 1 ? '' : 's'} · ${livePanelCount} live`
+                      : 'None yet'
+                  }
+                  onOpen={() => goSection('panels')}
+                />
+              )}
+              {isRealFullAdmin && canQotd && draft && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={ListOrdered}
+                  iconBg="bg-sky-500/15 text-sky-400"
+                  title="Question of the day"
+                  description="Daily thread schedule and question bank."
+                  meta={
+                    String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
+                      ? 'Enabled'
+                      : 'Disabled'
+                  }
+                  switch={
+                    previewReadOnly
+                      ? undefined
+                      : {
+                          checked: String(draft.qotd_enabled || 'false').toLowerCase() === 'true',
+                          onChange: (next) => setField('qotd_enabled', next ? 'true' : 'false'),
+                          ariaLabel: 'Enable question of the day',
+                        }
+                  }
+                  onOpen={() => {
+                    goSection('server')
+                    openQotdSubsection('hub')
+                  }}
+                />
+              )}
+              {isRealFullAdmin && canModLogsConfig && draft && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={Shield}
+                  iconBg="bg-rose-500/15 text-rose-400"
+                  title="Moderation logging"
+                  description="Join logs, message edits/deletes, and log channels."
+                  meta={draft.mod_log_enabled === 'true' ? 'Enabled' : 'Disabled'}
+                  switch={
+                    previewReadOnly
+                      ? undefined
+                      : {
+                          checked: draft.mod_log_enabled === 'true',
+                          onChange: (next) =>
+                            setDraft((p) => ({ ...p, mod_log_enabled: next ? 'true' : 'false' })),
+                          ariaLabel: 'Enable moderation logging',
+                        }
+                  }
+                  onOpen={() => goSection('mod_config')}
+                />
+              )}
+              {canModLogsView && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={ScrollText}
+                  iconBg="bg-orange-500/15 text-orange-400"
+                  title="Moderation logs"
+                  description="Browse join, edit, and delete events recorded by the bot."
+                  meta="View history"
+                  onOpen={() => {
+                    goSection('mod_logs')
+                    loadModLogs()
+                  }}
+                />
+              )}
+              {canRolePermissions && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={Bot}
+                  iconBg="bg-fuchsia-500/15 text-fuchsia-400"
+                  title="Role permissions"
+                  description="Map Discord roles to permission levels and bot feature access."
+                  meta={`${(config.rolePermissions || []).length} mapped`}
+                  onOpen={() => goSection('permissions')}
+                />
+              )}
+              {canSessionLogs && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={Clock3}
+                  iconBg="bg-sky-500/15 text-sky-400"
+                  title="Session logs"
+                  description="Who signed in, Discord IDs, durations, and session status."
+                  meta={`${sessionLogs.length || 0} recent`}
+                  onOpen={() => {
+                    goSection('logs')
+                    loadSessionLogs()
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          <AdminHubCategories>
+            <AdminHubCategory title="Configuration">
+              {canCredentials && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={KeyRound}
+                  iconBg="bg-amber-500/15 text-amber-400"
+                  title="Credentials"
+                  description="Discord token, client ID, and database keys."
+                  meta={credentialsReady ? 'Configured' : 'Needs setup'}
+                  onOpen={() => goSection('credentials')}
+                />
+              )}
+              {canServer && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={Server}
+                  iconBg="bg-emerald-500/15 text-emerald-400"
+                  title="Server"
+                  description="Guild ID, voice hub, and personal VC naming."
+                  meta={draft?.guild_id ? 'Guild linked' : 'No guild ID'}
+                  onOpen={() => goSection('server')}
+                />
+              )}
+            </AdminHubCategory>
+
+            <AdminHubCategory title="Misc">
+              {isRealFullAdmin && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={FlaskConical}
+                  iconBg="bg-indigo-500/15 text-indigo-400"
+                  title="Developer tools"
+                  description="Preview the panel as another role."
+                  meta="Role preview"
+                  onOpen={() => navigate('/admin/developer')}
+                />
+              )}
+            </AdminHubCategory>
+          </AdminHubCategories>
+          {![
+            canPanels,
+            isRealFullAdmin && canQotd,
+            isRealFullAdmin && canModLogsConfig,
+            canCredentials,
+            canServer,
+            canSessionLogs,
+            canRolePermissions,
+            canModLogsView,
+            isRealFullAdmin,
+          ].some(Boolean) && (
+            <p className={adminCalloutWarn}>
+              This role would not see any Discord bot admin sections. Adjust role permissions or
+              pick another preview target in Developer tools.
             </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <HubCard
-              icon={LayoutGrid}
-              iconBg="bg-violet-500/15 text-violet-400"
-              title="Reaction panels"
-              description="Verify gates, role menus, and announcement embeds."
-              tag={
-                config.messages.length
-                  ? `${config.messages.length} panel${config.messages.length === 1 ? '' : 's'} · ${livePanelCount} live`
-                  : 'None yet'
-              }
-              tagColor="text-sky-400 bg-sky-500/10"
-              onClick={() => goSection('panels')}
-            />
-            {canCredentials && (
-              <HubCard
-              icon={KeyRound}
-              iconBg="bg-amber-500/15 text-amber-400"
-              title="Credentials"
-              description="Discord token, client ID, and Supabase keys for the bot runtime."
-              tag={credentialsReady ? 'Configured' : 'Needs setup'}
-              tagColor={
-                credentialsReady
-                  ? 'text-emerald-400 bg-emerald-500/10'
-                  : 'text-amber-400 bg-amber-500/10'
-              }
-              onClick={() => goSection('credentials')}
-            />
-            )}
-            {canServer && (
-              <HubCard
-              icon={Server}
-              iconBg="bg-emerald-500/15 text-emerald-400"
-              title="Server"
-              description="Guild ID, join-to-create voice hub, and personal VC naming."
-              tag={draft.guild_id ? 'Guild linked' : 'No guild ID'}
-              tagColor={
-                draft.guild_id
-                  ? 'text-emerald-400 bg-emerald-500/10'
-                  : 'text-zinc-400 bg-zinc-500/10'
-              }
-              onClick={() => goSection('server')}
-            />
-            )}
-            {canSessionLogs && (
-              <HubCard
-                icon={Clock3}
-                iconBg="bg-sky-500/15 text-sky-400"
-                title="Session logs"
-                description="See who signed in, Discord IDs, durations, and session status."
-                tag={`${sessionLogs.length || 0} recent`}
-                tagColor="text-sky-400 bg-sky-500/10"
-                onClick={() => {
-                  goSection('logs')
-                  loadSessionLogs()
-                }}
-              />
-            )}
-            {canRolePermissions && (
-              <HubCard
-                icon={Bot}
-                iconBg="bg-fuchsia-500/15 text-fuchsia-400"
-                title="Role permissions"
-                description="Map Discord roles to permission levels and bot feature toggles."
-                tag={`${(config.rolePermissions || []).length} mapped`}
-                tagColor="text-fuchsia-300 bg-fuchsia-500/15"
-                onClick={() => goSection('permissions')}
-              />
-            )}
-            {canModLogsConfig && (
-              <HubCard
-                icon={Shield}
-                iconBg="bg-rose-500/15 text-rose-400"
-                title="Moderation logging"
-                description="Join logs, message edits/deletes, and log channels."
-                tag={draft?.mod_log_enabled === 'true' ? 'Enabled' : 'Disabled'}
-                tagColor={
-                  draft?.mod_log_enabled === 'true'
-                    ? 'text-emerald-400 bg-emerald-500/10'
-                    : 'text-zinc-400 bg-zinc-500/10'
-                }
-                onClick={() => goSection('mod_config')}
-              />
-            )}
-            {canModLogsView && (
-              <HubCard
-                icon={ScrollText}
-                iconBg="bg-orange-500/15 text-orange-400"
-                title="Moderation logs"
-                description="Browse join, edit, and delete events recorded by the bot."
-                tag="View history"
-                tagColor="text-orange-300 bg-orange-500/15"
-                onClick={() => {
-                  goSection('mod_logs')
-                  loadModLogs()
-                }}
-              />
-            )}
-          </div>
+          )}
         </SectionShell>
       )}
 
       {section === 'credentials' && canCredentials && (
         <SectionShell>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">Credentials</h3>
-            <p className="mt-1 text-sm text-zinc-500">
-              Stored in{' '}
-              <code className="rounded bg-zinc-800 px-1 text-xs">skz_bot_settings</code>. The bot
-              and player OAuth API read from here — not Railway env files.
-            </p>
+            <p className="mt-1 text-sm text-zinc-500">{CREDENTIALS_INTRO}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
@@ -1090,7 +1155,7 @@ export default function BotAdmin() {
               }
             />
             <SecretField
-              label="Supabase URL"
+              label="Database project URL"
               value={draft.supabase_url}
               onChange={(v) => setSecretField('supabase_url', v)}
               placeholder={
@@ -1100,7 +1165,7 @@ export default function BotAdmin() {
               }
             />
             <SecretField
-              label="Supabase service role key"
+              label="Database service role key"
               value={draft.supabase_service_role_key}
               onChange={(v) => setSecretField('supabase_service_role_key', v)}
               placeholder={
@@ -1113,6 +1178,7 @@ export default function BotAdmin() {
           <SettingsActions
             isDirty={isDirty}
             busy={busy}
+            readOnly={previewReadOnly}
             onReset={() => setDraft(config.settings)}
             onSave={handleSaveSettings}
           />
@@ -1121,69 +1187,74 @@ export default function BotAdmin() {
 
       {section === 'server' && canServer && (
         <SectionShell>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">{serverPageHeader.title}</h3>
             <p className="mt-1 text-sm text-zinc-500">{serverPageHeader.description}</p>
           </div>
           {serverSubsection === 'hub' && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <HubCard
+            <div className={adminFeatureList}>
+              <AdminFeatureRow
                 icon={Server}
                 iconBg="bg-emerald-500/15 text-emerald-400"
                 title="Guild settings"
                 description="Guild identity and base server linkage for bot configuration."
-                tag={draft.guild_id ? 'Guild linked' : 'Needs guild ID'}
-                tagColor={
-                  draft.guild_id
-                    ? 'text-emerald-400 bg-emerald-500/10'
-                    : 'text-amber-400 bg-amber-500/10'
-                }
-                onClick={() => setServerSubsection('guild')}
+                meta={draft.guild_id ? 'Guild linked' : 'Needs guild ID'}
+                onOpen={() => setServerSubsection('guild')}
               />
-              <HubCard
+              <AdminFeatureRow
                 icon={Bot}
                 iconBg="bg-sky-500/15 text-sky-400"
                 title="Join-to-create voice hub"
                 description="Hub channel, personal VC category, and naming pattern."
-                tag={draft.join_to_create_channel_id ? 'Configured' : 'Not configured'}
-                tagColor={
-                  draft.join_to_create_channel_id
-                    ? 'text-emerald-400 bg-emerald-500/10'
-                    : 'text-zinc-400 bg-zinc-500/10'
-                }
-                onClick={() => setServerSubsection('voice')}
+                meta={draft.join_to_create_channel_id ? 'Configured' : 'Not configured'}
+                onOpen={() => setServerSubsection('voice')}
               />
-              <HubCard
-                icon={Clock3}
-                iconBg="bg-violet-500/15 text-violet-400"
-                title="Question of the day"
-                description="Schedule, target channel, thread format, and question bank."
-                tag={
-                  canQotd
-                    ? String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
+              {canQotd && (
+                <AdminFeatureRow
+                  icon={Clock3}
+                  iconBg="bg-violet-500/15 text-violet-400"
+                  title="Question of the day"
+                  description="Schedule, target channel, thread format, and question bank."
+                  meta={
+                    String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
                       ? 'Enabled'
                       : 'Disabled'
-                    : 'No access'
-                }
-                tagColor={
-                  !canQotd
-                    ? 'text-zinc-400 bg-zinc-500/10'
-                    : String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
-                      ? 'text-emerald-400 bg-emerald-500/10'
-                      : 'text-amber-400 bg-amber-500/10'
-                }
-                onClick={() => canQotd && openQotdSubsection('hub')}
-              />
+                  }
+                  switch={
+                    isFullAdmin
+                      ? {
+                          checked:
+                            String(draft.qotd_enabled || 'false').toLowerCase() === 'true',
+                          onChange: (next) =>
+                            setField('qotd_enabled', next ? 'true' : 'false'),
+                          ariaLabel: 'Enable question of the day',
+                        }
+                      : undefined
+                  }
+                  onOpen={() => openQotdSubsection('hub')}
+                />
+              )}
             </div>
+          )}
+          {serverSubsection === 'hub' && isFullAdmin && (
+            <SettingsActions
+              isDirty={isDirty}
+              busy={busy}
+              readOnly={previewReadOnly}
+              onReset={() => setDraft(config.settings)}
+              onSave={handleSaveSettings}
+            />
           )}
 
           {serverSubsection === 'guild' && (
             <>
-              <div className="mb-3 rounded-xl border border-zinc-800/80 bg-[#121219] px-4 py-3 text-xs text-zinc-400">
+              <div className="mb-3 admin-inset text-xs text-zinc-400">
                 Server / Guild settings
               </div>
               <SubCard
+                collapsible
+                defaultOpen
                 title="Guild settings"
                 description="Core server identity and cache sync dependencies."
               >
@@ -1200,6 +1271,7 @@ export default function BotAdmin() {
               <SettingsActions
                 isDirty={isDirty}
                 busy={busy}
+                readOnly={previewReadOnly}
                 onReset={() => setDraft(config.settings)}
                 onSave={handleSaveSettings}
               />
@@ -1208,10 +1280,12 @@ export default function BotAdmin() {
 
           {serverSubsection === 'voice' && (
             <>
-              <div className="mb-3 rounded-xl border border-zinc-800/80 bg-[#121219] px-4 py-3 text-xs text-zinc-400">
+              <div className="mb-3 admin-inset text-xs text-zinc-400">
                 Server / Join-to-create voice hub
               </div>
               <SubCard
+                collapsible
+                defaultOpen
                 title="Join-to-create voice hub"
                 description="Configure where personal voice channels are created and how they are named."
               >
@@ -1243,6 +1317,7 @@ export default function BotAdmin() {
               <SettingsActions
                 isDirty={isDirty}
                 busy={busy}
+                readOnly={previewReadOnly}
                 onReset={() => setDraft(config.settings)}
                 onSave={handleSaveSettings}
               />
@@ -1252,64 +1327,65 @@ export default function BotAdmin() {
           {serverSubsection === 'qotd' && canQotd && (
             <>
               {qotdSubsection === 'hub' && (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <HubCard
+                <div className={adminFeatureList}>
+                  <AdminFeatureRow
                     icon={Clock3}
                     iconBg="bg-violet-500/15 text-violet-400"
                     title="Schedule"
                     description="Enable QOTD, pick channel, daily UTC time, and thread name."
-                    tag={
+                    meta={
                       String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
                         ? 'Enabled'
                         : 'Disabled'
                     }
-                    tagColor={
-                      String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
-                        ? 'text-emerald-400 bg-emerald-500/10'
-                        : 'text-amber-400 bg-amber-500/10'
+                    switch={
+                      isFullAdmin
+                        ? {
+                            checked:
+                              String(draft.qotd_enabled || 'false').toLowerCase() === 'true',
+                            onChange: (next) =>
+                              setField('qotd_enabled', next ? 'true' : 'false'),
+                            ariaLabel: 'Enable question of the day',
+                          }
+                        : undefined
                     }
-                    onClick={() => openQotdSubsection('schedule')}
+                    onOpen={() => openQotdSubsection('schedule')}
                   />
-                  <HubCard
+                  <AdminFeatureRow
                     icon={ListOrdered}
                     iconBg="bg-sky-500/15 text-sky-400"
                     title="Daily questions"
                     description="Banks per type — QOTD daily, bonuses on set weekdays."
-                    tag={`${(config.dailyQuestions || []).length} question${(config.dailyQuestions || []).length === 1 ? '' : 's'}`}
-                    tagColor="text-sky-400 bg-sky-500/10"
-                    onClick={() => openQotdSubsection('questions')}
+                    meta={`${(config.dailyQuestions || []).length} question${(config.dailyQuestions || []).length === 1 ? '' : 's'}`}
+                    onOpen={() => openQotdSubsection('questions')}
                   />
                 </div>
               )}
 
               {qotdSubsection === 'schedule' && (
                 <>
+                  <div className={adminStack}>
                   <SubCard
+                    collapsible
+                    defaultOpen
                     title="Schedule"
                     description="Control where and when the daily thread is posted."
-                    actions={
-                      <button
-                        type="button"
-                        onClick={setQotdToNextUtcMinute}
-                        className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
-                      >
-                        Set next minute (schedule)
-                      </button>
-                    }
+                    switch={{
+                      checked: String(draft.qotd_enabled || 'false').toLowerCase() === 'true',
+                      onChange: (next) => setField('qotd_enabled', next ? 'true' : 'false'),
+                      ariaLabel: 'Enable question of the day',
+                    }}
                   >
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <ToggleField
-                        label="Enable question of the day"
-                        checked={String(draft.qotd_enabled || 'false').toLowerCase() === 'true'}
-                        onChange={(next) => setField('qotd_enabled', next ? 'true' : 'false')}
-                      />
-                      <DiscordEntitySelect
-                        label="QOTD target channel"
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="sm:col-span-2">
+                        <DiscordEntitySelect
+                          label="QOTD target channel"
                         value={draft.qotd_channel_id}
                         onChange={(v) => setField('qotd_channel_id', v)}
-                        options={channelsFromCache(config.discordCache, 'text')}
-                        placeholder="Select channel..."
-                      />
+                          options={channelsFromCache(config.discordCache, 'text')}
+                          placeholder="Select channel..."
+                        />
+                      </div>
                       <label className="block space-y-1 sm:col-span-2">
                         <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                           QOTD daily time (UTC)
@@ -1341,49 +1417,70 @@ export default function BotAdmin() {
                     </div>
                   </SubCard>
 
-                  <div className="mt-4 rounded-xl border border-zinc-800/90 bg-[#111117] p-4">
-                    <h4 className="text-sm font-semibold text-zinc-100">Test the scheduler</h4>
-                    <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-zinc-500">
-                      <li>Enable QOTD, set channel, and schedule time — then Save settings.</li>
-                      <li>
-                        Optional: Set next minute (schedule), then Save settings again.
-                      </li>
-                      <li>Reset today&apos;s scheduler lock (clears the once-per-day block).</li>
-                      <li>
-                        Wait until the current UTC minute matches your saved time (bot checks every
-                        60s), or click Run scheduler check when the clock matches.
-                      </li>
-                    </ol>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={resetQotdSchedulerLock}
-                        className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
-                      >
-                        Reset today&apos;s lock
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={runQotdSchedulerTest}
-                        className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
-                      >
-                        Run scheduler check
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={runDailyQuestionNow}
-                        className="inline-flex h-8 items-center rounded-lg border border-violet-400/40 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 hover:bg-violet-500/20 disabled:opacity-50"
-                      >
-                        Run now (bypass schedule)
-                      </button>
+                  <SubCard
+                    collapsible
+                    title="Scheduler debug"
+                    description="Probe posting, locks, and timing — not for everyday config."
+                    badge="Dev"
+                  >
+                    <div className={adminDebugPanel}>
+                      <p className={adminCalloutWarn}>
+                        Use after saving schedule settings. These actions can post to Discord or
+                        change scheduler state immediately.
+                      </p>
+                      <p className={adminDebugPanelIntro}>
+                        Typical flow: enable QOTD and save → set next minute and save → reset
+                        today&apos;s lock if needed → run scheduler check when the UTC clock matches,
+                        or run now to skip the schedule.
+                      </p>
+                      <div>
+                        <p className={adminDebugPanelGroupLabel}>Timing</p>
+                        <div className={adminDebugPanelActions}>
+                          <button
+                            type="button"
+                            onClick={setQotdToNextUtcMinute}
+                            className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
+                          >
+                            Set next minute (UTC)
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={runQotdSchedulerTest}
+                            className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
+                          >
+                            Run scheduler check
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <p className={adminDebugPanelGroupLabel}>Locks &amp; overrides</p>
+                        <div className={adminDebugPanelActions}>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={resetQotdSchedulerLock}
+                            className={`${UI_BUTTON_SECONDARY} h-8 px-2.5 text-xs`}
+                          >
+                            Reset today&apos;s lock
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={runDailyQuestionNow}
+                            className="inline-flex h-8 items-center rounded-lg border border-amber-500/35 bg-amber-500/10 px-2.5 text-xs font-semibold text-amber-100 hover:bg-amber-500/20 disabled:opacity-50"
+                          >
+                            Run now (bypass schedule)
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                  </SubCard>
                   </div>
                   <SettingsActions
                     isDirty={isDirty}
                     busy={busy}
+                    readOnly={previewReadOnly}
                     onReset={() => setDraft(config.settings)}
                     onSave={handleSaveSettings}
                   />
@@ -1391,7 +1488,7 @@ export default function BotAdmin() {
               )}
 
               {qotdSubsection === 'questions' && (
-                <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#18181b]">
+                <div className={adminCollapsible}>
                   <div className="px-5 pt-4">
                     <p className="text-sm text-zinc-500">
                       Question of the day posts every day (time on Schedule). Bonus types post on
@@ -1401,7 +1498,7 @@ export default function BotAdmin() {
                       Question bank
                     </p>
                     <div
-                      className="mt-2 grid grid-cols-1 gap-1.5 rounded-xl border border-zinc-700/80 bg-[#0f0f14] p-1.5 sm:grid-cols-3"
+                      className="mt-2 grid grid-cols-1 gap-1.5 admin-inset p-1.5 sm:grid-cols-3"
                       role="tablist"
                       aria-label="Question types"
                     >
@@ -1436,35 +1533,34 @@ export default function BotAdmin() {
                   </div>
 
                   <div
-                    className="mt-4 border-t border-zinc-800/80 bg-[#141418] px-5 py-4"
+                    className="mt-4 border-t border-white/[0.06] px-5 py-4"
                     role="tabpanel"
                   >
                     <h3 className="text-base font-semibold text-zinc-100">
                       {activeQotdTypeMeta?.label}
                     </h3>
                     {dailyQuestionsTab !== 'standard' && activeBonusSchedule && (
-                      <div className="mb-4 mt-3 rounded-xl border border-zinc-800/80 bg-[#111117] p-4">
+                      <div className="mb-4 mt-3 admin-inset p-4">
                         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                           Schedule (UTC)
                         </p>
                         <div className="mt-3 grid gap-4 sm:grid-cols-2">
                           <label className="block space-y-1">
                             <span className="text-xs text-zinc-500">Post day</span>
-                            <select
+                            <AdminSelect
                               value={
                                 draft[activeBonusSchedule.day] ?? activeBonusSchedule.defaultDay
                               }
                               onChange={(e) =>
                                 setField(activeBonusSchedule.day, e.target.value)
                               }
-                              className={UI_SELECT}
                             >
                               {QOTD_WEEKDAYS_UTC.map((d) => (
                                 <option key={d.value} value={d.value}>
                                   {d.label}
                                 </option>
                               ))}
-                            </select>
+                            </AdminSelect>
                           </label>
                           <label className="block space-y-1">
                             <span className="text-xs text-zinc-500">Post time</span>
@@ -1524,11 +1620,11 @@ export default function BotAdmin() {
                     </div>
 
                     {activeTabQuestions.length === 0 ? (
-                      <p className="rounded-xl border border-zinc-800/80 bg-[#111117] px-3 py-4 text-xs text-zinc-500">
+                      <p className="admin-inset px-3 py-4 text-xs text-zinc-500">
                         No {activeQotdTypeMeta?.label?.toLowerCase() ?? 'questions'} yet.
                       </p>
                     ) : (
-                      <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
+                      <div className={adminTableWrap}>
                         <div className="overflow-x-auto">
                           <table className="min-w-full text-sm">
                             <thead className="bg-[#1a1a21] text-xs uppercase tracking-wide text-zinc-500">
@@ -1539,7 +1635,7 @@ export default function BotAdmin() {
                                 <th className="px-3 py-2 text-left">Actions</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-zinc-800/80 bg-[#121218]">
+                            <tbody>
                               {activeTabQuestions.map((q) => (
                                 <tr key={q.id}>
                                   <td className="px-3 py-2">
@@ -1599,6 +1695,7 @@ export default function BotAdmin() {
                       <SettingsActions
                         isDirty={qotdBonusScheduleDirty}
                         busy={busy}
+                        readOnly={previewReadOnly}
                         onReset={() => setDraft(config.settings)}
                         onSave={handleSaveSettings}
                       />
@@ -1612,7 +1709,7 @@ export default function BotAdmin() {
       )}
       {showAddQuestionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#121214] p-5 shadow-2xl">
+          <div className={adminModalWide}>
             <h4 className="text-base font-semibold text-zinc-100">
               Add {activeQotdTypeMeta?.label?.toLowerCase() ?? 'question'}
             </h4>
@@ -1660,7 +1757,7 @@ export default function BotAdmin() {
       )}
       {showBulkAddQuestionsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-[#121214] p-5 shadow-2xl">
+          <div className={adminModalWide}>
             <h4 className="text-base font-semibold text-zinc-100">
               Bulk add — {activeQotdTypeMeta?.label ?? 'questions'}
             </h4>
@@ -1711,12 +1808,12 @@ export default function BotAdmin() {
       )}
       {pendingDeleteQuestion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#121214] p-5 shadow-2xl">
+          <div className={adminModalNarrow}>
             <h4 className="text-base font-semibold text-zinc-100">Delete daily question?</h4>
             <p className="mt-2 text-sm text-zinc-400">
               This will permanently remove this question from the QOTD bank.
             </p>
-            <p className="mt-2 truncate rounded-lg border border-zinc-800 bg-[#0f0f13] px-3 py-2 text-sm text-zinc-200">
+            <p className={`mt-2 truncate ${adminInset} text-sm text-zinc-200`}>
               {pendingDeleteQuestion.prompt || 'Untitled question'}
             </p>
             <div className="mt-4 flex items-center justify-end gap-2">
@@ -1742,42 +1839,22 @@ export default function BotAdmin() {
 
       {section === 'panels' && canPanels && !editingPanel && config.messages.length > 0 && (
         <SectionShell>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">Reaction panels</h3>
             <p className="mt-1 text-sm text-zinc-500">
               Verify gates, role menus, and announcements.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={adminFeatureList}>
             {config.messages.map((m) => (
-              <button
+              <AdminFeatureRow
                 key={m.id}
-                type="button"
-                onClick={() => openPanel(m)}
-                className="group flex items-start gap-4 rounded-xl border border-zinc-800/80 bg-[#18181b] p-4 text-left transition-all hover:border-zinc-700 hover:bg-[#1c1c20]"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-zinc-100">
-                      {m.label || m.slug}
-                    </span>
-                    <ChevronRight className="size-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-400" />
-                  </span>
-                  <span className="mt-1 block text-sm capitalize text-zinc-500">
-                    {m.kind?.replace('_', ' ')}
-                  </span>
-                  <span
-                    className={`mt-3 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                      m.discord_message_id
-                        ? 'bg-emerald-500/10 text-emerald-400'
-                        : 'bg-zinc-500/10 text-zinc-400'
-                    }`}
-                  >
-                    {m.discord_message_id ? 'Live on Discord' : 'Draft'}
-                  </span>
-                </span>
-              </button>
+                title={m.label || m.slug}
+                description={m.kind?.replace('_', ' ') || 'Panel'}
+                meta={m.discord_message_id ? 'Live on Discord' : 'Draft'}
+                onOpen={() => openPanel(m)}
+              />
             ))}
           </div>
           <button
@@ -1793,7 +1870,7 @@ export default function BotAdmin() {
 
       {section === 'panels' && canPanels && !editingPanel && config.messages.length === 0 && (
         <>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <PanelTemplatePicker
             onSelect={(t) => {
               openNewPanel(t)
@@ -1804,7 +1881,7 @@ export default function BotAdmin() {
 
       {section === 'panels' && canPanels && editingPanel && (
         <>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <BotMessageEditor
             key={
               editingPanel === 'new'
@@ -1844,7 +1921,7 @@ export default function BotAdmin() {
 
       {section === 'mod_config' && canModLogsConfig && draft && (
         <SectionShell>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">Moderation logging</h3>
             <p className="mt-1 text-sm text-zinc-500">
@@ -1855,90 +1932,103 @@ export default function BotAdmin() {
               the Discord Developer Portal.
             </p>
           </div>
-          <SubCard title="Master switch" description="Turn all moderation logging on or off.">
-            <ToggleField
-              label="Enable moderation logging"
-              checked={draft.mod_log_enabled === 'true'}
-              onChange={(next) =>
-                setDraft((p) => ({ ...p, mod_log_enabled: next ? 'true' : 'false' }))
-              }
-            />
-          </SubCard>
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className={adminStack}>
             <SubCard
-              title="Member events"
-              description="Join logs and /info lookups post here."
+              collapsible
+              defaultOpen
+              title="Moderation logging"
+              description="Turn all join and message logging on or off."
+              switch={{
+                checked: draft.mod_log_enabled === 'true',
+                onChange: (next) =>
+                  setDraft((p) => ({ ...p, mod_log_enabled: next ? 'true' : 'false' })),
+                ariaLabel: 'Enable moderation logging',
+              }}
             >
-              <DiscordEntitySelect
-                label="Join / account log channel"
-                value={draft.mod_log_join_channel_id}
-                onChange={(v) => setDraft((p) => ({ ...p, mod_log_join_channel_id: v }))}
-                options={channelsFromCache(config.discordCache, 'text')}
-                placeholder="Select channel"
-              />
-              <div className="mt-3 space-y-2">
-                <ToggleField
-                  label="Log member joins"
-                  checked={draft.mod_log_member_join === 'true'}
-                  onChange={(next) =>
-                    setDraft((p) => ({ ...p, mod_log_member_join: next ? 'true' : 'false' }))
-                  }
-                />
-              </div>
+              <p className="text-xs text-zinc-500">
+                When disabled, the bot stops posting moderation embeds until you turn this back on.
+              </p>
             </SubCard>
-            <SubCard
-              title="Message events"
-              description="Edits, single deletes, and bulk deletes post here."
-            >
-              <DiscordEntitySelect
-                label="Message log channel"
-                value={draft.mod_log_message_channel_id}
-                onChange={(v) => setDraft((p) => ({ ...p, mod_log_message_channel_id: v }))}
-                options={channelsFromCache(config.discordCache, 'text')}
-                placeholder="Select channel"
-              />
-              <div className="mt-3 space-y-2">
-                <ToggleField
-                  label="Log message edits"
-                  checked={draft.mod_log_message_edits === 'true'}
-                  onChange={(next) =>
-                    setDraft((p) => ({
-                      ...p,
-                      mod_log_message_edits: next ? 'true' : 'false',
-                    }))
-                  }
-                />
-                <ToggleField
-                  label="Log message deletes"
-                  checked={draft.mod_log_message_deletes === 'true'}
-                  onChange={(next) =>
-                    setDraft((p) => ({
-                      ...p,
-                      mod_log_message_deletes: next ? 'true' : 'false',
-                    }))
-                  }
-                />
-                <ToggleField
-                  label="Log bulk deletes"
-                  checked={draft.mod_log_message_bulk_deletes === 'true'}
-                  onChange={(next) =>
-                    setDraft((p) => ({
-                      ...p,
-                      mod_log_message_bulk_deletes: next ? 'true' : 'false',
-                    }))
-                  }
-                />
-              </div>
-            </SubCard>
-          </div>
 
-          <div className="mt-8">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <SubCard
+                collapsible
+                title="Member events"
+                description="Join logs and /info lookups post here."
+                switch={{
+                  checked: draft.mod_log_member_join === 'true',
+                  onChange: (next) =>
+                    setDraft((p) => ({ ...p, mod_log_member_join: next ? 'true' : 'false' })),
+                  ariaLabel: 'Log member joins',
+                }}
+              >
+                <DiscordEntitySelect
+                  label="Join / account log channel"
+                  value={draft.mod_log_join_channel_id}
+                  onChange={(v) => setDraft((p) => ({ ...p, mod_log_join_channel_id: v }))}
+                  options={channelsFromCache(config.discordCache, 'text')}
+                  placeholder="Select channel"
+                />
+              </SubCard>
+              <SubCard
+                collapsible
+                title="Message events"
+                description="Edits, single deletes, and bulk deletes post here."
+                badge={`${[
+                  draft.mod_log_message_edits,
+                  draft.mod_log_message_deletes,
+                  draft.mod_log_message_bulk_deletes,
+                ].filter((v) => v === 'true').length} on`}
+              >
+                <DiscordEntitySelect
+                  label="Message log channel"
+                  value={draft.mod_log_message_channel_id}
+                  onChange={(v) => setDraft((p) => ({ ...p, mod_log_message_channel_id: v }))}
+                  options={channelsFromCache(config.discordCache, 'text')}
+                  placeholder="Select channel"
+                />
+                <div className="mt-3 divide-y divide-white/[0.06]">
+                  <AdminSettingsRow
+                    title="Log message edits"
+                    checked={draft.mod_log_message_edits === 'true'}
+                    onChange={(next) =>
+                      setDraft((p) => ({
+                        ...p,
+                        mod_log_message_edits: next ? 'true' : 'false',
+                      }))
+                    }
+                  />
+                  <AdminSettingsRow
+                    title="Log message deletes"
+                    checked={draft.mod_log_message_deletes === 'true'}
+                    onChange={(next) =>
+                      setDraft((p) => ({
+                        ...p,
+                        mod_log_message_deletes: next ? 'true' : 'false',
+                      }))
+                    }
+                  />
+                  <AdminSettingsRow
+                    title="Log bulk deletes"
+                    checked={draft.mod_log_message_bulk_deletes === 'true'}
+                    onChange={(next) =>
+                      setDraft((p) => ({
+                        ...p,
+                        mod_log_message_bulk_deletes: next ? 'true' : 'false',
+                      }))
+                    }
+                  />
+                </div>
+              </SubCard>
+            </div>
+
             <SubCard
+              collapsible
               title="Log embed appearance"
               description="Customize Discord embeds for each log type — same structure as reaction panels. Placeholders are filled when the bot posts."
             >
               <div
-                className="mb-4 flex justify-center rounded-xl border border-zinc-700/80 bg-[#0f0f14] p-2"
+                className="mb-4 flex justify-center admin-inset p-2"
                 role="tablist"
                 aria-label="Log embed templates"
               >
@@ -1979,6 +2069,7 @@ export default function BotAdmin() {
           <SettingsActions
             isDirty={isDirty}
             busy={busy}
+            readOnly={previewReadOnly}
             onReset={() => {
               setDraft(config.settings)
               setModLogEmbeds(savedModLogEmbeds)
@@ -1990,19 +2081,20 @@ export default function BotAdmin() {
 
       {section === 'mod_logs' && canModLogsView && (
         <SectionShell>
-          <BotBreadcrumb items={breadcrumbItems} />
+          <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-xl font-bold tracking-tight text-white">Moderation logs</h3>
               <p className="mt-1 text-sm text-zinc-500">
-                Events the bot records in Discord and in the database. Mods need{' '}
+                Events the bot records in Discord. Mods need{' '}
                 <strong className="font-medium text-zinc-300">Mod logs view</strong> on their
                 role (Role permissions).
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <select
-                className={`${UI_SELECT} h-9 w-auto min-w-[10rem]`}
+              <AdminSelect
+                wrapperClassName="admin-select-wrap--inline w-auto min-w-[10rem]"
+                size="sm"
                 value={modLogEventFilter}
                 onChange={(e) => setModLogEventFilter(e.target.value)}
               >
@@ -2011,7 +2103,7 @@ export default function BotAdmin() {
                     {t.label}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
               <button
                 type="button"
                 onClick={() => loadModLogs(modLogEventFilter)}
@@ -2032,7 +2124,7 @@ export default function BotAdmin() {
 
       {section === 'logs' && canSessionLogs && (
         <SectionShell>
-          <BotBreadcrumb
+          <AdminBreadcrumb
             items={[
               { key: 'hub', label: 'Discord bot', onClick: goHub },
               { key: 'logs', label: 'Session logs' },
@@ -2115,7 +2207,7 @@ export default function BotAdmin() {
 
       {section === 'permissions' && canRolePermissions && (
         <SectionShell>
-          <BotBreadcrumb
+          <AdminBreadcrumb
             items={[
               { key: 'hub', label: 'Discord bot', onClick: goHub },
               { key: 'permissions', label: 'Role permissions' },
@@ -2129,7 +2221,10 @@ export default function BotAdmin() {
               browse moderation history in this panel.
             </p>
           </div>
+          <div className={adminStack}>
           <SubCard
+            collapsible
+            defaultOpen
             title="Owner accounts (Discord user ID)"
             description="Always full_admin regardless of server roles. Enable Developer Mode in Discord → right-click your profile → Copy User ID. Only existing full admins can edit this list (staff code required)."
           >
@@ -2175,14 +2270,13 @@ export default function BotAdmin() {
             <div className="mt-4 space-y-2">
               {(config.userPermissions || []).length === 0 ? (
                 <p className="text-sm text-zinc-500">
-                  No owner user IDs yet. Add yours above, or insert via Supabase SQL (see migration
-                  20260528000020).
+                  No owner user IDs yet. Add yours above using the form.
                 </p>
               ) : (
                 (config.userPermissions || []).map((up) => (
                   <div
                     key={up.discord_user_id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-800/90 bg-[#0d0d11] px-3 py-2"
+                    className={`${adminListRow} justify-between gap-2 py-2`}
                   >
                     <div>
                       <div className="text-sm font-semibold text-zinc-200">
@@ -2221,8 +2315,8 @@ export default function BotAdmin() {
             </div>
           </SubCard>
 
-          <div className="mt-4">
           <SubCard
+            collapsible
             title="Add or update role mapping"
             description="Map Discord roles to permission levels, then tune feature access below."
           >
@@ -2243,8 +2337,7 @@ export default function BotAdmin() {
               <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 Permission level
               </span>
-              <select
-                className={UI_SELECT}
+              <AdminSelect
                 value={newRolePerm.permission_level}
                 onChange={(e) =>
                   setNewRolePerm((p) => ({ ...p, permission_level: e.target.value }))
@@ -2253,7 +2346,7 @@ export default function BotAdmin() {
                 <option value="full_admin">full_admin</option>
                 <option value="moderator">moderator</option>
                 <option value="member">member</option>
-              </select>
+              </AdminSelect>
             </label>
             <div className="sm:col-span-3">
               <button
@@ -2285,11 +2378,10 @@ export default function BotAdmin() {
             </div>
           </div>
           </SubCard>
-          </div>
 
-          <div className="mt-4 space-y-3">
+          <div className="space-y-3">
             {(config.rolePermissions || []).length === 0 ? (
-              <SubCard title="No roles mapped">
+              <SubCard collapsible title="No roles mapped">
                 <p className="text-sm text-zinc-500">
                   Add a Discord role above to control moderator access and bot features.
                 </p>
@@ -2304,44 +2396,34 @@ export default function BotAdmin() {
                 return (
                   <SubCard
                     key={rp.discord_role_id}
+                    collapsible
+                    open={isExpanded}
+                    onOpenChange={(next) =>
+                      setExpandedRolePermissionId(next ? rp.discord_role_id : null)
+                    }
                     title={roleTitle}
                     description={`Role ID ${rp.discord_role_id}`}
+                    badge={rp.permission_level}
                     actions={
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full border border-zinc-700/80 bg-zinc-800/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-300">
-                          {rp.permission_level}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setExpandedRolePermissionId(isExpanded ? null : rp.discord_role_id)
-                          }
-                          className={`${UI_BUTTON_SECONDARY} h-8 px-2 text-xs`}
-                        >
-                          {isExpanded ? 'Collapse' : 'Edit access'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            deleteRolePermission(code, rp.discord_role_id)
-                              .then(setConfig)
-                              .catch((err) => setError(err.message))
-                          }
-                          className="h-8 rounded-lg bg-red-500/15 px-2.5 text-xs font-medium text-red-300 transition hover:bg-red-500/25"
-                        >
-                          Remove
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          deleteRolePermission(code, rp.discord_role_id)
+                            .then(setConfig)
+                            .catch((err) => setError(err.message))
+                        }
+                        className="h-8 rounded-lg bg-red-500/15 px-2.5 text-xs font-medium text-red-300 transition hover:bg-red-500/25"
+                      >
+                        Remove
+                      </button>
                     }
                   >
-                    {isExpanded ? (
                       <div className="space-y-4">
                         <label className="block space-y-1.5">
                           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                             Permission level
                           </span>
-                          <select
-                            className={UI_SELECT}
+                          <AdminSelect
                             value={rp.permission_level}
                             onChange={(e) =>
                               upsertRolePermission(code, {
@@ -2358,11 +2440,11 @@ export default function BotAdmin() {
                             <option value="full_admin">full_admin</option>
                             <option value="moderator">moderator</option>
                             <option value="member">member</option>
-                          </select>
+                          </AdminSelect>
                         </label>
 
                         {rp.permission_level === 'full_admin' ? (
-                          <p className="rounded-xl border border-zinc-800/80 bg-[#0d0d11] px-3 py-2 text-xs text-zinc-400">
+                          <p className="admin-inset text-xs text-zinc-400">
                             Full admin always has access to all bot admin features, including
                             moderation log configuration.
                           </p>
@@ -2376,9 +2458,9 @@ export default function BotAdmin() {
                               ['session_logs', 'Session logs'],
                               ['mod_logs_view', 'Mod logs view'],
                             ].map(([key, label]) => (
-                              <ToggleField
+                              <AdminSettingsRow
                                 key={key}
-                                label={label}
+                                title={label}
                                 checked={Boolean((rp.bot_feature_access || {})[key])}
                                 onChange={(next) => {
                                   const updated = {
@@ -2400,15 +2482,11 @@ export default function BotAdmin() {
                           </div>
                         )}
                       </div>
-                    ) : (
-                      <p className="text-sm text-zinc-500">
-                        Expand to edit permission level and feature access for this role.
-                      </p>
-                    )}
                   </SubCard>
                 )
               })
             )}
+          </div>
           </div>
         </SectionShell>
       )}
@@ -2433,13 +2511,25 @@ function formatDuration(seconds) {
   return `${s}s`
 }
 
-function SettingsActions({ isDirty, busy, onReset, onSave }) {
+function SettingsActions({
+  isDirty,
+  busy,
+  onReset,
+  onSave,
+  readOnly = false,
+  placement = 'footer',
+}) {
+  const wrapClass =
+    placement === 'top'
+      ? 'flex shrink-0 flex-wrap justify-end gap-2'
+      : 'admin-subsection mt-8 flex justify-end gap-2 pt-6'
+
   return (
-    <div className="mt-8 flex justify-end gap-2 border-t border-zinc-800/80 pt-6">
+    <div className={wrapClass}>
       <button
         type="button"
         onClick={onReset}
-        disabled={!isDirty || busy}
+        disabled={readOnly || !isDirty || busy}
         className={UI_BUTTON_SECONDARY}
       >
         Reset
@@ -2447,7 +2537,7 @@ function SettingsActions({ isDirty, busy, onReset, onSave }) {
       <button
         type="button"
         onClick={onSave}
-        disabled={!isDirty || busy}
+        disabled={readOnly || !isDirty || busy}
         className={UI_BUTTON_PRIMARY}
       >
         {busy ? <Loader2 className="size-4 animate-spin" /> : null}
@@ -2494,15 +2584,16 @@ function SecretField({ label, value, onChange, placeholder }) {
   )
 }
 
-function ToggleField({ label, checked, onChange }) {
+function ToggleField({ label, checked, onChange, plain = false }) {
+  if (plain) {
+    return (
+      <AdminSettingsRow title={label} checked={checked} onChange={onChange} />
+    )
+  }
   return (
-    <label className="flex items-center justify-between rounded-xl border border-zinc-800/90 bg-[#14141a] px-3 py-2.5">
+    <label className={adminToggleRow}>
       <span className="text-sm text-zinc-300">{label}</span>
-      <AdminSwitch
-        checked={checked}
-        onChange={onChange}
-        aria-label={label}
-      />
+      <AdminSwitch checked={checked} onChange={onChange} aria-label={label} />
     </label>
   )
 }

@@ -4,6 +4,7 @@ import {
   modLogEventLabel,
   modLogEventStyle,
 } from '@/services/skzAdminBot'
+import { adminEmpty, adminLogItem } from '@/components/admin/adminUi'
 
 function formatWhen(iso) {
   if (!iso) return '—'
@@ -48,8 +49,8 @@ function ModLogCard({ row, channelNameMap }) {
   const badgeClass = modLogEventStyle(row.event_type)
 
   return (
-    <article className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
-      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-zinc-800/80 bg-[#14141a] px-4 py-3">
+    <article className={adminLogItem}>
+      <header className="admin-log-item__head">
         <span
           className={`inline-flex rounded-lg px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${badgeClass}`}
         >
@@ -60,13 +61,15 @@ function ModLogCard({ row, channelNameMap }) {
         </time>
       </header>
       {details.length > 0 ? (
-        <dl className="grid gap-3 px-4 py-3 sm:grid-cols-2">
+        <dl className="admin-log-item__body grid gap-3 sm:grid-cols-2">
           {details.map((d, i) => (
             <DetailRow key={`${row.id}-${d.label}-${i}`} {...d} />
           ))}
         </dl>
       ) : (
-        <p className="px-4 py-3 text-sm text-zinc-500">No detail recorded for this event.</p>
+        <p className="admin-log-item__body text-sm text-zinc-500">
+          No detail recorded for this event.
+        </p>
       )}
     </article>
   )
@@ -80,22 +83,18 @@ export default function ModLogsViewer({
 }) {
   if (loading) {
     return (
-      <div className="flex items-center justify-center rounded-xl border border-zinc-800/90 bg-[#111116] py-16 text-zinc-500">
+      <div className={`${adminEmpty} flex items-center justify-center py-16`}>
         <Loader2 className="size-6 animate-spin" />
       </div>
     )
   }
 
   if (!rows.length) {
-    return (
-      <div className="rounded-xl border border-zinc-800/90 bg-[#111116] px-4 py-12 text-center text-sm text-zinc-500">
-        {emptyMessage}
-      </div>
-    )
+    return <div className={adminEmpty}>{emptyMessage}</div>
   }
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-2">
       {rows.map((row) => (
         <li key={row.id}>
           <ModLogCard row={row} channelNameMap={channelNameMap} />

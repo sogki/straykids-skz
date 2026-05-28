@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import AdminSelect from '@/components/admin/AdminSelect'
+import { ANALYTICS_INTRO } from '@/components/admin/adminCopy'
 import AdminKpiCards from '@/components/admin/AdminKpiCards'
 import AnalyticsCharts from '@/components/admin/AnalyticsCharts'
 import { fetchAdminAnalytics, getStoredAdminCode } from '@/services/skzAdmin'
@@ -35,20 +37,20 @@ export default function AdminOverview({ title = 'Overview', showRange = true }) 
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Counts from <code className="text-zinc-400">skz_analytics_events</code>
-            {' '}(excluded countries omitted from KPIs — see Leaderboard).
+            {ANALYTICS_INTRO}
           </p>
         </div>
         {showRange && (
-          <select
-            value={days}
+          <AdminSelect
+            wrapperClassName="admin-select-wrap--inline w-auto min-w-[10rem]"
+            size="sm"
+            value={String(days)}
             onChange={(e) => setDays(Number(e.target.value))}
-            className="h-9 rounded-md border border-white/10 bg-[#111113] px-3 text-sm"
           >
-            <option value={7}>Last 7 days</option>
-            <option value={14}>Last 14 days</option>
-            <option value={30}>Last 30 days</option>
-          </select>
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30">Last 30 days</option>
+          </AdminSelect>
         )}
       </div>
 

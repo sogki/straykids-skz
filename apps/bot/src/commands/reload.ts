@@ -3,6 +3,7 @@ import { reloadBotConfig } from '../db/botConfig.js'
 import { loadCredentialsFromDb } from '../db/credentials.js'
 import { refreshDiscordSession } from '../discordSession.js'
 import { processOutbox } from '../services/outboxWorker.js'
+import { registerDiscordCommands } from '../services/registerDiscordCommands.js'
 import { syncDiscordCache } from '../services/syncDiscordCache.js'
 import { invalidateModLogSettingsCache } from '../services/modLogSettings.js'
 import { clearPlayerAuthConfigCache } from '../http/playerAuthConfig.js'
@@ -25,10 +26,12 @@ export const reloadCommand: SlashCommand = {
       const config = await reloadBotConfig()
       const synced = await syncDiscordCache(interaction.client)
       const outbox = await processOutbox(interaction.client)
+      const cmdReg = await registerDiscordCommands()
       const rrCount = config.reactionRoles.filter((r) => r.isActive).length
       const reconnectNote = reconnected ? ' Reconnected with new token from DB.' : ''
+      const globalCmds = cmdReg.global.map((n) => `/${n}`).join(', ')
       await interaction.editReply(
-        `Reloaded from skz_bot_settings.${reconnectNote} ${rrCount} active reaction role${rrCount === 1 ? '' : 's'}, ${synced} Discord entities cached, ${outbox} outbox job${outbox === 1 ? '' : 's'} processed.`,
+        `Reloaded bot settings.${reconnectNote} ${rrCount} active reaction role${rrCount === 1 ? '' : 's'}, ${synced} Discord entities cached, ${outbox} outbox job${outbox === 1 ? '' : 's'} processed.\n\nSlash commands updated — global: ${globalCmds}${cmdReg.guild ? `; guild: ${cmdReg.guild.map((n) => `/${n}`).join(', ')}` : ''}.\n\nGlobal commands can take up to an hour to appear everywhere; guild commands are instant.`,
       )
     } catch (err) {
       console.error('[skz-bot] /reload failed:', err)

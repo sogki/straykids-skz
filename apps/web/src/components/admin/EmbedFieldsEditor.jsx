@@ -1,8 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react'
 import AdminSwitch from '@/components/admin/AdminSwitch'
-
-const inputClass =
-  'w-full rounded-lg border border-zinc-700/80 bg-[#0d0d11] px-2 py-1.5 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/20'
+import { adminControl, adminTableWrap } from '@/components/admin/adminUi'
 
 export default function EmbedFieldsEditor({
   fields = [],
@@ -27,10 +25,10 @@ export default function EmbedFieldsEditor({
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-zinc-800/90 bg-[#111116]">
+      <div className={adminTableWrap}>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-[#1a1a21] text-xs uppercase tracking-wide text-zinc-500">
+            <thead>
               <tr>
                 <th className="w-8 px-2 py-2 text-center font-medium">#</th>
                 <th className="min-w-[7rem] px-2 py-2 text-left font-medium">Name</th>
@@ -39,7 +37,7 @@ export default function EmbedFieldsEditor({
                 <th className="w-10 px-2 py-2" aria-label="Actions" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/80 bg-[#121218]">
+            <tbody>
               {fields.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-3 py-5 text-center text-xs text-zinc-500">
@@ -55,7 +53,7 @@ export default function EmbedFieldsEditor({
                     <td className="px-2 py-1.5 align-top">
                       <input
                         type="text"
-                        className={inputClass}
+                        className={`${adminControl} h-9 px-2 py-1.5`}
                         value={field.name ?? ''}
                         onChange={(e) => onUpdate(index, 'name', e.target.value)}
                         placeholder="Field name"
@@ -65,7 +63,7 @@ export default function EmbedFieldsEditor({
                     <td className="px-2 py-1.5 align-top">
                       <textarea
                         rows={2}
-                        className={`${inputClass} min-h-[2.5rem] resize-y`}
+                        className={`${adminControl} admin-control--textarea min-h-[2.5rem] px-2 py-1.5`}
                         value={field.value ?? ''}
                         onChange={(e) => onUpdate(index, 'value', e.target.value)}
                         placeholder="{placeholder}"

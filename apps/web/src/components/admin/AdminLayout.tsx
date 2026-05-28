@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import {
   BarChart3,
   Bot,
+  FlaskConical,
   Gamepad2,
   Home,
   LayoutDashboard,
@@ -29,7 +30,9 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { getStoredAdminAccess, signOutAdminAuth } from '@/services/skzAdmin'
+import AdminPreviewBanner from '@/components/admin/AdminPreviewBanner'
+import { useAdminAccess } from '@/hooks/useAdminAccess'
+import { signOutAdminAuth } from '@/services/skzAdmin'
 import { cn } from '@/lib/utils'
 import '@/styles/Admin.css'
 
@@ -42,7 +45,13 @@ const SITE_NAV = [
   { to: '/admin/requests', label: 'Requests', icon: Inbox },
 ] as const
 
-const BOT_NAV = [{ to: '/admin/bot', label: 'Discord bot', icon: Bot }] as const
+const DEV_NAV = [
+  { to: '/admin/developer', label: 'Developer tools', icon: FlaskConical, badge: 'Beta' as const },
+] as const
+
+const BOT_NAV = [
+  { to: '/admin/bot', label: 'Discord bot', icon: Bot, badge: 'Beta' as const },
+] as const
 
 function NavGroup({
   label,
@@ -50,7 +59,13 @@ function NavGroup({
   pathname,
 }: {
   label: string
-  items: ReadonlyArray<{ to: string; end?: boolean; label: string; icon: typeof Bot }>
+  items: ReadonlyArray<{
+    to: string
+    end?: boolean
+    label: string
+    icon: typeof Bot
+    badge?: string
+  }>
   pathname: string
 }) {
   return (
@@ -58,15 +73,22 @@ function NavGroup({
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map(({ to, end, label, icon: Icon }) => (
+          {items.map(({ to, end, label, icon: Icon, badge }) => (
             <SidebarMenuItem key={to}>
               <SidebarMenuButton
                 render={<NavLink to={to} end={end} />}
                 isActive={end ? pathname === '/admin' : pathname.startsWith(to)}
-                tooltip={label}
+                tooltip={badge ? `${label} (${badge})` : label}
               >
                 <Icon />
-                <span>{label}</span>
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <span className="truncate">{label}</span>
+                  {badge ? (
+                    <span className="shrink-0 rounded border border-violet-500/35 bg-violet-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-violet-300">
+                      {badge}
+                    </span>
+                  ) : null}
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -79,11 +101,10 @@ function NavGroup({
 export default function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const access = getStoredAdminAccess()
-  const permission = access?.permission_level ?? 'none'
-  const isFullAdmin = permission === 'full_admin'
+  const { isFullAdmin, isModerator, isPreview, isRealFullAdmin } = useAdminAccess()
   const siteNavItems = isFullAdmin ? SITE_NAV : []
-  const showBotNav = isFullAdmin || permission === 'moderator'
+  const showBotNav = isFullAdmin || isModerator
+  const showDevNav = isRealFullAdmin && !isPreview
 
   useEffect(() => {
     document.documentElement.classList.add('dark')
@@ -95,21 +116,23 @@ export default function AdminLayout() {
   }
 
   const pageTitle =
-    pathname === '/admin/banner'
-      ? 'Site banner'
-      : pathname === '/admin/leaderboard'
-        ? 'Leaderboard'
-        : pathname === '/admin/analytics'
-          ? 'Analytics'
-          : pathname === '/admin/games'
-            ? 'Games'
-            : pathname === '/admin/requests'
-              ? 'Requests'
-              : pathname === '/admin/bot'
-                ? 'Discord bot'
-                : pathname === '/admin'
-                  ? 'Dashboard'
-                  : 'Admin'
+    pathname === '/admin/developer'
+      ? 'Developer tools'
+      : pathname === '/admin/banner'
+        ? 'Site banner'
+        : pathname === '/admin/leaderboard'
+          ? 'Leaderboard'
+          : pathname === '/admin/analytics'
+            ? 'Analytics'
+            : pathname === '/admin/games'
+              ? 'Games'
+              : pathname === '/admin/requests'
+                ? 'Requests'
+                : pathname === '/admin/bot'
+                  ? 'Discord bot'
+                  : pathname === '/admin'
+                    ? 'Dashboard'
+                    : 'Admin'
 
   return (
     <TooltipProvider>
@@ -134,6 +157,9 @@ export default function AdminLayout() {
             ) : null}
             {showBotNav ? (
               <NavGroup label="Discord bot" items={BOT_NAV} pathname={pathname} />
+            ) : null}
+            {showDevNav ? (
+              <NavGroup label="Developer" items={DEV_NAV} pathname={pathname} />
             ) : null}
           </SidebarContent>
           <SidebarFooter>
@@ -163,16 +189,24 @@ export default function AdminLayout() {
               <h1 className="text-sm font-semibold">{pageTitle}</h1>
               <span
                 className={cn(
-                  'hidden items-center gap-1.5 rounded-full border border-emerald-500/30',
-                  'bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 sm:inline-flex',
+                  'hidden items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider sm:inline-flex',
+                  isPreview
+                    ? 'border-amber-500/35 bg-amber-500/10 text-amber-300'
+                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
                 )}
               >
-                <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Live
+                <span
+                  className={cn(
+                    'size-1.5 rounded-full',
+                    isPreview ? 'bg-amber-400' : 'animate-pulse bg-emerald-400',
+                  )}
+                />
+                {isPreview ? 'Preview' : 'Live'}
               </span>
             </div>
           </header>
           <div className="admin-shell-content flex flex-1 flex-col gap-4">
+            <AdminPreviewBanner />
             <Outlet />
           </div>
         </SidebarInset>

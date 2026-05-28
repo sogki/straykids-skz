@@ -1,5 +1,13 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import AdminSwitch from '@/components/admin/AdminSwitch'
+import {
+  adminCollapsible,
+  adminCollapsibleActions,
+  adminCollapsibleBody,
+  adminCollapsibleHead,
+  adminCollapsibleTrigger,
+} from '@/components/admin/adminUi'
 
 export default function CollapsibleSection({
   title,
@@ -8,6 +16,8 @@ export default function CollapsibleSection({
   defaultOpen = true,
   open,
   onOpenChange,
+  actions = null,
+  switch: headerSwitch = null,
   children,
 }) {
   const isControlled = open !== undefined
@@ -20,30 +30,51 @@ export default function CollapsibleSection({
   }
 
   return (
-    <div className="overflow-visible rounded-xl border border-zinc-800/90 bg-[#18181b]">
-      <button
-        type="button"
-        onClick={toggle}
-        className="flex w-full items-center gap-3 px-5 py-4 text-left hover:bg-[#1c1c20]"
-      >
-        <ChevronDown
-          className={`size-5 shrink-0 text-zinc-500 transition-transform ${isOpen ? '' : '-rotate-90'}`}
-        />
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2">
-            <span className="font-semibold text-zinc-100">{title}</span>
-            {badge != null && (
-              <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-400">
-                {badge}
-              </span>
+    <div className={adminCollapsible}>
+      <div className={adminCollapsibleHead}>
+        <button type="button" onClick={toggle} className={adminCollapsibleTrigger}>
+          <ChevronDown
+            className={`size-5 shrink-0 text-zinc-500 transition-transform ${isOpen ? '' : '-rotate-90'}`}
+          />
+          <span className="min-w-0 flex-1">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold text-zinc-100">{title}</span>
+              {badge != null && (
+                <span className="rounded-md bg-zinc-800/80 px-2 py-0.5 text-xs font-medium text-zinc-400">
+                  {badge}
+                </span>
+              )}
+            </span>
+            {subtitle && (
+              <span className="mt-0.5 block text-sm text-zinc-500">{subtitle}</span>
             )}
           </span>
-          {subtitle && (
-            <span className="mt-0.5 block text-sm text-zinc-500">{subtitle}</span>
-          )}
-        </span>
-      </button>
-      {isOpen && <div className="border-t border-zinc-800/80 px-5 pb-5 pt-4">{children}</div>}
+        </button>
+        {headerSwitch ? (
+          <div
+            className="admin-collapsible__switch"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <AdminSwitch
+              checked={headerSwitch.checked}
+              onChange={headerSwitch.onChange}
+              disabled={headerSwitch.disabled}
+              aria-label={headerSwitch.ariaLabel || title}
+            />
+          </div>
+        ) : null}
+        {actions ? (
+          <div
+            className={adminCollapsibleActions}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {actions}
+          </div>
+        ) : null}
+      </div>
+      {isOpen && <div className={adminCollapsibleBody}>{children}</div>}
     </div>
   )
 }

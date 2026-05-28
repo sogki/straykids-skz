@@ -4,6 +4,7 @@ import {
   bootstrapAdminSession,
   getStoredAdminAccess,
 } from '@/services/skzAdmin'
+import { getEffectiveAdminAccess, isRealFullAdmin } from '@/services/adminPreview'
 
 export function AdminGuestRoute() {
   const access = getStoredAdminAccess()
@@ -48,8 +49,16 @@ export function AdminProtectedRoute() {
 }
 
 export function AdminFullRoute() {
-  const access = getStoredAdminAccess()
+  const access = getEffectiveAdminAccess()
   if (access?.permission_level !== 'full_admin') {
+    return <Navigate to="/admin/bot" replace />
+  }
+  return <Outlet />
+}
+
+/** Developer tools — real full admin only (not while previewing another role). */
+export function AdminDeveloperRoute() {
+  if (!isRealFullAdmin()) {
     return <Navigate to="/admin/bot" replace />
   }
   return <Outlet />

@@ -27,6 +27,7 @@ import { syncDiscordCache } from './services/syncDiscordCache.js'
 import { startDailyQuestionPoller } from './services/dailyQuestionWorker.js'
 import { startRotatingPresence, stopRotatingPresence } from './services/rotatingPresence.js'
 import { startPlayerAuthHttpServer } from './http/server.js'
+import { registerDiscordCommands } from './services/registerDiscordCommands.js'
 
 // GuildMembers is a privileged intent — not requested here. Individual
 // member fetches via REST still work for role assignment. If you need
@@ -65,6 +66,12 @@ async function onReady() {
     )
     await syncDiscordCache(client)
     await processOutbox(client)
+    const cmdReg = await registerDiscordCommands()
+    console.log(
+      `[skz-bot] slash commands registered — global: ${cmdReg.global.join(', ')}${
+        cmdReg.guild ? `; guild (${cmdReg.guildId}): ${cmdReg.guild.join(', ')}` : ''
+      }`,
+    )
   } catch (err) {
     console.error('[skz-bot] post-login setup failed:', err)
   }

@@ -12,6 +12,16 @@ import {
   mergeModLogEmbedForEditor,
 } from '@/services/skzAdminBot'
 import {
+  adminCalloutInfo,
+  adminControl,
+  adminControlTextarea,
+  adminDividerSection,
+  adminField,
+  adminFieldHint,
+  adminFieldLabel,
+  adminInset,
+} from '@/components/admin/adminUi'
+import {
   MOD_LOG_MEMBER_PLACEHOLDERS,
   MOD_LOG_MESSAGE_PLACEHOLDERS,
   MOD_LOG_PREVIEW_MEMBER,
@@ -37,18 +47,16 @@ const PLACEHOLDERS_BY_TEMPLATE = {
 
 function Field({ label, value, onChange, placeholder, hint }) {
   return (
-    <label className="block space-y-1.5">
-      <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-        {label}
-      </span>
+    <label className={adminField}>
+      <span className={adminFieldLabel}>{label}</span>
       <input
         type="text"
-        className="h-10 w-full rounded-xl border border-zinc-700/80 bg-[#0d0d11] px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20"
+        className={adminControl}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
       />
-      {hint ? <span className="block text-xs text-zinc-500">{hint}</span> : null}
+      {hint ? <span className={adminFieldHint}>{hint}</span> : null}
     </label>
   )
 }
@@ -112,7 +120,7 @@ export default function ModLogEmbedEditor({ templateId, embed, onChange, onReset
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0 space-y-4">
-        <p className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-3 py-2 text-xs text-violet-200/90">
+        <p className={`${adminCalloutInfo} text-xs`}>
           The preview substitutes sample data for <code className="text-violet-300">{'{placeholders}'}</code>.
           Fields below are what you edit — they are saved exactly as written.
         </p>
@@ -145,13 +153,11 @@ export default function ModLogEmbedEditor({ templateId, embed, onChange, onReset
               placeholder="{event_title}"
               hint='Use {event_title} for "Member joined", "Message deleted", etc.'
             />
-            <label className="block space-y-1.5">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Description
-              </span>
+            <label className={adminField}>
+              <span className={adminFieldLabel}>Description</span>
               <textarea
                 rows={3}
-                className="w-full resize-y rounded-xl border border-zinc-700/80 bg-[#0d0d11] px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-violet-500/70 focus:ring-2 focus:ring-violet-500/20"
+                className={adminControlTextarea}
                 value={baseEmbed.description ?? ''}
                 onChange={(e) => setEmbed('description', e.target.value)}
                 placeholder="Optional — most templates use fields instead"
@@ -161,7 +167,7 @@ export default function ModLogEmbedEditor({ templateId, embed, onChange, onReset
               value={baseEmbed.color ?? EMPTY_EMBED.color}
               onChange={(hex) => setEmbed('color', hexColorToInt(hex))}
             />
-            <div className="rounded-xl border border-zinc-800/80 bg-[#0d0d11] px-3 py-2">
+            <div className={adminInset}>
               <p className="text-[11px] font-medium text-zinc-500">Placeholders</p>
               <ul className="mt-1 max-h-40 space-y-0.5 overflow-y-auto text-[11px] text-zinc-600">
                 {placeholders.map((p) => (
@@ -172,10 +178,8 @@ export default function ModLogEmbedEditor({ templateId, embed, onChange, onReset
               </ul>
             </div>
 
-            <div className="space-y-2 border-t border-zinc-800/80 pt-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Embed fields
-              </span>
+            <div className={`${adminDividerSection} space-y-2`}>
+              <span className={adminFieldLabel}>Embed fields</span>
               <p className="text-xs text-zinc-500">
                 Rows map to the preview body — edit name, value, and inline per row.
               </p>
@@ -199,7 +203,7 @@ export default function ModLogEmbedEditor({ templateId, embed, onChange, onReset
               Thumbnail, footer, image, and title link
             </button>
             {showAdvanced && (
-              <div className="space-y-4 rounded-xl border border-zinc-800/80 bg-[#0d0d11] p-4">
+              <div className={`${adminInset} space-y-4 p-4`}>
                 <Field
                   label="Title link"
                   value={baseEmbed.url}

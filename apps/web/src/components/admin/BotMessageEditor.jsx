@@ -21,6 +21,15 @@ import {
   resolvePlaceholders,
 } from '@skz/shared'
 import { DISCORD_MESSAGE_PREVIEW_WIDTH } from '@/components/admin/discordPreviewConstants'
+import {
+  adminAddDashed,
+  adminControl,
+  adminControlTextarea,
+  adminDividerSection,
+  adminInset,
+  adminPreviewPanel,
+  adminToolbarSticky,
+} from '@/components/admin/adminUi'
 
 const MAX_ROLES = 20
 
@@ -391,7 +400,7 @@ export default function BotMessageEditor({
   return (
     <div className="mx-auto max-w-6xl space-y-4">
       {/* Sticky top bar */}
-      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800/90 bg-[#111113]/95 px-4 py-3 backdrop-blur-md">
+      <div className={adminToolbarSticky}>
         <div className="flex min-w-0 items-center gap-2">
           <Pencil className="size-4 shrink-0 text-zinc-500" />
           <input
@@ -475,7 +484,7 @@ export default function BotMessageEditor({
             <span className="text-xs font-medium text-zinc-500">Description</span>
             <textarea
               rows={4}
-              className="w-full resize-y rounded-lg bg-[#0c0c0e] px-3 py-2.5 text-sm leading-relaxed text-zinc-100 ring-1 ring-zinc-800 outline-none focus:ring-violet-500/50"
+              className={`${adminControlTextarea} leading-relaxed`}
               value={draft.embed.description || ''}
               onChange={(e) => setEmbed('description', e.target.value)}
               placeholder="React below to get access…"
@@ -485,7 +494,7 @@ export default function BotMessageEditor({
               {EMBED_PLACEHOLDERS.map((p) => p.token).join(', ')}
             </span>
           </label>
-          <div className="rounded-lg bg-[#0c0c0e] px-3 py-2 ring-1 ring-zinc-800">
+          <div className={adminInset}>
             <p className="text-[11px] font-medium text-zinc-500">Placeholders</p>
             <ul className="mt-1 space-y-0.5 text-[11px] text-zinc-600">
               {EMBED_PLACEHOLDERS.map((p) => (
@@ -516,7 +525,7 @@ export default function BotMessageEditor({
           </button>
 
           {showAdvancedEmbed && (
-            <div className="space-y-4 rounded-xl bg-[#0c0c0e] p-4 ring-1 ring-zinc-800">
+            <div className={`${adminInset} space-y-4 p-4`}>
               <Field
                 label="Title link"
                 value={draft.embed.url || ''}
@@ -567,7 +576,7 @@ export default function BotMessageEditor({
                 />
               </div>
 
-              <div className="space-y-2 border-t border-zinc-800 pt-4">
+              <div className={`${adminDividerSection} space-y-2`}>
                 <span className="text-xs font-medium text-zinc-500">Fields</span>
                 <EmbedFieldsEditor
                   fields={draft.embed.fields || []}
@@ -614,7 +623,7 @@ export default function BotMessageEditor({
           <div className="space-y-2">
             {draftRoles.map((role) => (
               <div key={role.localId}>
-                <div className="flex items-center gap-2 rounded-xl bg-[#0c0c0e] p-2 ring-1 ring-zinc-800">
+                <div className={`${adminInset} flex items-center gap-2 p-2`}>
                   {useEmoji && (
                     <EmojiPickerField
                       value={role.emoji}
@@ -664,7 +673,7 @@ export default function BotMessageEditor({
                 </div>
 
                 {useButtons && editingLocalId === role.localId && (
-                  <div className="mt-2 rounded-xl bg-[#0c0c0e] p-4 ring-1 ring-zinc-800">
+                  <div className={`mt-2 ${adminInset} p-4`}>
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
                       Button editor
                     </p>
@@ -687,7 +696,7 @@ export default function BotMessageEditor({
                             patchRole(role.localId, { label: e.target.value })
                           }
                           placeholder='e.g. "Blue"'
-                          className="h-10 w-full rounded-lg bg-[#18181b] px-3 text-sm ring-1 ring-zinc-800"
+                          className={adminControl}
                         />
                       </label>
                     </div>
@@ -724,7 +733,7 @@ export default function BotMessageEditor({
                 type="button"
                 onClick={addReaction}
                 disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-700 py-3 text-sm text-zinc-500 transition-colors hover:border-zinc-600 hover:bg-[#0c0c0e] hover:text-zinc-300"
+                className={adminAddDashed}
               >
                 <Plus className="size-4" />
                 Add new reaction
@@ -816,7 +825,7 @@ export default function BotMessageEditor({
         {/* Live preview — card hugs Discord message width */}
         <div className="w-fit max-w-full shrink-0 lg:sticky lg:top-[4.5rem]">
           <div
-            className="rounded-xl border border-zinc-800/90 bg-[#18181b] p-4"
+            className={adminPreviewPanel}
             style={{ width: DISCORD_MESSAGE_PREVIEW_WIDTH + 32, maxWidth: '100%' }}
           >
             <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">

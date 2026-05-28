@@ -81,7 +81,7 @@ export default function EmbedColorPicker({ value, onChange, label = 'Accent colo
         <div
           role="dialog"
           aria-label={label}
-          className="absolute left-0 top-full z-50 mt-2 w-60 rounded-xl border border-zinc-800 bg-[#18181b] p-3 shadow-xl shadow-black/40"
+          className="admin-dropdown absolute left-0 top-full z-50 mt-2 w-60 p-3"
         >
           <HexColorPicker
             color={hex}

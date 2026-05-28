@@ -1,4 +1,5 @@
 import { ChevronRight, LayoutTemplate, Megaphone, Palette, ShieldCheck } from 'lucide-react'
+import { adminHubCard, adminPanel } from '@/components/admin/adminUi'
 
 const TEMPLATES = [
   {
@@ -71,7 +72,7 @@ export { TEMPLATES }
 
 export default function PanelTemplatePicker({ onSelect }) {
   return (
-    <div className="rounded-2xl border border-zinc-800/80 bg-[#121214] p-6 sm:p-8">
+    <div className={adminPanel}>
       <div className="mb-8">
         <h3 className="text-xl font-bold tracking-tight text-white">Reaction panels</h3>
         <p className="mt-1 text-sm text-zinc-500">
@@ -87,12 +88,7 @@ export default function PanelTemplatePicker({ onSelect }) {
         {TEMPLATES.map((t) => {
           const Icon = t.icon
           return (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => onSelect(t)}
-              className="group flex items-start gap-4 rounded-xl border border-zinc-800/80 bg-[#18181b] p-4 text-left transition-all hover:border-zinc-700 hover:bg-[#1c1c20]"
-            >
+            <button key={t.id} type="button" onClick={() => onSelect(t)} className={`group ${adminHubCard}`}>
               <span
                 className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${t.iconBg}`}
               >

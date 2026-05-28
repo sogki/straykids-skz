@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import SiteBannerView from '@/components/banner/SiteBannerView'
+import AdminCheckbox from '@/components/admin/AdminCheckbox'
+import AdminSelect from '@/components/admin/AdminSelect'
 import BannerIconPicker from '@/components/admin/BannerIconPicker'
 import BannerMarkdownToolbar from '@/components/admin/BannerMarkdownToolbar'
 import { SITE_INTERNAL_LINKS } from '@/data/siteLinks'
@@ -119,14 +121,12 @@ export default function BannerEditor({ onSaved }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <label className="admin-toggle">
-              <input
-                type="checkbox"
-                checked={form.enabled}
-                onChange={(e) => patch({ enabled: e.target.checked })}
-              />
+            <AdminCheckbox
+              checked={form.enabled}
+              onChange={(next) => patch({ enabled: next })}
+            >
               Banner enabled
-            </label>
+            </AdminCheckbox>
 
             <div className="space-y-2">
               <Label htmlFor="banner-message">Message</Label>
@@ -165,9 +165,8 @@ export default function BannerEditor({ onSaved }) {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="banner-link-internal">Internal page</Label>
-              <select
+              <AdminSelect
                 id="banner-link-internal"
-                className="admin-select"
                 value=""
                 onChange={(e) => {
                   if (e.target.value) patch({ link: e.target.value })
@@ -179,7 +178,7 @@ export default function BannerEditor({ onSaved }) {
                     {item.label}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </div>
 
             <div className="space-y-2">
@@ -214,21 +213,18 @@ export default function BannerEditor({ onSaved }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <label className="admin-toggle">
-              <input
-                type="checkbox"
-                checked={form.useCustomColors}
-                onChange={(e) => patch({ useCustomColors: e.target.checked })}
-              />
+            <AdminCheckbox
+              checked={form.useCustomColors}
+              onChange={(next) => patch({ useCustomColors: next })}
+            >
               Custom colours
-            </label>
+            </AdminCheckbox>
 
             {!form.useCustomColors ? (
               <div className="space-y-2">
                 <Label htmlFor="banner-variant">Preset</Label>
-                <select
+                <AdminSelect
                   id="banner-variant"
-                  className="admin-select"
                   value={form.variant}
                   onChange={(e) => patch({ variant: e.target.value })}
                 >
@@ -237,7 +233,7 @@ export default function BannerEditor({ onSaved }) {
                       {v.label}
                     </option>
                   ))}
-                </select>
+                </AdminSelect>
               </div>
             ) : (
               <div className="admin-color-row">

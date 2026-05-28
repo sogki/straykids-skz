@@ -40,7 +40,7 @@ export default function AdminOverview() {
     <div className="max-w-6xl">
       <header className="admin-page-header">
         <h1>Analytics</h1>
-        <p>Traffic and game activity from your Supabase analytics table.</p>
+        <p>Traffic and game activity from site analytics.</p>
       </header>
       <Dashboard13
         analytics={analytics}

@@ -4,6 +4,7 @@
 export default function AdminSwitch({
   checked,
   onChange,
+  disabled = false,
   'aria-label': ariaLabel,
   title,
   size = 'default',
@@ -18,6 +19,7 @@ export default function AdminSwitch({
       aria-checked={checked}
       aria-label={ariaLabel}
       title={title}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative shrink-0 rounded-full transition-colors ${
         compact ? 'h-5 w-9' : 'h-6 w-11'

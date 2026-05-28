@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, Trash2 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  adminCalloutInfo,
+  adminCalloutWarn,
+  adminControl,
+  adminList,
+  adminListRow,
+  adminPanel,
+} from '@/components/admin/adminUi'
 import LeaderboardGameSelect from '@/components/home/LeaderboardGameSelect'
 import {
   fetchExcludedCountries,
@@ -12,13 +19,7 @@ import {
 import { fetchPublicLeaderboard } from '@/services/skzLeaderboard'
 import { LEADERBOARD_GAMES } from '@/data/leaderboardGames'
 import { countryCodeToFlag, getCountryName } from '@/utils/country'
-
-const MANUAL_SQL = `-- Run in Supabase SQL Editor if admin buttons fail:
-INSERT INTO skz_analytics_excluded_countries (country_code, reason)
-VALUES ('GB', 'Staff / test traffic')
-ON CONFLICT (country_code) DO NOTHING;
-
-DELETE FROM skz_analytics_events WHERE country_code = 'GB';`
+import { ADMIN_SETUP_INCOMPLETE } from '@/components/admin/adminCopy'
 
 function isMigrationError(message) {
   if (!message) return false
@@ -192,32 +193,19 @@ export default function LeaderboardAdmin() {
         </p>
       </div>
 
-      {message && (
-        <p className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200">
-          {message}
+      {message && <p className={adminCalloutInfo}>{message}</p>}
+
+      {showSql && (
+        <p className={adminCalloutWarn}>
+          <span className="font-semibold">Setup required: </span>
+          {ADMIN_SETUP_INCOMPLETE}
         </p>
       )}
 
-      {showSql && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100">
-          <p className="mb-2 font-semibold">Database migration may be missing</p>
-          <p className="mb-2 text-amber-200/90">
-            Apply migrations{' '}
-            <code className="text-xs">20250525000007</code> and{' '}
-            <code className="text-xs">20250525000008</code> in Supabase, or run:
-          </p>
-          <pre className="overflow-x-auto rounded bg-black/40 p-3 text-xs text-zinc-300">
-            {MANUAL_SQL}
-          </pre>
-        </div>
-      )}
-
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-white/10 bg-[#111113]">
-          <CardHeader>
-            <CardTitle className="text-base">Exclude country</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className={adminPanel}>
+          <h3 className="text-base font-semibold text-zinc-100">Exclude country</h3>
+          <div className="mt-4">
             <form onSubmit={handleExclude} className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs text-zinc-500">
@@ -227,7 +215,7 @@ export default function LeaderboardAdmin() {
                   value={countryInput}
                   onChange={(e) => setCountryInput(e.target.value.toUpperCase())}
                   maxLength={2}
-                  className="h-9 w-full rounded-md border border-white/10 bg-black/40 px-3 font-mono text-sm uppercase"
+                  className={`${adminControl} font-mono uppercase`}
                   placeholder="GB"
                 />
               </div>
@@ -236,7 +224,7 @@ export default function LeaderboardAdmin() {
                 <input
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="h-9 w-full rounded-md border border-white/10 bg-black/40 px-3 text-sm"
+                  className={adminControl}
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -276,11 +264,11 @@ export default function LeaderboardAdmin() {
               ) : excluded.length === 0 ? (
                 <p className="text-sm text-zinc-500">None — all countries count.</p>
               ) : (
-                <ul className="space-y-2">
+                <ul className={adminList}>
                   {excluded.map((row) => (
                     <li
                       key={row.country_code}
-                      className="flex items-center justify-between rounded border border-white/10 bg-black/30 px-3 py-2 text-sm"
+                      className={`${adminListRow} justify-between text-sm`}
                     >
                       <span>
                         {countryCodeToFlag(row.country_code)}{' '}
@@ -302,14 +290,12 @@ export default function LeaderboardAdmin() {
                 </ul>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-white/10 bg-[#111113]">
-          <CardHeader>
-            <CardTitle className="text-base">Leaderboard preview</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className={adminPanel}>
+          <h3 className="text-base font-semibold text-zinc-100">Leaderboard preview</h3>
+          <div className="mt-4">
             <p className="mb-2 text-xs text-zinc-500">Game</p>
             <LeaderboardGameSelect
               value={previewGame}
@@ -320,14 +306,14 @@ export default function LeaderboardAdmin() {
             {loading ? (
               <Loader2 size={18} className="animate-spin text-zinc-500" />
             ) : (
-              <ol className="space-y-2 text-sm">
+              <ol className={`${adminList} text-sm`}>
                 {(preview?.entries ?? []).length === 0 ? (
                   <li className="text-zinc-500">No ranked countries yet.</li>
                 ) : (
                   preview.entries.map((entry) => (
                     <li
                       key={entry.country_code}
-                      className="flex justify-between rounded border border-white/5 px-2 py-1.5"
+                      className={`${adminListRow} justify-between py-2`}
                     >
                       <span>
                         {countryCodeToFlag(entry.country_code)}{' '}
@@ -359,8 +345,8 @@ export default function LeaderboardAdmin() {
                 Reset leaderboard (all games)
               </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
