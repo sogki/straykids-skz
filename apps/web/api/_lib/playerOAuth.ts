@@ -1,9 +1,10 @@
-/** @deprecated Prefer apps/web/api/_lib/playerOAuth.ts for Vercel deploys. */
+/**
+ * Vercel serverless handlers — import @skz/api source via relative path so the
+ * bundler includes it (workspace package exports can fail at runtime on Vercel).
+ */
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { loadApiConfig } from './config.js'
-import { loadLocalEnv } from './loadEnv.js'
-
-loadLocalEnv()
+import { loadApiConfig } from '../../../api/src/config.js'
+import { loadLocalEnv } from '../../../api/src/loadEnv.js'
 import {
   handlePlayerDiscordAuthCallback,
   handlePlayerDiscordAuthStart,
@@ -11,7 +12,12 @@ import {
   parseCookieHeader,
   playerAuthSetCookieHeaders,
   type PlayerAuthResult,
-} from './playerAuthHandlers.js'
+} from '../../../api/src/playerAuthHandlers.js'
+
+loadLocalEnv()
+
+const VERCEL_SETUP_HINT =
+  'Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the Vercel project (Settings → Environment Variables), then redeploy. Same values as apps/bot/.env locally.'
 
 function sendVercelPlayerAuthResult(res: VercelResponse, result: PlayerAuthResult) {
   if ('body' in result) {
@@ -21,6 +27,17 @@ function sendVercelPlayerAuthResult(res: VercelResponse, result: PlayerAuthResul
   const cookies = playerAuthSetCookieHeaders(result)
   if (cookies.length) res.setHeader('Set-Cookie', cookies)
   res.redirect(result.status, result.location)
+}
+
+function sendConfigError(res: VercelResponse, err: unknown) {
+  const message = err instanceof Error ? err.message : 'OAuth is not configured'
+  console.error('[skz-api] oauth:', err)
+  res.status(500).json({
+    error: message,
+    hint: message.includes('Supabase') || message.includes('discord_')
+      ? VERCEL_SETUP_HINT
+      : undefined,
+  })
 }
 
 export async function vercelPlayerDiscordAuth(req: VercelRequest, res: VercelResponse) {
@@ -34,10 +51,7 @@ export async function vercelPlayerDiscordAuth(req: VercelRequest, res: VercelRes
     const result = await handlePlayerDiscordAuthStart(config, returnTo)
     sendVercelPlayerAuthResult(res, result)
   } catch (err) {
-    console.error('[skz-api] oauth start:', err)
-    res.status(500).json({
-      error: err instanceof Error ? err.message : 'OAuth is not configured',
-    })
+    sendConfigError(res, err)
   }
 }
 

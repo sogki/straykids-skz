@@ -68,10 +68,18 @@ For local testing, set **Site URL** in admin to `http://localhost:5173` (not pro
 
 The web app ships **serverless handlers** under `apps/web/api/player/` that reuse `@skz/api` OAuth logic. No separate API host is required.
 
-Set these in the **Vercel** project (same values as local `apps/api/.env` bootstrap, or rely on DB credentials in `skz_bot_settings`):
+Set these in **Vercel → Project → Settings → Environment Variables** for **Production** (and Preview if you test there):
 
-- `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, **or**
-- `SKZ_BOOTSTRAP_SUPABASE_URL` + `SKZ_BOOTSTRAP_SUPABASE_SERVICE_ROLE_KEY` (reads Discord + Supabase keys from the DB)
+| Variable | Value |
+|----------|--------|
+| `SUPABASE_URL` | `https://xxxx.supabase.co` (from Supabase → Settings → API) |
+| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` secret (not the anon key) |
+
+Redeploy after saving. Without these, `/api/player/auth/discord` returns **500 FUNCTION_INVOCATION_FAILED**.
+
+Optional aliases: `SKZ_BOOTSTRAP_SUPABASE_URL` + `SKZ_BOOTSTRAP_SUPABASE_SERVICE_ROLE_KEY` (same values).
+
+Discord client id/secret and `site_url` are still read from **`skz_bot_settings`** once Supabase connects.
 
 Ensure **Site URL** and **Discord client secret** are set in Admin → Discord bot → Credentials.
 

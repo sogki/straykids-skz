@@ -1,1 +1,1 @@
-export { vercelPlayerDiscordCallback as default } from '@skz/api/vercel-player-auth'
+export { vercelPlayerDiscordCallback as default } from '../../../_lib/playerOAuth.js'

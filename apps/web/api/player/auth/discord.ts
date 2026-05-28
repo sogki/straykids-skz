@@ -1,1 +1,1 @@
-export { vercelPlayerDiscordAuth as default } from '@skz/api/vercel-player-auth'
+export { vercelPlayerDiscordAuth as default } from '../../_lib/playerOAuth.js'
