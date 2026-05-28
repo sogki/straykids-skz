@@ -1,15 +1,48 @@
-import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js'
+import {
+  Client,
+  Events,
+  GatewayIntentBits,
+  MessageFlags,
+  Partials,
+} from 'discord.js'
 import { config } from './config.js'
 import { commandMap } from './commands/index.js'
+import { reloadBotConfig } from './db/botConfig.js'
+import { registerReactionRoles } from './handlers/reactionRoles.js'
+import {
+  cleanupOrphanedTempChannels,
+  registerVoiceHub,
+} from './handlers/voiceHub.js'
 
 const client = new Client({
-  // Slash commands don't need privileged intents. Add more here if/when the
-  // bot needs to listen to messages, voice, etc.
-  intents: [GatewayIntentBits.Guilds],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMembers,
+  ],
+  // Partials let us receive reaction events on messages the bot didn't
+  // see at startup (i.e. older verify / reaction-role messages).
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 })
 
-client.once(Events.ClientReady, (ready) => {
+registerReactionRoles(client)
+registerVoiceHub(client)
+
+client.once(Events.ClientReady, async (ready) => {
   console.log(`[skz-bot] logged in as ${ready.user.tag}`)
+  try {
+    const cfg = await reloadBotConfig()
+    console.log(
+      `[skz-bot] config loaded: ${cfg.reactionRoles.filter((r) => r.isActive).length} active reaction roles, verify=${cfg.settings.verifyMessageId ? 'configured' : 'unset'}, join-to-create=${cfg.settings.joinToCreateChannelId ? 'configured' : 'unset'}`,
+    )
+  } catch (err) {
+    console.error(
+      '[skz-bot] initial config load failed — bot is online but features are disabled until /reload succeeds.',
+      err,
+    )
+  }
+  await cleanupOrphanedTempChannels(client)
 })
 
 client.on(Events.InteractionCreate, async (interaction) => {
