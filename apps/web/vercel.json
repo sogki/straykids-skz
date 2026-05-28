@@ -1,4 +1,12 @@
 {
+  "functions": {
+    "api/player/auth/**/*.ts": {
+      "includeFiles": "node_modules/@skz/api/src/**"
+    },
+    "api/_lib/**/*.ts": {
+      "includeFiles": "node_modules/@skz/api/src/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/jype-image/:path*",

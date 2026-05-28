@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
+    "./config": "./src/config.ts",
+    "./player-auth-handlers": "./src/playerAuthHandlers.ts",
     "./vercel-player-auth": "./src/vercelPlayerAuth.ts"
   },
   "scripts": {

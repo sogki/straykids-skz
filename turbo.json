@@ -5,7 +5,18 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", ".vercel/output/**"],
-      "env": ["NODE_ENV", "VITE_*"]
+      "env": [
+        "NODE_ENV",
+        "VITE_*",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SKZ_BOOTSTRAP_*",
+        "DISCORD_*",
+        "SITE_URL"
+      ]
+    },
+    "@skz/api#build": {
+      "outputs": []
     },
     "dev": {
       "cache": false,

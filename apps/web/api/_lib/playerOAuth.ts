@@ -1,10 +1,8 @@
 /**
- * Vercel serverless handlers — import @skz/api source via relative path so the
- * bundler includes it (workspace package exports can fail at runtime on Vercel).
+ * Vercel serverless OAuth — imports @skz/api from node_modules (workspace package).
  */
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { loadApiConfig } from '../../../api/src/config.js'
-import { loadLocalEnv } from '../../../api/src/loadEnv.js'
+import { loadApiConfig } from '@skz/api/config'
 import {
   handlePlayerDiscordAuthCallback,
   handlePlayerDiscordAuthStart,
@@ -12,12 +10,10 @@ import {
   parseCookieHeader,
   playerAuthSetCookieHeaders,
   type PlayerAuthResult,
-} from '../../../api/src/playerAuthHandlers.js'
-
-loadLocalEnv()
+} from '@skz/api/player-auth-handlers'
 
 const VERCEL_SETUP_HINT =
-  'Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the Vercel project (Settings → Environment Variables), then redeploy. Same values as apps/bot/.env locally.'
+  'In Vercel → Settings → Environment Variables, set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (spelling: ROLE not ROLEY), then redeploy.'
 
 function sendVercelPlayerAuthResult(res: VercelResponse, result: PlayerAuthResult) {
   if ('body' in result) {
@@ -34,9 +30,7 @@ function sendConfigError(res: VercelResponse, err: unknown) {
   console.error('[skz-api] oauth:', err)
   res.status(500).json({
     error: message,
-    hint: message.includes('Supabase') || message.includes('discord_')
-      ? VERCEL_SETUP_HINT
-      : undefined,
+    hint: VERCEL_SETUP_HINT,
   })
 }
 

@@ -75,7 +75,11 @@ Set these in **Vercel → Project → Settings → Environment Variables** for *
 | `SUPABASE_URL` | `https://xxxx.supabase.co` (from Supabase → Settings → API) |
 | `SUPABASE_SERVICE_ROLE_KEY` | `service_role` secret (not the anon key) |
 
-Redeploy after saving. Without these, `/api/player/auth/discord` returns **500 FUNCTION_INVOCATION_FAILED**.
+**Common typo:** `SUPABASE_SERVICE_ROLEY_KEY` (extra **Y**) — Turbo/Vercel will warn and OAuth will crash. Delete the misspelled variable.
+
+Redeploy after saving. Smoke test: `GET /api/player/auth/debug` should return `{ ok: true, ... }`.
+
+Without correct env vars, `/api/player/auth/discord` returns **500 FUNCTION_INVOCATION_FAILED**.
 
 Optional aliases: `SKZ_BOOTSTRAP_SUPABASE_URL` + `SKZ_BOOTSTRAP_SUPABASE_SERVICE_ROLE_KEY` (same values).
 
