@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
+import { PlayerSessionProvider } from '@/context/PlayerSessionContext'
 import Footer from '@/components/Footer'
 import RouteDocumentMeta from '@/components/RouteDocumentMeta'
 import AppUpdateToast from '@/components/AppUpdateToast'
@@ -43,15 +44,17 @@ export default function Layout() {
   useScrollToTopOnRoute()
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <RouteDocumentMeta />
-      <Navbar />
-      <main className={isHome ? 'flex-1' : gameMainClass(pathname)}>
-        <Outlet />
-      </main>
-      <Footer />
-      <AppUpdateToast />
-      <SmallScreenWarning />
-    </div>
+    <PlayerSessionProvider>
+      <div className="flex min-h-screen flex-col">
+        <RouteDocumentMeta />
+        <Navbar />
+        <main className={isHome ? 'flex-1' : gameMainClass(pathname)}>
+          <Outlet />
+        </main>
+        <Footer />
+        <AppUpdateToast />
+        <SmallScreenWarning />
+      </div>
+    </PlayerSessionProvider>
   )
 }

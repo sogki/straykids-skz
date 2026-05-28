@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Loader2, Trophy, User } from 'lucide-react'
 import { fetchGlobalPlayerLeaderboard } from '@/services/skzPlayerLeaderboard'
 import { discordAvatarUrl, startPlayerDiscordOAuth } from '@/services/skzPlayerAuth'
-import { usePlayerSession } from '@/hooks/usePlayerSession'
+import { usePlayerSessionContext } from '@/context/PlayerSessionContext'
 import '@/styles/pattern-bar.css'
 
 function PlayerRow({ entry, maxPoints }) {
@@ -45,7 +45,7 @@ export default function PlayerLeaderboard({ embedded = false } = {}) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [connectError, setConnectError] = useState(null)
-  const { access, loading: sessionLoading } = usePlayerSession({ refreshStats: true })
+  const { access, loading: sessionLoading } = usePlayerSessionContext()
 
   const days = period === '30' ? 30 : null
 

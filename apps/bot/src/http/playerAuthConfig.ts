@@ -41,6 +41,9 @@ export async function loadPlayerAuthConfig(): Promise<PlayerAuthConfig> {
   const discordClientId = map.discord_client_id ?? ''
   let discordClientSecret = map.discord_client_secret ?? ''
   if (PLACEHOLDER.has(discordClientSecret)) discordClientSecret = ''
+  if (!discordClientSecret) {
+    discordClientSecret = String(process.env.DISCORD_CLIENT_SECRET ?? '').trim()
+  }
 
   if (!discordClientId) {
     throw new Error(
@@ -50,7 +53,7 @@ export async function loadPlayerAuthConfig(): Promise<PlayerAuthConfig> {
 
   if (!discordClientSecret) {
     throw new Error(
-      'discord_client_secret is missing. Add it in Admin → Discord bot → Credentials.',
+      'discord_client_secret is missing. In Admin → Discord bot → Credentials, paste the OAuth2 Client Secret from Discord Developer Portal → OAuth2, click Save settings, then /reload in Discord. Or set DISCORD_CLIENT_SECRET on Railway.',
     )
   }
 

@@ -12,14 +12,14 @@ import {
   signOutPlayer,
   startPlayerDiscordOAuth,
 } from '@/services/skzPlayerAuth'
-import { usePlayerSession } from '@/hooks/usePlayerSession'
+import { usePlayerSessionContext } from '@/context/PlayerSessionContext'
 
 export default function PlayerLink() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [error, setError] = useState(null)
   const [oauthBusy, setOauthBusy] = useState(false)
-  const { access, loading: bootLoading, reload } = usePlayerSession({ refreshStats: true })
+  const { access, loading: bootLoading, reload } = usePlayerSessionContext()
 
   useEffect(() => {
     document.title = 'Link Discord · SKZ Arcade'

@@ -277,3 +277,137 @@
 .navbar-mobile-link:hover {
   opacity: 0.85;
 }
+
+/* ─── Player account (Discord linked) ─── */
+.navbar-account {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.navbar-account__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 12rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-account__trigger {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-shell--scrolled .navbar-account__trigger {
+  color: #ececee;
+  text-shadow: none;
+}
+
+.navbar-account__trigger:hover,
+.navbar-account__trigger--open {
+  background: color-mix(in srgb, #fff 10%, transparent);
+}
+
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-account__trigger:hover,
+.navbar-shell:not(.navbar-shell--scrolled) .navbar-account__trigger--open {
+  background: color-mix(in srgb, #000 35%, transparent);
+}
+
+.navbar-account__avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  ring: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar-account__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-account__chevron {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 0.15s;
+}
+
+.navbar-account__trigger--open .navbar-account__chevron {
+  transform: rotate(180deg);
+}
+
+.navbar-account__dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 50;
+  min-width: 11rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #3a3a3c;
+  background: #272729;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
+}
+
+.navbar-account-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem;
+}
+
+.navbar-account-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  color: #f0f0f2;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.navbar-account-menu__item:hover {
+  background: #1a1a1b;
+}
+
+.navbar-account-menu__item--danger:hover {
+  color: #fca5a5;
+}
+
+.navbar-account--mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.navbar-account__mobile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-account__dropdown--mobile {
+  position: static;
+  width: 100%;
+}

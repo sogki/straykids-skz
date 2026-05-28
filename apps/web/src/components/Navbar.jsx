@@ -34,6 +34,11 @@ import {
 } from '@/components/ui/sheet'
 import SiteLogo from '@/components/SiteLogo'
 import SiteBanner from '@/components/SiteBanner'
+import {
+  NavbarPlayerAccountDesktop,
+  NavbarPlayerAccountMobile,
+  NavbarPlayerSessionSync,
+} from '@/components/NavbarPlayerAccount'
 import { cn } from '@/lib/utils'
 import '@/styles/SiteChrome.css'
 import '@/styles/Navbar.css'
@@ -249,6 +254,7 @@ export default function Navbar() {
 
   return (
     <>
+      <NavbarPlayerSessionSync />
       <header
         ref={chromeRef}
         className={cn('site-chrome', isHome && 'site-chrome--overlay')}
@@ -284,6 +290,7 @@ export default function Navbar() {
                   games={games}
                   className="navbar-cta-play"
                 />
+                <NavbarPlayerAccountDesktop />
               </div>
             </div>
 
@@ -337,6 +344,9 @@ export default function Navbar() {
                         {NAV_DISCORD.title}
                       </a>
                     </div>
+                    <NavbarPlayerAccountMobile
+                      onClose={() => setMobileOpen(false)}
+                    />
                     <PlayRandomButton
                       games={games}
                       mobile
