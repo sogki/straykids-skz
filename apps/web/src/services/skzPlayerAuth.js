@@ -16,14 +16,28 @@ export async function startPlayerDiscordOAuth(returnPath = '/link') {
   const path = returnPath.startsWith('/') ? returnPath : '/link'
   const url = `/api/player/auth/discord?return_to=${encodeURIComponent(path)}`
 
+  let health
   try {
-    const health = await fetch('/api/player/health', { method: 'GET' })
-    if (!health.ok) throw new Error('unavailable')
+    health = await fetch('/api/player/health', { method: 'GET' })
   } catch {
-    const hint = import.meta.env.DEV
-      ? 'Player sign-in runs on the Discord bot HTTP server. Run: npm run dev:bot (port 8787) or npm run dev:arcade from the repo root.'
-      : 'Player sign-in is temporarily unavailable. Check the bot is running on Railway and SKZ_BOT_HTTP_ORIGIN is set on Vercel.'
-    throw new Error(hint)
+    throw new Error(
+      import.meta.env.DEV
+        ? 'Could not reach /api/player/health. Run npm run dev:bot (port 8787) while the web app is running.'
+        : 'Could not reach /api/player/health on the site. Try again or check Vercel function logs.',
+    )
+  }
+
+  if (!health.ok) {
+    let detail = `Sign-in unavailable (HTTP ${health.status}).`
+    try {
+      const body = await health.json()
+      if (body.error) detail = body.error
+      if (body.fix) detail += ` ${body.fix}`
+      else if (body.hint) detail += ` ${body.hint}`
+    } catch {
+      /* ignore */
+    }
+    throw new Error(detail)
   }
 
   window.location.assign(url)
