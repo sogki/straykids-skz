@@ -14,7 +14,6 @@ export const DEFAULT_WELCOME_GOODBYE_EMBEDS: Record<'welcome' | 'goodbye', ModLo
     fields: [
       { name: 'Member', value: '{tag}', inline: true },
       { name: 'Member #', value: '{member_count}', inline: true },
-      { name: 'Account created', value: '{account_created}', inline: false },
     ],
   },
   goodbye: {
