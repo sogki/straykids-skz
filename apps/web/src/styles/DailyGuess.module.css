@@ -131,6 +131,13 @@
   background: color-mix(in srgb, var(--game-accent, #a855f7) 10%, var(--bg));
 }
 
+.vibeQuestion {
+  margin: -0.35rem 0 1rem;
+  font-size: 0.95rem;
+  color: var(--text-muted, #a1a1aa);
+  text-align: center;
+}
+
 /* Centered clue stage */
 .clueStage {
   margin: 0 0 1.25rem;

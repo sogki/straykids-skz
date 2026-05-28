@@ -5,7 +5,9 @@ import styles from '../styles/DailyGuess.module.css'
  */
 export default function HintPanel({ ladder, variant = 'stage' }) {
   const unlocked = ladder.filter((h) => h.unlocked)
-  const active = unlocked[unlocked.length - 1]
+  const active =
+    [...unlocked].reverse().find((h) => h.type !== 'prompt') ??
+    unlocked[unlocked.length - 1]
   const lockedCount = ladder.length - unlocked.length
 
   return (

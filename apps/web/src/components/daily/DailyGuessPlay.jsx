@@ -35,6 +35,9 @@ export default function DailyGuessPlay({
       {questionBadge && (
         <p className={styles.questionBadge}>{questionBadge}</p>
       )}
+      {puzzle?.questionType === 'vibe' && puzzle.prompt && (
+        <p className={styles.vibeQuestion}>{puzzle.prompt}</p>
+      )}
 
       <div className={styles.topBar}>
         <div className={styles.triesBlock}>

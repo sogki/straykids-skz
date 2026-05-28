@@ -19,7 +19,9 @@ function q({
     displayAnswer,
     answers,
     reveals: [
-      { type: 'prompt', label: 'Question', content: prompt },
+      ...(questionType === 'vibe'
+        ? []
+        : [{ type: 'prompt', label: 'Question', content: prompt }]),
       ...reveals,
     ],
   }
