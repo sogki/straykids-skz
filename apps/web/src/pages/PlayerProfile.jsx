@@ -163,7 +163,7 @@ export default function PlayerProfile() {
                 Connection
               </CardTitle>
               <CardDescription className="text-zinc-400">
-                Linked for the global player leaderboard. Same account on web and Discord bot.
+                Linked for the global player leaderboard.
               </CardDescription>
             </CardHeader>
             <CardContent>
