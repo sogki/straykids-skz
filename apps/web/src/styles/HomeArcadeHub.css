@@ -396,6 +396,29 @@
   color: var(--color-skz-muted, #818384);
 }
 
+.stay-board__filter {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-skz-border, #3a3a3c);
+}
+
+.stay-board__filter-label {
+  display: block;
+  margin: 0 0 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-skz-muted, #818384);
+}
+
+.stay-board__filter-hint {
+  margin: 0.55rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--color-skz-muted, #818384);
+}
+
 .stay-board__picker {
   position: relative;
   z-index: 1;

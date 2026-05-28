@@ -1044,13 +1044,21 @@ export default function BotAdmin() {
           <div className="mb-6">
             <h3 className="text-xl font-bold tracking-tight text-white">Credentials</h3>
             <p className="mt-1 text-sm text-zinc-500">
-              The bot reads these from{' '}
-              <code className="rounded bg-zinc-800 px-1 text-xs">skz_bot_settings</code>{' '}
-              on every start and /reload — not from Railway env or{' '}
-              <code className="rounded bg-zinc-800 px-1 text-xs">apps/bot/.env</code>.
+              Stored in{' '}
+              <code className="rounded bg-zinc-800 px-1 text-xs">skz_bot_settings</code>. The bot
+              and player OAuth API read from here — not Railway env files.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <Field
+                label="Site URL"
+                hint="Public origin with no trailing slash. Player OAuth redirects use {site_url}/api/player/auth/discord/callback — add that URL in Discord → OAuth2 → Redirects."
+                value={draft.site_url ?? ''}
+                onChange={(v) => setDraft((p) => ({ ...p, site_url: v.replace(/\/$/, '') }))}
+                placeholder="https://skzarcade.com"
+              />
+            </div>
             <SecretField
               label="Discord bot token"
               value={draft.discord_token}
@@ -1069,6 +1077,16 @@ export default function BotAdmin() {
                 draft.discord_client_id === SECRET_PLACEHOLDER
                   ? '•••••••• (saved)'
                   : 'Application ID'
+              }
+            />
+            <SecretField
+              label="Discord client secret"
+              value={draft.discord_client_secret}
+              onChange={(v) => setSecretField('discord_client_secret', v)}
+              placeholder={
+                draft.discord_client_secret === SECRET_PLACEHOLDER
+                  ? '•••••••• (saved — type to replace)'
+                  : 'OAuth2 client secret (player Continue with Discord)'
               }
             />
             <SecretField

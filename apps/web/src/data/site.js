@@ -1,18 +1,25 @@
 /** Site-wide links, branding, and copy (not stored in DB). */
 export const DISCORD_INVITE = 'https://discord.gg/dFhbmcHfcV'
-export const DISCORD_LABEL = 'Seungminiverse'
+export const DISCORD_LABEL = 'Stay Café'
 
-/** Canonical public origin (Open Graph, share links, copy). */
+/** Fallback origin when DB settings are not loaded yet (build / first paint). */
 export const SITE_ORIGIN = (
   import.meta.env.VITE_SITE_URL?.trim() || 'https://skzarcade.com'
 ).replace(/\/$/, '')
 
 export const SITE_NAME = 'SKZ Arcade'
 
-/** Build absolute URL for a path on skzarcade.com */
-export function absoluteSiteUrl(path = '/') {
+/** Prefer site_url from skz_bot_settings (via public config); else build-time fallback. */
+export function resolveSiteOrigin(settings) {
+  const fromDb = settings?.site_url?.trim()
+  if (fromDb) return fromDb.replace(/\/$/, '')
+  return SITE_ORIGIN
+}
+
+/** Build absolute URL for a path on the public site. */
+export function absoluteSiteUrl(path = '/', settings) {
   const normalized = path.startsWith('/') ? path : `/${path}`
-  return `${SITE_ORIGIN}${normalized}`
+  return `${resolveSiteOrigin(settings)}${normalized}`
 }
 
 /** Buy Me a Coffee — override with VITE_SUPPORT_URL if needed. */

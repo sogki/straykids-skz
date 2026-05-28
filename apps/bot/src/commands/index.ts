@@ -1,6 +1,7 @@
 import type { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { reloadCommand } from './reload.js'
 import { panelCommand } from './panel.js'
+import { leaderboardCommand } from './leaderboard.js'
 import { infoCommand } from './info.js'
 
 export interface SlashCommand {
@@ -17,11 +18,17 @@ export interface SlashCommand {
  * Add new commands here. They'll be auto-registered by `npm run register` and
  * auto-routed by the interaction handler in `src/index.ts`.
  */
-export const commands: SlashCommand[] = [
+/** Guild-scoped staff / mod commands (registered to configured guild). */
+export const guildCommands: SlashCommand[] = [
   reloadCommand,
   panelCommand,
   infoCommand,
 ]
+
+/** Global commands (DM + any server) — player leaderboard. */
+export const globalCommands: SlashCommand[] = [leaderboardCommand]
+
+export const commands: SlashCommand[] = [...guildCommands, ...globalCommands]
 
 export const commandMap = new Map<string, SlashCommand>(
   commands.map((c) => {

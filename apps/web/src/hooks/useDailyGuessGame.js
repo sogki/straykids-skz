@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMidnightCountdown } from '@/hooks/useMidnightCountdown'
+import { usePlayerDailyScoring } from '@/hooks/usePlayerDailyScoring'
 import {
   createInitialState,
   getHintLadder,
@@ -61,6 +62,8 @@ export function useDailyGuessGame({ pool, puzzle: puzzleProp, storageGame, track
     if (!puzzle || !state) return []
     return getHintLadder(puzzle, wrongCount, false)
   }, [puzzle, wrongCount, state])
+
+  usePlayerDailyScoring({ storageGame, puzzle, state, todayKey })
 
   function persist(next) {
     setState(next)

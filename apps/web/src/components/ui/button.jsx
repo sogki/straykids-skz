@@ -12,7 +12,7 @@ const buttonVariants = cva(
         outline:
           'border border-skz-border bg-skz-surface/50 text-skz-muted backdrop-blur-sm hover:border-skz-muted hover:text-white',
         ghost: 'text-skz-muted hover:bg-skz-surface hover:text-white',
-        discord: 'bg-[#5865F2] text-white hover:brightness-110',
+        discord: 'bg-[#5865F2] text-white hover:bg-[#4752C4] hover:text-white',
       },
       size: {
         default: 'h-10 px-5 py-2',
@@ -37,7 +37,7 @@ export function Button({
   const Comp = asChild ? Slot : 'button'
   return (
     <Comp
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   )

@@ -3,6 +3,7 @@ import { getSupabaseClient } from '../lib/supabase/client'
 export const SECRET_PLACEHOLDER = '__SECRET_SET__'
 
 const OPERATIONAL_KEYS = [
+  'site_url',
   'guild_id',
   'verify_channel_id',
   'verify_message_id',
@@ -32,6 +33,7 @@ const OPERATIONAL_KEYS = [
 const SECRET_KEYS = [
   'discord_token',
   'discord_client_id',
+  'discord_client_secret',
   'supabase_url',
   'supabase_service_role_key',
 ]
@@ -41,8 +43,10 @@ const ALL_SETTING_KEYS = [...SECRET_KEYS, ...OPERATIONAL_KEYS]
 export const SETTING_DEFAULTS = {
   discord_token: '',
   discord_client_id: '',
+  discord_client_secret: '',
   supabase_url: '',
   supabase_service_role_key: '',
+  site_url: 'https://skzarcade.com',
   guild_id: '',
   verify_channel_id: '',
   verify_message_id: '',

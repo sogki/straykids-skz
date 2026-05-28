@@ -35,6 +35,12 @@ Enable **Server Members Intent** and **Message Content Intent** in the [Discord 
 - `/reload` — reload DB config, sync channel/role dropdown cache, process deploy queue
 - `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
 
+**Global commands** (DM or any server):
+
+- `/leaderboard [days]` — top players by daily puzzle points
+
+Player sign-in uses **Discord OAuth** on the website (`Continue with Discord`), via `@skz/api` — not `/link` bot codes.
+
 ## Deploy queue
 
 Admin actions **Sync Discord dropdowns** and **Publish** write to `skz_bot_outbox`. The bot processes jobs immediately via Supabase Realtime (with a 2s poll fallback) and also on `/reload`.

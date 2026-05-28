@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
  * Compact game picker for the STAY board — matches arcade hub pill styling.
  */
 export default function LeaderboardGameSelect({
+  id,
   value,
   onChange,
   options,
@@ -47,6 +48,7 @@ export default function LeaderboardGameSelect({
       data-open={open || undefined}
     >
       <button
+        id={id}
         type="button"
         className="stay-board__picker-trigger"
         aria-haspopup="listbox"

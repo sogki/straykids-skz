@@ -5,6 +5,7 @@ import { resolveSkzAssetUrl } from '../lib/supabase/storage'
 
 const DEFAULTS = {
   hero_image_url: '',
+  site_url: '',
   site_title: 'SKZ Arcade',
   site_tagline: 'Daily puzzles and minigames for STAYs',
   site_logo_url: SITE_LOGOS.white,
@@ -17,17 +18,21 @@ const DEFAULTS = {
 export async function fetchPublicSettings() {
   try {
     const supabase = await getSupabaseClient()
-    const { data, error } = await supabase
-      .from('skz_settings')
-      .select('key, value, updated_at')
-      .eq('is_public', true)
+    const [{ data: rows, error }, { data: publicConfig, error: rpcError }] = await Promise.all([
+      supabase.from('skz_settings').select('key, value, updated_at').eq('is_public', true),
+      supabase.rpc('skz_get_public_config'),
+    ])
 
     if (error) throw error
+    if (rpcError) throw rpcError
 
-    const config = { ...DEFAULTS }
+    const config = {
+      ...DEFAULTS,
+      ...(publicConfig && typeof publicConfig === 'object' ? publicConfig : {}),
+    }
     let latestUpdate = 0
 
-    for (const row of data ?? []) {
+    for (const row of rows ?? []) {
       config[row.key] = row.value
       const t = new Date(row.updated_at).getTime()
       if (t > latestUpdate) latestUpdate = t

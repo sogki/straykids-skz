@@ -13,6 +13,7 @@ import { useSkzData } from '../context/SkzDataContext'
 import { getDailyPuzzle } from '../services/skzDaily'
 import { absoluteSiteUrl } from '@/data/site'
 import { useMidnightCountdown } from '@/hooks/useMidnightCountdown'
+import { usePlayerDailyScoring } from '@/hooks/usePlayerDailyScoring'
 import {
   getTodayKey,
   loadDailyState,
@@ -94,6 +95,8 @@ export default function GuessSong() {
   const lost = state?.status === 'lost'
   const gameOver = won || lost
   const triesLeft = maxGuesses - wrongCount
+
+  usePlayerDailyScoring({ storageGame: 'song', puzzle, state, todayKey })
 
   const hintLadder = useMemo(
     () =>

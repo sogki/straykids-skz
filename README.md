@@ -23,6 +23,9 @@ npm install
 # run the web app
 npm run dev:web        # http://localhost:5173
 
+# web + player Discord OAuth API (needed for "Connect with Discord")
+npm run dev:arcade     # web on :5173, API on :8787
+
 # run the bot (needs apps/bot/.env)
 npm run dev:bot
 

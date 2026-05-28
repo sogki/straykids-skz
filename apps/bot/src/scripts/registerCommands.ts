@@ -1,7 +1,8 @@
 /**
  * Registers slash commands with Discord.
  *
- * Reads discord_client_id, discord_token, and guild_id from skz_bot_settings.
+ * Guild commands: panel, reload, info (configured guild_id).
+ * Global commands: link (player arcade auth — works in DMs, any server).
  *
  * Run: npm run register --workspace=@skz/bot
  */
@@ -10,9 +11,15 @@ import { config as loadEnv } from 'dotenv'
 import { loadCredentialsFromDb } from '../db/credentials.js'
 import { reloadBotConfig } from '../db/botConfig.js'
 import { bootstrapSupabaseFromDb } from '../db/supabase.js'
-import { commands } from '../commands/index.js'
+import { globalCommands, guildCommands } from '../commands/index.js'
 
 loadEnv()
+
+function toJsonBody(list: typeof guildCommands) {
+  return list.map((c) =>
+    'toJSON' in c.data ? (c.data as { toJSON: () => unknown }).toJSON() : c.data,
+  )
+}
 
 async function main() {
   await bootstrapSupabaseFromDb()
@@ -26,23 +33,28 @@ async function main() {
   }
 
   const guildId = config.settings.guildId?.trim()
-
   const rest = new REST({ version: '10' }).setToken(creds.discordToken)
-  const body = commands.map((c) =>
-    'toJSON' in c.data ? (c.data as { toJSON: () => unknown }).toJSON() : c.data,
-  )
 
-  const route = guildId
-    ? Routes.applicationGuildCommands(creds.discordClientId, guildId)
-    : Routes.applicationCommands(creds.discordClientId)
-
+  await rest.put(Routes.applicationCommands(creds.discordClientId), {
+    body: toJsonBody(globalCommands),
+  })
   console.log(
-    `[skz-bot] registering ${commands.length} command(s) ${
-      guildId ? `to guild ${guildId} (from skz_bot_settings)` : 'globally'
-    }`,
+    `[skz-bot] registered ${globalCommands.length} global command(s): ${globalCommands.map((c) => (c.data as { name: string }).name).join(', ')}`,
   )
 
-  await rest.put(route, { body })
+  if (guildId) {
+    await rest.put(Routes.applicationGuildCommands(creds.discordClientId, guildId), {
+      body: toJsonBody(guildCommands),
+    })
+    console.log(
+      `[skz-bot] registered ${guildCommands.length} guild command(s) to ${guildId}: ${guildCommands.map((c) => (c.data as { name: string }).name).join(', ')}`,
+    )
+  } else {
+    console.warn(
+      '[skz-bot] guild_id not set — staff commands (panel, reload, info) were not registered. Set guild_id in bot settings.',
+    )
+  }
+
   console.log('[skz-bot] done.')
 }
 
