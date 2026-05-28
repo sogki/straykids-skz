@@ -23,8 +23,8 @@ npm install
 # run the web app
 npm run dev:web        # http://localhost:5173
 
-# web + player Discord OAuth API (needed for "Connect with Discord")
-npm run dev:arcade     # web on :5173, API on :8787
+# web + bot (player OAuth HTTP runs inside the bot on :8787)
+npm run dev:arcade     # web :5173 + bot :8787
 
 # run the bot (needs apps/bot/.env)
 npm run dev:bot
@@ -44,8 +44,8 @@ npm run build
 
 ## Deployment
 
-- **Web → Vercel**: set the project's *Root Directory* to `apps/web`. The build command stays as the default. Vercel auto-detects npm workspaces and hoists deps at the repo root.
-- **Bot → Railway**: set the project's *Root Directory* to `apps/bot`. Add env vars from `apps/bot/.env.example` in the Railway dashboard. See `apps/bot/README.md`.
+- **Web → Vercel**: root `apps/web`. Set `SKZ_BOT_HTTP_ORIGIN` to your Railway bot public URL so `/api/player/*` proxies to the bot.
+- **Bot → Railway**: root `apps/bot`. Bootstrap `SUPABASE_*` in Railway env; Discord OAuth + credentials live in `skz_bot_settings`. See `apps/bot/README.md`.
 
 ## Web app — Supabase setup
 

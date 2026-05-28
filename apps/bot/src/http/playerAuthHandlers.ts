@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import type { ApiConfig } from './config.js'
+import type { PlayerAuthConfig } from './playerAuthConfig.js'
 import {
   discordAuthorizeUrl,
   exchangeDiscordCode,
@@ -44,10 +44,7 @@ function randomState() {
 function errorRedirect(siteOrigin: string, message: string): PlayerAuthRedirect {
   const url = new URL('/link', siteOrigin)
   url.searchParams.set('error', message)
-  return {
-    status: 302,
-    location: url.toString(),
-  }
+  return { status: 302, location: url.toString() }
 }
 
 function oauthStateCookie(state: string, returnTo: string, secure: boolean): PlayerAuthCookie {
@@ -65,13 +62,11 @@ function oauthStateCookie(state: string, returnTo: string, secure: boolean): Pla
 }
 
 export async function handlePlayerDiscordAuthStart(
-  config: ApiConfig,
+  config: PlayerAuthConfig,
   returnToRaw: unknown,
 ): Promise<PlayerAuthResult> {
   const returnTo =
-    typeof returnToRaw === 'string' && returnToRaw.startsWith('/')
-      ? returnToRaw
-      : '/link'
+    typeof returnToRaw === 'string' && returnToRaw.startsWith('/') ? returnToRaw : '/link'
 
   const state = randomState()
   const authorizeUrl = discordAuthorizeUrl({
@@ -90,7 +85,7 @@ export async function handlePlayerDiscordAuthStart(
 }
 
 export async function handlePlayerDiscordAuthCallback(
-  config: ApiConfig,
+  config: PlayerAuthConfig,
   params: {
     error?: string | null
     code?: string
@@ -143,20 +138,16 @@ export async function handlePlayerDiscordAuthCallback(
     )
 
     if (rpcError || !session?.session_token) {
-      console.error('[skz-api] session rpc:', rpcError)
+      console.error('[skz-bot] player session rpc:', rpcError)
       return { ...errorRedirect(siteOrigin, 'session_failed'), clearCookies }
     }
 
     const dest = new URL(returnTo.startsWith('/') ? returnTo : '/link', siteOrigin)
     dest.hash = `session_token=${encodeURIComponent(session.session_token as string)}`
 
-    return {
-      status: 302,
-      location: dest.toString(),
-      clearCookies,
-    }
+    return { status: 302, location: dest.toString(), clearCookies }
   } catch (err) {
-    console.error('[skz-api] oauth callback:', err)
+    console.error('[skz-bot] player oauth callback:', err)
     return { ...errorRedirect(siteOrigin, 'oauth_failed'), clearCookies }
   }
 }
@@ -176,32 +167,9 @@ export function serializeClearCookie(name: string, path = '/'): string {
   return `${name}=; Path=${path}; Max-Age=0; HttpOnly`
 }
 
-export function parseCookieHeader(header: string | undefined): Record<string, string> {
-  const out: Record<string, string> = {}
-  if (!header) return out
-  for (const segment of header.split(';')) {
-    const trimmed = segment.trim()
-    if (!trimmed) continue
-    const eq = trimmed.indexOf('=')
-    if (eq <= 0) continue
-    const key = trimmed.slice(0, eq).trim()
-    const raw = trimmed.slice(eq + 1).trim()
-    try {
-      out[key] = decodeURIComponent(raw)
-    } catch {
-      out[key] = raw
-    }
-  }
-  return out
-}
-
 export function playerAuthSetCookieHeaders(result: PlayerAuthRedirect): string[] {
   const cookies: string[] = []
-  for (const c of result.setCookies ?? []) {
-    cookies.push(serializeSetCookie(c))
-  }
-  for (const name of result.clearCookies ?? []) {
-    cookies.push(serializeClearCookie(name))
-  }
+  for (const c of result.setCookies ?? []) cookies.push(serializeSetCookie(c))
+  for (const name of result.clearCookies ?? []) cookies.push(serializeClearCookie(name))
   return cookies
 }

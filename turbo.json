@@ -1,6 +1,19 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "stream",
+  "globalPassThroughEnv": [
+    "NODE_ENV",
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_ANON_KEY",
+    "VITE_*",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SKZ_BOOTSTRAP_*",
+    "SKZ_BOT_HTTP_ORIGIN",
+    "DISCORD_*",
+    "SITE_URL",
+    "PUBLIC_SITE_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -11,12 +24,10 @@
         "SUPABASE_URL",
         "SUPABASE_SERVICE_ROLE_KEY",
         "SKZ_BOOTSTRAP_*",
+        "SKZ_BOT_HTTP_ORIGIN",
         "DISCORD_*",
         "SITE_URL"
       ]
-    },
-    "@skz/api#build": {
-      "outputs": []
     },
     "dev": {
       "cache": false,

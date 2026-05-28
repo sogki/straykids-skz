@@ -21,8 +21,8 @@ export async function startPlayerDiscordOAuth(returnPath = '/link') {
     if (!health.ok) throw new Error('unavailable')
   } catch {
     const hint = import.meta.env.DEV
-      ? 'Player sign-in API is not running. From the repo root run: npm run dev:arcade (or npm run dev:api in a second terminal while the web app is running).'
-      : 'Player sign-in is temporarily unavailable. Try again in a moment.'
+      ? 'Player sign-in runs on the Discord bot HTTP server. Run: npm run dev:bot (port 8787) or npm run dev:arcade from the repo root.'
+      : 'Player sign-in is temporarily unavailable. Check the bot is running on Railway and SKZ_BOT_HTTP_ORIGIN is set on Vercel.'
     throw new Error(hint)
   }
 

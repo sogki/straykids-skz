@@ -26,6 +26,7 @@ import {
 import { syncDiscordCache } from './services/syncDiscordCache.js'
 import { startDailyQuestionPoller } from './services/dailyQuestionWorker.js'
 import { startRotatingPresence, stopRotatingPresence } from './services/rotatingPresence.js'
+import { startPlayerAuthHttpServer } from './http/server.js'
 
 // GuildMembers is a privileged intent — not requested here. Individual
 // member fetches via REST still work for role assignment. If you need
@@ -129,6 +130,7 @@ try {
   await bootstrapSupabaseFromDb()
   const creds = await loadCredentialsFromDb()
   await loginFromDatabase(client)
+  startPlayerAuthHttpServer()
   outboxPollerTimer = startOutboxPoller(client)
   startOutboxRealtime(client)
   dailyQuestionPollerTimer = startDailyQuestionPoller(client)

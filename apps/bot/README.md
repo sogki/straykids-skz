@@ -39,11 +39,33 @@ Enable **Server Members Intent** and **Message Content Intent** in the [Discord 
 
 - `/leaderboard [days]` — top players by daily puzzle points
 
-Player sign-in uses **Discord OAuth** on the website (`Continue with Discord`), via `@skz/api` — not `/link` bot codes.
+Player sign-in uses **Discord OAuth** on the website (`Continue with Discord`). The OAuth HTTP routes run **in this bot process** (`/api/player/*`), reading `discord_client_secret`, `site_url`, etc. from `skz_bot_settings` — there is no separate `apps/api` package.
 
 ## Deploy queue
 
 Admin actions **Sync Discord dropdowns** and **Publish** write to `skz_bot_outbox`. The bot processes jobs immediately via Supabase Realtime (with a 2s poll fallback) and also on `/reload`.
+
+## Player OAuth HTTP
+
+When the bot starts, it also listens on `PORT` (Railway sets this automatically; local default **8787**):
+
+| Route | Purpose |
+| ----- | ------- |
+| `GET /api/player/health` | Smoke test |
+| `GET /api/player/auth/discord` | Start OAuth |
+| `GET /api/player/auth/discord/callback` | Discord redirect |
+| `GET /api/player/auth/debug` | Config check (no secrets) |
+
+**Local:** `npm run dev:web` proxies `/api/player` → `http://127.0.0.1:8787` while `npm run dev:bot` is running.
+
+**Production (Vercel + Railway):** the static site proxies `/api/player/*` to the bot. In **Vercel → Environment Variables** set:
+
+- `SKZ_BOT_HTTP_ORIGIN` = your Railway **public** URL, e.g. `https://skz-bot-production.up.railway.app` (no trailing slash)
+
+Enable **Public networking** on Railway so the bot HTTP port is reachable.
+
+Admin must have **Site URL**, **Discord client secret**, and Discord redirect  
+`{site_url}/api/player/auth/discord/callback`.
 
 ## Railway
 

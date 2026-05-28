@@ -1,16 +1,14 @@
 import { Router, type Request, type Response } from 'express'
-import { loadApiConfig } from './config.js'
+import { loadPlayerAuthConfig } from './playerAuthConfig.js'
 import {
   handlePlayerDiscordAuthCallback,
   handlePlayerDiscordAuthStart,
   OAUTH_STATE_COOKIE,
   playerAuthSetCookieHeaders,
+  type PlayerAuthResult,
 } from './playerAuthHandlers.js'
 
-function sendPlayerAuthResult(
-  res: import('express').Response,
-  result: import('./playerAuthHandlers.js').PlayerAuthResult,
-) {
+function sendPlayerAuthResult(res: Response, result: PlayerAuthResult) {
   if ('body' in result) {
     res.status(result.status).json(result.body)
     return
@@ -23,22 +21,40 @@ function sendPlayerAuthResult(
 export function createPlayerAuthRouter() {
   const router = Router()
 
-  router.get('/discord', async (req: Request, res: Response) => {
+  router.get('/debug', async (_req, res) => {
     try {
-      const config = await loadApiConfig()
+      const config = await loadPlayerAuthConfig()
+      res.json({
+        ok: true,
+        siteOrigin: config.siteOrigin,
+        redirectUri: config.redirectUri,
+        hasDiscordClientId: Boolean(config.discordClientId),
+        hasDiscordClientSecret: Boolean(config.discordClientSecret),
+      })
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: err instanceof Error ? err.message : 'config failed',
+      })
+    }
+  })
+
+  router.get('/discord', async (req, res) => {
+    try {
+      const config = await loadPlayerAuthConfig()
       const result = await handlePlayerDiscordAuthStart(config, req.query.return_to)
       sendPlayerAuthResult(res, result)
     } catch (err) {
-      console.error('[skz-api] oauth start:', err)
+      console.error('[skz-bot] player oauth start:', err)
       res.status(500).json({
         error: err instanceof Error ? err.message : 'OAuth is not configured',
       })
     }
   })
 
-  router.get('/discord/callback', async (req: Request, res: Response) => {
+  router.get('/discord/callback', async (req, res) => {
     try {
-      const config = await loadApiConfig()
+      const config = await loadPlayerAuthConfig()
       const result = await handlePlayerDiscordAuthCallback(config, {
         error: typeof req.query.error === 'string' ? req.query.error : null,
         code: typeof req.query.code === 'string' ? req.query.code : undefined,
@@ -47,9 +63,9 @@ export function createPlayerAuthRouter() {
       })
       sendPlayerAuthResult(res, result)
     } catch (err) {
-      console.error('[skz-api] oauth callback:', err)
+      console.error('[skz-bot] player oauth callback:', err)
       try {
-        const config = await loadApiConfig()
+        const config = await loadPlayerAuthConfig()
         sendPlayerAuthResult(
           res,
           await handlePlayerDiscordAuthCallback(config, { error: 'oauth_failed' }),

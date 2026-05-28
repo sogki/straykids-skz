@@ -10,8 +10,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "npm run dev --workspace=@skz/web",
-    "dev:api": "npm run dev --workspace=@skz/api",
-    "dev:arcade": "turbo run dev --filter=@skz/web --filter=@skz/api",
+    "dev:arcade": "turbo run dev --filter=@skz/web --filter=@skz/bot",
     "dev:bot": "npm run dev --workspace=@skz/bot",
     "build": "turbo run build",
     "build:web": "npm run build --workspace=@skz/web",

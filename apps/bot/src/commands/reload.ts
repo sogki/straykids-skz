@@ -5,6 +5,7 @@ import { refreshDiscordSession } from '../discordSession.js'
 import { processOutbox } from '../services/outboxWorker.js'
 import { syncDiscordCache } from '../services/syncDiscordCache.js'
 import { invalidateModLogSettingsCache } from '../services/modLogSettings.js'
+import { clearPlayerAuthConfigCache } from '../http/playerAuthConfig.js'
 import type { SlashCommand } from './index.js'
 
 export const reloadCommand: SlashCommand = {
@@ -18,6 +19,7 @@ export const reloadCommand: SlashCommand = {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     try {
       await loadCredentialsFromDb()
+      clearPlayerAuthConfigCache()
       const reconnected = await refreshDiscordSession(interaction.client)
       invalidateModLogSettingsCache()
       const config = await reloadBotConfig()
