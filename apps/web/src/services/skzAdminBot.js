@@ -74,7 +74,29 @@ function normaliseConfig(raw) {
     discordCache: Array.isArray(raw?.discord_cache) ? raw.discord_cache : [],
     dailyQuestions: Array.isArray(raw?.daily_questions) ? raw.daily_questions : [],
     rolePermissions: Array.isArray(raw?.role_permissions) ? raw.role_permissions : [],
+    userPermissions: Array.isArray(raw?.user_permissions) ? raw.user_permissions : [],
   }
+}
+
+export async function upsertUserPermission(code, { discord_user_id, label = '' }) {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_upsert_user_permission', {
+    p_code: code.trim(),
+    p_discord_user_id: discord_user_id,
+    p_label: label ?? '',
+  })
+  if (error) throw error
+  return normaliseConfig(data)
+}
+
+export async function deleteUserPermission(code, discordUserId) {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_delete_user_permission', {
+    p_code: code.trim(),
+    p_discord_user_id: discordUserId,
+  })
+  if (error) throw error
+  return normaliseConfig(data)
 }
 
 export async function fetchBotConfig(code) {

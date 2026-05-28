@@ -51,4 +51,19 @@ The bot cannot read the database on first boot without these. Copy them from Sup
 
 Discord token / client ID stay in `skz_bot_settings` only (Admin → Credentials). Do not commit `.env` to git.
 
+## Owner full admin (by Discord user ID)
+
+Apply migration `20260528000020`. Then either:
+
+1. **Admin → Discord bot → Role permissions → Owner accounts** (requires an existing full-admin session + staff code), or
+2. **Supabase SQL** (first-time bootstrap):
+
+```sql
+INSERT INTO skz_admin_discord_user_permissions (discord_user_id, label)
+VALUES ('YOUR_DISCORD_USER_ID', 'Owner')
+ON CONFLICT (discord_user_id) DO UPDATE SET is_active = true, label = EXCLUDED.label;
+```
+
+Enable **Developer Mode** in Discord → right-click your profile → **Copy User ID**. Owner rows always receive `full_admin` regardless of Stay Café roles; moderators cannot edit this table from the panel.
+
 The `ws` package is required on Node 20 (Railway) so Supabase Realtime can connect for the deploy outbox.

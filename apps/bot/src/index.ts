@@ -45,7 +45,7 @@ registerVoiceHub(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)
-  startRotatingPresence(client, discordApplicationId)
+  startRotatingPresence(client)
   try {
     const cfg = await reloadBotConfig()
     console.log(
@@ -88,7 +88,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 let outboxPollerTimer: ReturnType<typeof setInterval> | undefined
 let dailyQuestionPollerTimer: ReturnType<typeof setInterval> | undefined
-let discordApplicationId = ''
 let shuttingDown = false
 
 async function shutdown(signal: string) {
@@ -118,7 +117,6 @@ process.on('SIGTERM', () => {
 try {
   await bootstrapSupabaseFromDb()
   const creds = await loadCredentialsFromDb()
-  discordApplicationId = creds.discordClientId
   await loginFromDatabase(client)
   outboxPollerTimer = startOutboxPoller(client)
   startOutboxRealtime(client)

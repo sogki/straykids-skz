@@ -38,7 +38,8 @@ export const panelCommand: SlashCommand = {
           ? interaction.member.roles.filter((id) => id !== interaction.guildId)
           : []
     const db = getSupabase()
-    const { data: level, error: levelErr } = await db.rpc('skz_admin_permission_from_roles', {
+    const { data: level, error: levelErr } = await db.rpc('skz_admin_permission_for_member', {
+      p_discord_user_id: interaction.user.id,
       p_role_ids: roleIds,
     })
     if (levelErr) {
@@ -48,7 +49,7 @@ export const panelCommand: SlashCommand = {
     const permissionLevel = String(level ?? 'none')
     if (!['full_admin', 'moderator'].includes(permissionLevel)) {
       await interaction.editReply(
-        'Your roles are not mapped for admin access. Ask a super admin to map your role in `skz_admin_discord_role_permissions`.',
+        'Your account is not authorized for admin access. Ask a full admin to map your Discord role or add your user ID as an owner.',
       )
       return
     }

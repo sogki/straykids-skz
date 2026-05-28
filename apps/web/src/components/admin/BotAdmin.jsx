@@ -30,11 +30,13 @@ import {
   deleteBotMessage,
   deleteReactionRole,
   deleteRolePermission,
+  deleteUserPermission,
   fetchBotConfig,
   queueBotAction,
   saveBotSettings,
   SECRET_PLACEHOLDER,
   upsertRolePermission,
+  upsertUserPermission,
   updateReactionRole,
   updateDailyQuestion,
   upsertBotMessage,
@@ -198,6 +200,7 @@ export default function BotAdmin() {
     label: '',
     permission_level: 'moderator',
   })
+  const [newOwnerUser, setNewOwnerUser] = useState({ discord_user_id: '', label: '' })
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -1749,9 +1752,102 @@ export default function BotAdmin() {
           <div className="mb-4">
             <h3 className="text-xl font-bold tracking-tight text-white">Role permissions</h3>
             <p className="mt-1 text-sm text-zinc-500">
-              Full-admin only. Toggle what bot admin features each mapped role can access.
+              Full-admin only. Owner user IDs always receive full admin; roles control everyone else.
             </p>
           </div>
+          <SubCard
+            title="Owner accounts (Discord user ID)"
+            description="Always full_admin regardless of server roles. Enable Developer Mode in Discord → right-click your profile → Copy User ID. Only existing full admins can edit this list (staff code required)."
+          >
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field
+                label="Discord user ID"
+                value={newOwnerUser.discord_user_id}
+                onChange={(v) => setNewOwnerUser((p) => ({ ...p, discord_user_id: v.replace(/\D/g, '') }))}
+                placeholder="e.g. 123456789012345678"
+              />
+              <Field
+                label="Label"
+                value={newOwnerUser.label}
+                onChange={(v) => setNewOwnerUser((p) => ({ ...p, label: v }))}
+                placeholder="Your name"
+              />
+              <div className="sm:col-span-2">
+                <button
+                  type="button"
+                  disabled={!newOwnerUser.discord_user_id || busy}
+                  onClick={async () => {
+                    setBusy(true)
+                    try {
+                      const next = await upsertUserPermission(code, {
+                        discord_user_id: newOwnerUser.discord_user_id,
+                        label: newOwnerUser.label || newOwnerUser.discord_user_id,
+                      })
+                      setConfig(next)
+                      setNewOwnerUser({ discord_user_id: '', label: '' })
+                    } catch (err) {
+                      setError(err.message || 'Could not add owner account')
+                    } finally {
+                      setBusy(false)
+                    }
+                  }}
+                  className={UI_BUTTON_PRIMARY}
+                >
+                  <Plus className="size-4" />
+                  Add owner
+                </button>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              {(config.userPermissions || []).length === 0 ? (
+                <p className="text-sm text-zinc-500">
+                  No owner user IDs yet. Add yours above, or insert via Supabase SQL (see migration
+                  20260528000020).
+                </p>
+              ) : (
+                (config.userPermissions || []).map((up) => (
+                  <div
+                    key={up.discord_user_id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-800/90 bg-[#0d0d11] px-3 py-2"
+                  >
+                    <div>
+                      <div className="text-sm font-semibold text-zinc-200">
+                        {up.label || up.discord_user_id}
+                      </div>
+                      <div className="font-mono text-xs text-zinc-500">{up.discord_user_id}</div>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={async () => {
+                        if (
+                          !window.confirm(
+                            `Remove full_admin override for ${up.label || up.discord_user_id}?`,
+                          )
+                        ) {
+                          return
+                        }
+                        setBusy(true)
+                        try {
+                          const next = await deleteUserPermission(code, up.discord_user_id)
+                          setConfig(next)
+                        } catch (err) {
+                          setError(err.message || 'Could not remove owner account')
+                        } finally {
+                          setBusy(false)
+                        }
+                      }}
+                      className="h-8 rounded bg-red-500/20 px-2 text-xs font-medium text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </SubCard>
+
+          <div className="mt-4">
           <SubCard
             title="Add or update role mapping"
             description="Map Discord roles to permission levels, then tune feature access below."
@@ -1815,6 +1911,7 @@ export default function BotAdmin() {
             </div>
           </div>
           </SubCard>
+          </div>
 
           <div className="mt-4 space-y-2">
             {(config.rolePermissions || []).length === 0 ? (

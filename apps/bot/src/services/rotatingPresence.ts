@@ -1,11 +1,10 @@
-import { ActivityType, type Client } from 'discord.js'
-import { ActivityType as ApiActivityType, GatewayOpcodes } from 'discord-api-types/v10'
+import { ActivityType, PresenceUpdateStatus, type Client } from 'discord.js'
 
 /**
  * Rotating rich presence (Playing / Watching / Listening).
  *
- * Discord’s member list only formats these types when `application_id` is set
- * (your app’s client ID). Without it, clients often show plain `name` text only.
+ * Bots may only set activity `name`, `state`, `type`, and `url` (not `application_id`).
+ * Use discord.js `setPresence` so the gateway payload matches Discord’s bot rules.
  *
  * @see https://discord.com/developers/docs/events/gateway-events#activity-object
  */
@@ -23,7 +22,6 @@ const ROTATE_MS = 45_000
 
 let rotateTimer: ReturnType<typeof setInterval> | null = null
 let statusIndex = 0
-let applicationId: string | null = null
 
 function activityLabel(type: ActivityType, name: string) {
   switch (type) {
@@ -38,79 +36,36 @@ function activityLabel(type: ActivityType, name: string) {
   }
 }
 
-export function setPresenceApplicationId(id: string) {
-  const trimmed = id.trim()
-  applicationId = trimmed.length > 0 ? trimmed : null
-}
-
-function resolveApplicationId(client: Client): string | null {
-  if (applicationId) return applicationId
-  const id = client.application?.id
-  if (id) {
-    applicationId = id
-    return id
-  }
-  return null
-}
-
-function sendPresenceUpdate(
-  client: Client,
-  entry: { name: string; type: ActivityType },
-  appId: string,
-) {
-  const activity: Record<string, string | number> = {
-    name: entry.name,
-    type: entry.type as ApiActivityType,
-    application_id: appId,
-  }
-
-  const packet = {
-    op: GatewayOpcodes.PresenceUpdate,
-    d: {
-      since: 0,
-      afk: false,
-      status: 'online',
-      activities: [activity],
-    },
-  }
-
-  // Do not call client.user.setPresence() here — discord.js drops application_id and
-  // would overwrite this packet, leaving only plain `name` text in the member list.
-  ;(client.ws as unknown as { broadcast: (data: typeof packet) => void }).broadcast(packet)
-}
-
-async function applyPresence(client: Client) {
+function applyPresence(client: Client) {
   if (!client.user) return
-
-  const appId = resolveApplicationId(client)
-  if (!appId) {
-    console.warn(
-      '[skz-bot] presence skipped: discord_client_id missing in skz_bot_settings (required for Playing/Watching UI)',
-    )
-    return
-  }
 
   const entry = ROTATING_STATUSES[statusIndex % ROTATING_STATUSES.length]!
   statusIndex += 1
 
   try {
-    sendPresenceUpdate(client, entry, appId)
-    console.log(`[skz-bot] presence → ${activityLabel(entry.type, entry.name)} (app ${appId})`)
+    client.user.setPresence({
+      status: PresenceUpdateStatus.Online,
+      activities: [
+        {
+          name: entry.name,
+          type: entry.type,
+        },
+      ],
+    })
+    console.log(`[skz-bot] presence → ${activityLabel(entry.type, entry.name)}`)
   } catch (err) {
     console.warn('[skz-bot] presence update failed:', err)
   }
 }
 
-export function startRotatingPresence(client: Client, discordApplicationId?: string) {
-  if (discordApplicationId) setPresenceApplicationId(discordApplicationId)
-
+export function startRotatingPresence(client: Client) {
   if (rotateTimer) {
     clearInterval(rotateTimer)
     rotateTimer = null
   }
-  void applyPresence(client)
+  applyPresence(client)
   rotateTimer = setInterval(() => {
-    void applyPresence(client)
+    applyPresence(client)
   }, ROTATE_MS)
 }
 
