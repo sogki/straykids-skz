@@ -64,6 +64,8 @@ When the bot starts, it also listens on `PORT` (Railway sets this automatically;
 
 Enable **Public networking** on Railway so the bot HTTP port is reachable.
 
+**Port must match:** In Railway → Networking, if the public port is **8787**, set a service variable `PORT=8787` (or let Railway inject `PORT` automatically when you pick that port). The process listens on `process.env.PORT`. If Railway shows “Application failed to respond”, the deploy logs should still show `player OAuth HTTP listening on 0.0.0.0:…` — if that line is missing, the container exited during startup (check Supabase bootstrap + Discord token).
+
 Admin must have **Site URL**, **Discord client secret**, and Discord redirect  
 `{site_url}/api/player/auth/discord/callback`.
 

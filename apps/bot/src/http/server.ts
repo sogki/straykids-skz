@@ -11,15 +11,20 @@ export function startPlayerAuthHttpServer() {
   app.use(cors({ origin: true, credentials: true }))
   app.use(cookieParser())
 
+  // Railway / load balancers often probe `/` first.
+  app.get('/', (_req, res) => {
+    res.json({ ok: true, service: 'skz-bot' })
+  })
+
   app.get('/api/player/health', (_req, res) => {
-    res.json({ ok: true, service: 'skz-player-auth', host: 'bot' })
+    res.json({ ok: true, service: 'skz-player-auth', host: 'bot', port })
   })
 
   app.use('/api/player/auth', createPlayerAuthRouter())
 
   app.listen(port, '0.0.0.0', () => {
-    console.log(`[skz-bot] player OAuth HTTP on http://0.0.0.0:${port}`)
-    console.log(`[skz-bot] health: http://127.0.0.1:${port}/api/player/health`)
+    console.log(`[skz-bot] player OAuth HTTP listening on 0.0.0.0:${port} (PORT=${process.env.PORT ?? 'unset'})`)
+    console.log(`[skz-bot] health: /api/player/health`)
   })
 
   return app

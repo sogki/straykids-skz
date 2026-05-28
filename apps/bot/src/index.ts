@@ -128,9 +128,10 @@ process.on('SIGTERM', () => {
 // ── Bootstrap: Supabase (env one-time) → all secrets from DB → Discord login ──
 try {
   await bootstrapSupabaseFromDb()
-  const creds = await loadCredentialsFromDb()
-  await loginFromDatabase(client)
+  await loadCredentialsFromDb()
+  // Start HTTP before Discord login so Railway public URL responds immediately.
   startPlayerAuthHttpServer()
+  await loginFromDatabase(client)
   outboxPollerTimer = startOutboxPoller(client)
   startOutboxRealtime(client)
   dailyQuestionPollerTimer = startDailyQuestionPoller(client)

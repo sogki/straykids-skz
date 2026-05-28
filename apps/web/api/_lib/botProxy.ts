@@ -37,16 +37,22 @@ export async function proxyToBot(
     return
   }
 
-  const qs = new URLSearchParams()
-  for (const [key, value] of Object.entries(req.query)) {
-    if (key === 'path') continue
-    if (Array.isArray(value)) {
-      for (const v of value) qs.append(key, v)
-    } else if (value != null) {
-      qs.append(key, String(value))
+  // Prefer query string from the incoming URL (reliable on Vercel); fall back to req.query.
+  const rawUrl = req.url ?? ''
+  const qIndex = rawUrl.indexOf('?')
+  let query = qIndex >= 0 ? rawUrl.slice(qIndex + 1) : ''
+  if (!query) {
+    const qs = new URLSearchParams()
+    for (const [key, value] of Object.entries(req.query)) {
+      if (key === 'path') continue
+      if (Array.isArray(value)) {
+        for (const v of value) qs.append(key, v)
+      } else if (value != null) {
+        qs.append(key, String(value))
+      }
     }
+    query = qs.toString()
   }
-  const query = qs.toString()
   const target = `${origin}${targetPath}${query ? `?${query}` : ''}`
 
   try {
