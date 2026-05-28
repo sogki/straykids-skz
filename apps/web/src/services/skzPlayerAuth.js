@@ -12,8 +12,8 @@ export function discordAvatarUrl(discordUserId, avatarHash, size = 64) {
 }
 
 /** Start Discord OAuth (redirects to Discord authorize — no bot command). */
-export async function startPlayerDiscordOAuth(returnPath = '/link') {
-  const path = returnPath.startsWith('/') ? returnPath : '/link'
+export async function startPlayerDiscordOAuth(returnPath = '/profile') {
+  const path = returnPath.startsWith('/') ? returnPath : '/profile'
   const url = `/api/player/auth/discord?return_to=${encodeURIComponent(path)}`
 
   let health
@@ -129,6 +129,21 @@ export async function fetchPlayerStats() {
   })
   if (error) throw error
   if (data) setStoredPlayerAccess(data)
+  return data
+}
+
+export async function fetchPlayerProfile() {
+  const token = getStoredPlayerSession()
+  if (!token) return null
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_player_get_my_profile', {
+    p_session_token: token,
+  })
+  if (error) throw error
+  if (data) {
+    const { daily_history: _h, points_by_game: _g, linked_at: _l, ...access } = data
+    setStoredPlayerAccess(access)
+  }
   return data
 }
 

@@ -42,7 +42,7 @@ function randomState() {
 }
 
 function errorRedirect(siteOrigin: string, message: string): PlayerAuthRedirect {
-  const url = new URL('/link', siteOrigin)
+  const url = new URL('/profile', siteOrigin)
   url.searchParams.set('error', message)
   return { status: 302, location: url.toString() }
 }
@@ -66,7 +66,7 @@ export async function handlePlayerDiscordAuthStart(
   returnToRaw: unknown,
 ): Promise<PlayerAuthResult> {
   const returnTo =
-    typeof returnToRaw === 'string' && returnToRaw.startsWith('/') ? returnToRaw : '/link'
+    typeof returnToRaw === 'string' && returnToRaw.startsWith('/') ? returnToRaw : '/profile'
 
   const state = randomState()
   const authorizeUrl = discordAuthorizeUrl({
@@ -111,7 +111,7 @@ export async function handlePlayerDiscordAuthCallback(
 
   const colon = String(cookieRaw).indexOf(':')
   const expectedState = colon >= 0 ? String(cookieRaw).slice(0, colon) : String(cookieRaw)
-  const returnTo = colon >= 0 ? String(cookieRaw).slice(colon + 1) : '/link'
+  const returnTo = colon >= 0 ? String(cookieRaw).slice(colon + 1) : '/profile'
 
   if (state !== expectedState) {
     return { ...errorRedirect(siteOrigin, 'state_mismatch'), clearCookies }
@@ -142,7 +142,7 @@ export async function handlePlayerDiscordAuthCallback(
       return { ...errorRedirect(siteOrigin, 'session_failed'), clearCookies }
     }
 
-    const dest = new URL(returnTo.startsWith('/') ? returnTo : '/link', siteOrigin)
+    const dest = new URL(returnTo.startsWith('/') ? returnTo : '/profile', siteOrigin)
     dest.hash = `session_token=${encodeURIComponent(session.session_token as string)}`
 
     return { status: 302, location: dest.toString(), clearCookies }

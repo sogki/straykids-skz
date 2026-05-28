@@ -95,6 +95,18 @@ export const ROUTE_SEO = [
     description:
       'Contact SKZ Arcade for data corrections, takedowns, privacy questions, and feedback.',
   },
+  {
+    path: '/profile',
+    title: 'Player profile',
+    description:
+      'Your SKZ Arcade player profile — Discord connection, global leaderboard points, and daily puzzle scores.',
+  },
+  {
+    path: '/link',
+    title: 'Player profile',
+    description:
+      'Your SKZ Arcade player profile — Discord connection, global leaderboard points, and daily puzzle scores.',
+  },
 ]
 
 export function getRouteSeo(pathname) {

@@ -168,7 +168,7 @@ export default function ArcadeLeaderboard() {
 
       {tab === 'players' && (
         <p className="px-4 pb-3 text-center text-[11px] text-zinc-600">
-          <Link to="/link" className="text-violet-400 hover:underline">
+          <Link to="/profile" className="text-violet-400 hover:underline">
             Account
           </Link>
         </p>

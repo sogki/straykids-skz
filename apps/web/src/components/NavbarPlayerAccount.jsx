@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ChevronDown, LogOut, Trophy } from 'lucide-react'
+import { ChevronDown, LogOut, User } from 'lucide-react'
 import { usePlayerSessionContext } from '@/context/PlayerSessionContext'
 import { discordAvatarUrl } from '@/services/skzPlayerAuth'
 import { cn } from '@/lib/utils'
@@ -15,13 +15,13 @@ function AccountMenuItems({ onNavigate, className }) {
   return (
     <div className={cn('navbar-account-menu', className)} role="menu">
       <Link
-        to="/link"
+        to="/profile"
         className="navbar-account-menu__item"
         role="menuitem"
         onClick={onNavigate}
       >
-        <Trophy className="size-4 shrink-0 opacity-80" aria-hidden="true" />
-        View points
+        <User className="size-4 shrink-0 opacity-80" aria-hidden="true" />
+        Profile
       </Link>
       <button
         type="button"
@@ -69,9 +69,6 @@ export function NavbarPlayerAccountDesktop() {
 
   return (
     <div ref={rootRef} className="navbar-account">
-      <span className="navbar-cta-play__sep" aria-hidden="true">
-        |
-      </span>
       <button
         type="button"
         className={cn('navbar-account__trigger', open && 'navbar-account__trigger--open')}
@@ -123,7 +120,7 @@ export function NavbarPlayerAccountMobile({ onClose }) {
   )
 }
 
-/** Refresh session when route changes (e.g. after OAuth on /link). */
+/** Refresh session when route changes (e.g. after OAuth on /profile). */
 export function NavbarPlayerSessionSync() {
   const { pathname } = useLocation()
   const { reload } = usePlayerSessionContext()

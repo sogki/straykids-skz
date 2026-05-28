@@ -286,11 +286,11 @@ export default function Navbar() {
               </NavigationMenu>
 
               <div className="navbar-desktop__actions">
+                <NavbarPlayerAccountDesktop />
                 <PlayRandomButton
                   games={games}
                   className="navbar-cta-play"
                 />
-                <NavbarPlayerAccountDesktop />
               </div>
             </div>
 

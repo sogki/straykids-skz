@@ -71,7 +71,7 @@ export function createPlayerAuthRouter() {
           await handlePlayerDiscordAuthCallback(config, { error: 'oauth_failed' }),
         )
       } catch {
-        res.redirect(302, '/link?error=oauth_failed')
+        res.redirect(302, '/profile?error=oauth_failed')
       }
     }
   })

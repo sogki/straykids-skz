@@ -180,10 +180,10 @@ export default function PlayerLeaderboard({ embedded = false } = {}) {
                   </div>
                 </div>
                 <Link
-                  to="/link"
+                  to="/profile"
                   className="shrink-0 text-xs text-violet-300 hover:text-violet-200"
                 >
-                  Account
+                  Profile
                 </Link>
               </div>
             ) : (
@@ -197,7 +197,7 @@ export default function PlayerLeaderboard({ embedded = false } = {}) {
                   onClick={async () => {
                     setConnectError(null)
                     try {
-                      await startPlayerDiscordOAuth('/link')
+                      await startPlayerDiscordOAuth('/profile')
                     } catch (err) {
                       setConnectError(err.message || 'Could not start Discord sign-in.')
                     }
