@@ -29,9 +29,9 @@ export const reloadCommand: SlashCommand = {
       const cmdReg = await registerDiscordCommands()
       const rrCount = config.reactionRoles.filter((r) => r.isActive).length
       const reconnectNote = reconnected ? ' Reconnected with new token from DB.' : ''
-      const globalCmds = cmdReg.global.map((n) => `/${n}`).join(', ')
+      const guildCmds = (cmdReg.guild ?? []).map((n) => `/${n}`).join(', ')
       await interaction.editReply(
-        `Reloaded bot settings.${reconnectNote} ${rrCount} active reaction role${rrCount === 1 ? '' : 's'}, ${synced} Discord entities cached, ${outbox} outbox job${outbox === 1 ? '' : 's'} processed.\n\nSlash commands updated — global: ${globalCmds}${cmdReg.guild ? `; guild: ${cmdReg.guild.map((n) => `/${n}`).join(', ')}` : ''}.\n\nGlobal commands can take up to an hour to appear everywhere; guild commands are instant.`,
+        `Reloaded bot settings.${reconnectNote} ${rrCount} active reaction role${rrCount === 1 ? '' : 's'}, ${synced} Discord entities cached, ${outbox} outbox job${outbox === 1 ? '' : 's'} processed.\n\nSlash commands updated for this server: ${guildCmds}.`,
       )
     } catch (err) {
       console.error('[skz-bot] /reload failed:', err)

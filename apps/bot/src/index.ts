@@ -68,9 +68,7 @@ async function onReady() {
     await processOutbox(client)
     const cmdReg = await registerDiscordCommands()
     console.log(
-      `[skz-bot] slash commands registered — global: ${cmdReg.global.join(', ')}${
-        cmdReg.guild ? `; guild (${cmdReg.guildId}): ${cmdReg.guild.join(', ')}` : ''
-      }`,
+      `[skz-bot] slash commands registered (guild ${cmdReg.guildId}): ${cmdReg.guild?.join(', ')}`,
     )
   } catch (err) {
     console.error('[skz-bot] post-login setup failed:', err)

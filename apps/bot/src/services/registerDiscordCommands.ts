@@ -23,8 +23,8 @@ export type RegisterCommandsResult = {
 }
 
 /**
- * Pushes slash command definitions to Discord (global + configured guild).
- * Safe to call on startup and /reload — required for /leaderboard, /profile, etc.
+ * Pushes slash commands to the configured guild and clears global commands.
+ * Safe to call on startup and /reload.
  */
 export async function registerDiscordCommands(): Promise<RegisterCommandsResult> {
   const creds = await loadCredentialsFromDb()
@@ -39,21 +39,24 @@ export async function registerDiscordCommands(): Promise<RegisterCommandsResult>
   const guildId = config.settings.guildId?.trim() || null
   const rest = new REST({ version: '10' }).setToken(creds.discordToken)
 
+  // Remove any previously registered global commands (e.g. old leaderboard/profile).
   await rest.put(Routes.applicationCommands(creds.discordClientId), {
     body: toJsonBody(globalCommands),
   })
 
-  let guildNames: string[] | null = null
-  if (guildId) {
-    await rest.put(Routes.applicationGuildCommands(creds.discordClientId, guildId), {
-      body: toJsonBody(guildCommands),
-    })
-    guildNames = commandNames(guildCommands)
+  if (!guildId) {
+    throw new Error(
+      'guild_id is not set in bot settings. Set your Stay Café server ID in Admin → Discord bot → Server.',
+    )
   }
+
+  await rest.put(Routes.applicationGuildCommands(creds.discordClientId, guildId), {
+    body: toJsonBody(guildCommands),
+  })
 
   return {
     global: commandNames(globalCommands),
-    guild: guildNames,
+    guild: commandNames(guildCommands),
     guildId,
   }
 }

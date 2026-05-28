@@ -1,7 +1,7 @@
 /**
  * Registers slash commands with Discord (CLI).
  *
- * Guild: panel, reload, info. Global: leaderboard, profile.
+ * Guild-only: panel, reload, info, leaderboard, profile (Stay Café server).
  *
  * Run: npm run register --workspace=@skz/bot
  * (Also runs automatically on bot startup and /reload.)
@@ -16,19 +16,10 @@ async function main() {
   await bootstrapSupabaseFromDb()
   const result = await registerDiscordCommands()
 
+  console.log('[skz-bot] cleared global slash commands (this bot is guild-only).')
   console.log(
-    `[skz-bot] registered ${result.global.length} global command(s): ${result.global.join(', ')}`,
+    `[skz-bot] registered ${result.guild?.length ?? 0} guild command(s) to ${result.guildId}: ${result.guild?.join(', ')}`,
   )
-
-  if (result.guild && result.guildId) {
-    console.log(
-      `[skz-bot] registered ${result.guild.length} guild command(s) to ${result.guildId}: ${result.guild.join(', ')}`,
-    )
-  } else {
-    console.warn(
-      '[skz-bot] guild_id not set — staff commands (panel, reload, info) were not registered. Set guild_id in bot settings.',
-    )
-  }
 
   console.log('[skz-bot] done.')
 }

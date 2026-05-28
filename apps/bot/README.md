@@ -31,11 +31,11 @@ Enable **Server Members Intent** and **Message Content Intent** in the [Discord 
 
 ## Commands
 
+All slash commands are **guild-only** (your configured Stay Café server — instant updates on `/reload`):
+
 - `/reload` — reload DB config, sync channel/role dropdown cache, re-register slash commands, process deploy queue
+- `/panel` — deploy reaction role panels
 - `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
-
-**Global commands** (DM or any server):
-
 - `/leaderboard [game] [days]` — top players by daily puzzle points
 - `/profile [user]` — player points, rank, and daily wins (privacy-aware)
 

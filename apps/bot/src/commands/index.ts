@@ -23,17 +23,19 @@ export interface SlashCommand {
  * Add new commands here. They'll be auto-registered by `npm run register` and
  * auto-routed by the interaction handler in `src/index.ts`.
  */
-/** Guild-scoped staff / mod commands (registered to configured guild). */
+/** All slash commands — registered to the configured Stay Café guild only. */
 export const guildCommands: SlashCommand[] = [
   reloadCommand,
   panelCommand,
   infoCommand,
+  leaderboardCommand,
+  profileCommand,
 ]
 
-/** Global commands (DM + any server) — player leaderboard. */
-export const globalCommands: SlashCommand[] = [leaderboardCommand, profileCommand]
+/** Intentionally empty — this bot is single-guild; clears stale global commands on register. */
+export const globalCommands: SlashCommand[] = []
 
-export const commands: SlashCommand[] = [...guildCommands, ...globalCommands]
+export const commands: SlashCommand[] = [...guildCommands]
 
 export const commandMap = new Map<string, SlashCommand>(
   commands.map((c) => {
