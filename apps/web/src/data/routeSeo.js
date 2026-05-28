@@ -80,12 +80,14 @@ export const ROUTE_SEO = [
   {
     path: '/terms',
     title: 'Terms of Use',
-    description: 'Terms of use for SKZ Arcade — fan-made Stray Kids puzzles and minigames.',
+    description:
+      'Terms of use for SKZ Arcade (skzarcade.com) — fan project rules, games, leaderboards, and intellectual property.',
   },
   {
     path: '/privacy',
     title: 'Privacy Policy',
-    description: 'How SKZ Arcade collects and uses analytics, leaderboard, and contact data.',
+    description:
+      'Privacy policy for SKZ Arcade — analytics, leaderboards, local storage, contact data, and your rights.',
   },
   {
     path: '/contact',

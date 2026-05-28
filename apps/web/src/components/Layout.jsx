@@ -5,8 +5,10 @@ import RouteDocumentMeta from '@/components/RouteDocumentMeta'
 import AppUpdateToast from '@/components/AppUpdateToast'
 import SmallScreenWarning from '@/components/SmallScreenWarning'
 import { useAnalyticsPageView } from '@/hooks/useAnalyticsPageView'
+import { useScrollToTopOnRoute } from '@/hooks/useScrollToTopOnRoute'
 
 const GAME_PATHS = ['/guess-song', '/guess-member', '/guess-lyric', '/memory-match', '/tier-list', '/fan-profile', '/bias-quiz', '/higher-lower', '/audio-guess']
+const LEGAL_PATHS = ['/terms', '/privacy', '/contact']
 
 function gameMainClass(pathname) {
   if (pathname === '/tier-list') {
@@ -17,6 +19,9 @@ function gameMainClass(pathname) {
   }
   if (pathname === '/arcade') {
     return 'mx-auto w-full max-w-[1140px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
+  }
+  if (LEGAL_PATHS.includes(pathname)) {
+    return 'mx-auto w-full max-w-[960px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
   }
   if (pathname === '/guess-song' || pathname.startsWith('/guess-song/')) {
     return 'mx-auto w-full max-w-[1040px] flex-1 px-5 pb-10 pt-2 md:px-8 md:pb-14'
@@ -35,6 +40,7 @@ export default function Layout() {
   const { pathname } = useLocation()
   const isHome = pathname === '/'
   useAnalyticsPageView()
+  useScrollToTopOnRoute()
 
   return (
     <div className="flex min-h-screen flex-col">
