@@ -1,5 +1,6 @@
 import {
   type Client,
+  type Guild,
   type GuildMember,
   type Message,
   type PartialMessage,
@@ -21,6 +22,12 @@ export type ModLogEventType =
 function truncate(text: string, max = 1000) {
   if (text.length <= max) return text
   return `${text.slice(0, max - 3)}...`
+}
+
+function channelNameForGuild(guild: Guild | null | undefined, channelId: string) {
+  if (!guild) return null
+  const ch = guild.channels.cache.get(channelId)
+  return ch && 'name' in ch ? (ch.name as string) : null
 }
 
 async function persistEvent(
@@ -93,7 +100,7 @@ export async function logMemberInfo(
 
   const ctx = memberLogContext(member, 'Account lookup', requestedBy)
   const embed = buildModLogEmbed(settings.embedTemplates, 'member', ctx)
-  const payload = memberInfoPayload(member, requestedBy.id)
+  const payload = memberInfoPayload(member, requestedBy)
 
   await persistEvent(settings, {
     eventType: 'member_info',
@@ -150,6 +157,7 @@ export async function logMessageDelete(
     author_id: message.author?.id ?? null,
     author_tag: message.author?.tag ?? null,
     channel_id: message.channelId,
+    channel_name: channelNameForGuild(guild, message.channelId),
     content,
   }
 
@@ -237,13 +245,22 @@ export async function logMessageBulkDelete(
   }
   const embed = buildModLogEmbed(settings.embedTemplates, 'message_bulk_delete', ctx)
 
+  let guild: Guild | null = null
+  try {
+    guild = await client.guilds.fetch(guildId)
+  } catch {
+    guild = null
+  }
+
   const payload = {
     channel_id: channelId,
+    channel_name: channelNameForGuild(guild, channelId),
     count: list.length,
     message_ids: list.map((m) => m.id),
     samples: list.slice(0, 10).map((m) => ({
       id: m.id,
       author_id: m.author?.id ?? null,
+      author_tag: m.author?.tag ?? null,
       content: messageContent(m),
     })),
   }

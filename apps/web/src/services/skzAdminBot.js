@@ -74,6 +74,146 @@ export const MOD_LOG_EVENT_TYPES = [
   { value: 'message_bulk_delete', label: 'Bulk delete' },
 ]
 
+/** Tailwind classes for mod log event badges in the admin viewer. */
+export const MOD_LOG_EVENT_STYLES = {
+  member_join: 'bg-emerald-500/15 text-emerald-200 ring-emerald-500/30',
+  member_info: 'bg-violet-500/15 text-violet-200 ring-violet-500/30',
+  message_delete: 'bg-red-500/15 text-red-200 ring-red-500/30',
+  message_edit: 'bg-amber-500/15 text-amber-200 ring-amber-500/30',
+  message_bulk_delete: 'bg-red-500/15 text-red-200 ring-red-500/30',
+}
+
+export function channelNameMapFromDiscordCache(cache = []) {
+  const map = new Map()
+  for (const entry of cache) {
+    if (entry?.entity_type === 'channel' && entry.entity_id) {
+      map.set(entry.entity_id, entry.name)
+    }
+  }
+  return map
+}
+
+export function modLogEventLabel(eventType) {
+  const found = MOD_LOG_EVENT_TYPES.find((t) => t.value === eventType)
+  return found?.label ?? eventType ?? '—'
+}
+
+export function modLogEventStyle(eventType) {
+  return MOD_LOG_EVENT_STYLES[eventType] ?? 'bg-zinc-500/15 text-zinc-300 ring-zinc-500/30'
+}
+
+export function formatModLogUserLabel(tag, userId) {
+  if (tag) return tag
+  if (userId) return `User ${userId}`
+  return null
+}
+
+export function formatModLogChannelLabel(row, channelNameMap) {
+  const name =
+    row.channel_name ||
+    row.payload?.channel_name ||
+    (row.channel_id && channelNameMap?.get(row.channel_id)) ||
+    (row.payload?.channel_id && channelNameMap?.get(row.payload.channel_id))
+  const id = row.channel_id || row.payload?.channel_id
+  if (name) return `#${name}`
+  if (id) return `Channel ${id}`
+  return null
+}
+
+function formatModLogSamples(samples) {
+  if (!Array.isArray(samples) || !samples.length) return null
+  return samples
+    .map((s) => {
+      const author =
+        s.author_tag || (s.author_id ? `User ${s.author_id}` : 'Unknown')
+      const bit = s.content ? String(s.content).slice(0, 120) : '—'
+      return `• ${author}: ${bit}`
+    })
+    .join('\n')
+}
+
+/**
+ * Human-readable detail rows for the admin mod log viewer.
+ * @returns {{ label: string, value: string, fullWidth?: boolean, pre?: boolean, mono?: boolean }[]}
+ */
+export function getModLogDetailRows(row, channelNameMap) {
+  const p = row.payload && typeof row.payload === 'object' ? row.payload : {}
+  const channel = formatModLogChannelLabel(row, channelNameMap)
+
+  const detail = (label, value, opts = {}) => {
+    if (value == null || value === '') return null
+    return { label, value: String(value), ...opts }
+  }
+
+  switch (row.event_type) {
+    case 'message_delete':
+      return [
+        detail(
+          'Author',
+          formatModLogUserLabel(p.author_tag, p.author_id || row.actor_user_id),
+        ),
+        detail('Channel', channel),
+        detail('Message ID', row.message_id, { mono: true }),
+        detail('Deleted content', p.content, { fullWidth: true, pre: true }),
+      ].filter(Boolean)
+
+    case 'message_edit':
+      return [
+        detail(
+          'Author',
+          formatModLogUserLabel(p.author_tag, p.author_id || row.actor_user_id),
+        ),
+        detail('Channel', channel),
+        detail('Message ID', row.message_id, { mono: true }),
+        detail('Before', p.before, { fullWidth: true, pre: true }),
+        detail('After', p.after, { fullWidth: true, pre: true }),
+      ].filter(Boolean)
+
+    case 'message_bulk_delete': {
+      const sampleText = formatModLogSamples(p.samples)
+      return [
+        detail('Channel', channel),
+        detail('Messages removed', p.count != null ? String(p.count) : null),
+        detail('Sample content', sampleText, { fullWidth: true, pre: true }),
+      ].filter(Boolean)
+    }
+
+    case 'member_join':
+    case 'member_info': {
+      const roles =
+        Array.isArray(p.role_names) && p.role_names.length
+          ? p.role_names.join(', ')
+          : null
+      const rows = [
+        detail('User', formatModLogUserLabel(p.tag, p.user_id || row.target_user_id)),
+        detail('Display name', p.display_name),
+        detail('Bot account', p.is_bot === true ? 'Yes' : p.is_bot === false ? 'No' : null),
+        detail('Joined server', p.joined_at ? formatIsoDateTime(p.joined_at) : null),
+        detail('Account created', p.account_created_at ? formatIsoDateTime(p.account_created_at) : null),
+        detail('Roles', roles, { fullWidth: true }),
+      ]
+      if (row.event_type === 'member_info') {
+        rows.unshift(
+          detail(
+            'Requested by',
+            formatModLogUserLabel(p.requested_by_tag, row.actor_user_id),
+          ),
+        )
+      }
+      return rows.filter(Boolean)
+    }
+
+    default:
+      return []
+  }
+}
+
+function formatIsoDateTime(iso) {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return d.toLocaleString()
+}
+
 export const EMPTY_EMBED = {
   title: '',
   description: '',

@@ -58,7 +58,7 @@ export function buildMemberInfoEmbed(
   return embed
 }
 
-export function memberInfoPayload(member: GuildMember, actorUserId?: string) {
+export function memberInfoPayload(member: GuildMember, requestedBy?: GuildMember) {
   const user = member.user
   return {
     username: user.username,
@@ -75,7 +75,8 @@ export function memberInfoPayload(member: GuildMember, actorUserId?: string) {
     role_names: member.roles.cache
       .filter((r) => r.id !== member.guild.id)
       .map((r) => r.name),
-    actor_user_id: actorUserId ?? null,
+    actor_user_id: requestedBy?.id ?? null,
+    requested_by_tag: requestedBy?.user.tag ?? null,
   }
 }
 

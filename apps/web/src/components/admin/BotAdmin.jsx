@@ -17,9 +17,11 @@ import {
 import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
 import ModLogEmbedEditor from '@/components/admin/ModLogEmbedEditor'
+import ModLogsViewer from '@/components/admin/ModLogsViewer'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import {
+  channelNameMapFromDiscordCache,
   channelsFromCache,
   createDailyQuestion,
   createReactionRole,
@@ -357,6 +359,11 @@ export default function BotAdmin() {
 
   const voiceChannels = useMemo(
     () => channelsFromCache(config.discordCache, 'voice'),
+    [config.discordCache],
+  )
+
+  const modLogChannelNameMap = useMemo(
+    () => channelNameMapFromDiscordCache(config.discordCache),
     [config.discordCache],
   )
 
@@ -1970,7 +1977,7 @@ export default function BotAdmin() {
             <div>
               <h3 className="text-xl font-bold tracking-tight text-white">Moderation logs</h3>
               <p className="mt-1 text-sm text-zinc-500">
-                Persisted events from the bot. Mods need{' '}
+                Events the bot records in Discord and in the database. Mods need{' '}
                 <strong className="font-medium text-zinc-300">Mod logs view</strong> on their
                 role (Role permissions).
               </p>
@@ -1997,59 +2004,10 @@ export default function BotAdmin() {
               </button>
             </div>
           </div>
-          <AdminDataTable
+          <ModLogsViewer
+            rows={modLogs}
             loading={modLogsLoading}
-            emptyMessage="No moderation events yet."
-            columns={[
-              {
-                key: 'time',
-                label: 'Time',
-                render: (row) => (
-                  <span className="text-zinc-400">{formatDateTime(row.created_at)}</span>
-                ),
-              },
-              {
-                key: 'type',
-                label: 'Event',
-                render: (row) => (
-                  <span className="font-medium text-zinc-200">
-                    {formatModLogEventType(row.event_type)}
-                  </span>
-                ),
-              },
-              {
-                key: 'target',
-                label: 'Target',
-                render: (row) => (
-                  <span className="font-mono text-xs text-zinc-400">
-                    {row.target_user_id ? (
-                      <span>{row.target_user_id}</span>
-                    ) : row.message_id ? (
-                      <span>msg {row.message_id}</span>
-                    ) : (
-                      '—'
-                    )}
-                  </span>
-                ),
-              },
-              {
-                key: 'channel',
-                label: 'Channel',
-                render: (row) => (
-                  <span className="text-zinc-400">
-                    {row.channel_id ? `#${row.channel_id}` : '—'}
-                  </span>
-                ),
-              },
-              {
-                key: 'summary',
-                label: 'Summary',
-                render: (row) => (
-                  <span className="max-w-md text-zinc-300">{summarizeModLogPayload(row)}</span>
-                ),
-              },
-            ]}
-            rows={modLogs.map((row) => ({ ...row, key: row.id }))}
+            channelNameMap={modLogChannelNameMap}
           />
         </SectionShell>
       )}
@@ -2438,28 +2396,6 @@ export default function BotAdmin() {
       )}
     </div>
   )
-}
-
-function formatModLogEventType(type) {
-  const found = MOD_LOG_EVENT_TYPES.find((t) => t.value === type)
-  return found?.label ?? type ?? '—'
-}
-
-function summarizeModLogPayload(row) {
-  const p = row.payload && typeof row.payload === 'object' ? row.payload : {}
-  if (row.event_type === 'member_join' || row.event_type === 'member_info') {
-    return p.tag || p.username || row.target_user_id || '—'
-  }
-  if (row.event_type === 'message_edit') {
-    return p.before && p.after ? `${String(p.before).slice(0, 40)} → ${String(p.after).slice(0, 40)}` : '—'
-  }
-  if (row.event_type === 'message_delete') {
-    return p.content ? String(p.content).slice(0, 80) : '—'
-  }
-  if (row.event_type === 'message_bulk_delete') {
-    return p.count ? `${p.count} messages` : '—'
-  }
-  return '—'
 }
 
 function formatDateTime(value) {
