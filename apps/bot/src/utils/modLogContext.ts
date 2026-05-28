@@ -1,4 +1,19 @@
-import type { GuildMember } from 'discord.js'
+import type { GuildMember, PartialGuildMember } from 'discord.js'
+
+/** Member on join (full) or leave (may be partial). */
+export type GreetingMember = GuildMember | PartialGuildMember
+
+function roleMentionsForGreetingMember(member: GreetingMember): string {
+  if (!('roles' in member) || !member.roles || !('cache' in member.roles)) {
+    return 'None'
+  }
+  const mentions = member.roles.cache
+    .filter((r) => r.id !== member.guild.id)
+    .sort((a, b) => b.position - a.position)
+    .map((r) => r.toString())
+    .slice(0, 20)
+  return mentions.length ? mentions.join(', ') : 'None'
+}
 
 export function discordTimestamp(ms: number | null | undefined) {
   if (!ms) return '—'
@@ -42,13 +57,30 @@ export function channelMention(id: string | null | undefined) {
 
 /** Context for welcome / goodbye embeds. */
 export function memberGreetingContext(
-  member: GuildMember,
+  member: GreetingMember,
   eventTitle: string,
   options?: { includeLeftAt?: boolean },
 ) {
-  const ctx = memberLogContext(member, eventTitle)
-  if (options?.includeLeftAt) {
-    return { ...ctx, left_at: discordTimestamp(Date.now()) }
+  const user = member.user
+  const ctx = {
+    username: user.username,
+    displayname: member.displayName || user.username,
+    mention: `<@${user.id}>`,
+    tag: user.tag,
+    user_id: user.id,
+    server: member.guild.name,
+    member_count:
+      member.guild.memberCount != null ? String(member.guild.memberCount) : '0',
+    account_created: discordTimestamp(user.createdTimestamp),
+    joined_at: discordTimestamp(member.joinedTimestamp ?? null),
+    is_bot: user.bot ? 'Yes' : 'No',
+    roles: roleMentionsForGreetingMember(member),
+    avatar_url: user.displayAvatarURL({ size: 256 }),
+    event_title: eventTitle,
+    left_at: '—' as string,
   }
-  return { ...ctx, left_at: '—' }
+  if (options?.includeLeftAt) {
+    ctx.left_at = discordTimestamp(Date.now())
+  }
+  return ctx
 }

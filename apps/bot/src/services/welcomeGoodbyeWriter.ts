@@ -1,6 +1,6 @@
 import type { Client, GuildMember, TextChannel } from 'discord.js'
 import { buildConfiguredEmbed } from '../utils/buildConfiguredEmbed.js'
-import { memberGreetingContext } from '../utils/modLogContext.js'
+import { memberGreetingContext, type GreetingMember } from '../utils/modLogContext.js'
 import { loadWelcomeGoodbyeSettings } from './welcomeGoodbyeSettings.js'
 
 async function postEmbed(
@@ -27,7 +27,7 @@ export async function postWelcomeMessage(client: Client, member: GuildMember) {
   await postEmbed(client, settings.welcomeChannelId, settings.welcomeEmbed, ctx)
 }
 
-export async function postGoodbyeMessage(client: Client, member: GuildMember) {
+export async function postGoodbyeMessage(client: Client, member: GreetingMember) {
   const settings = await loadWelcomeGoodbyeSettings()
   if (!settings.goodbyeEnabled) return
   if (settings.guildId && member.guild.id !== settings.guildId) return
