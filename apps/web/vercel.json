@@ -1,9 +1,6 @@
 {
   "functions": {
-    "api/player/auth/**/*.ts": {
-      "includeFiles": "node_modules/@skz/api/src/**"
-    },
-    "api/_lib/**/*.ts": {
+    "api/player/**/*.ts": {
       "includeFiles": "node_modules/@skz/api/src/**"
     }
   },
