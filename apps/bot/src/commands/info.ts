@@ -12,8 +12,6 @@ import {
 } from '../services/modLogWriter.js'
 import type { SlashCommand } from './index.js'
 
-// addUserOption narrows the builder type; cast matches other slash commands.
-
 const infoData = new SlashCommandBuilder()
   .setName('info')
   .setDescription('Look up detailed account information for a member (moderators).')
@@ -26,7 +24,7 @@ const infoData = new SlashCommandBuilder()
   .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 
 export const infoCommand: SlashCommand = {
-  data: infoData as SlashCommandBuilder,
+  data: infoData,
   async execute(interaction) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 

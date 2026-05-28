@@ -1,4 +1,8 @@
-import type { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import type {
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
+} from 'discord.js'
 import { reloadCommand } from './reload.js'
 import { panelCommand } from './panel.js'
 import { leaderboardCommand } from './leaderboard.js'
@@ -8,8 +12,8 @@ export interface SlashCommand {
   /** The slash command definition Discord registers. */
   data:
     | SlashCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
     | ReturnType<SlashCommandBuilder['toJSON']>
-    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
   /** Handler invoked when a user runs the command. */
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>
 }
