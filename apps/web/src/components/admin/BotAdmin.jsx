@@ -15,6 +15,7 @@ import {
   Server,
   Shield,
   FlaskConical,
+  UserPlus,
 } from 'lucide-react'
 import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
@@ -33,6 +34,7 @@ import {
 import AdminSettingsRow from '@/components/admin/AdminSettingsRow'
 import CollapsibleSection from '@/components/admin/CollapsibleSection'
 import ModLogEmbedEditor from '@/components/admin/ModLogEmbedEditor'
+import WelcomeGoodbyeEmbedEditor from '@/components/admin/WelcomeGoodbyeEmbedEditor'
 import ModLogsViewer from '@/components/admin/ModLogsViewer'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
@@ -61,6 +63,10 @@ import {
   modLogEmbedsEqual,
   modLogEmbedsToSettingsPayload,
   parseModLogEmbedsFromSettings,
+  parseWelcomeGoodbyeEmbedsFromSettings,
+  WELCOME_GOODBYE_EMBED_TEMPLATES,
+  welcomeGoodbyeEmbedsEqual,
+  welcomeGoodbyeEmbedsToSettingsPayload,
   queueBotAction,
   saveBotSettings,
   SECRET_PLACEHOLDER,
@@ -119,7 +125,7 @@ function isMigrationError(message) {
   return m.includes('skz_admin_bot_') || m.includes('skz_bot_')
 }
 
-/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs'} BotSection */
+/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs' | 'welcome_goodbye'} BotSection */
 
 function SectionShell({ children }) {
   return <div className={adminPanel}>{children}</div>
@@ -272,8 +278,16 @@ export default function BotAdmin() {
   const [savedModLogEmbeds, setSavedModLogEmbeds] = useState(() =>
     parseModLogEmbedsFromSettings(SETTING_DEFAULTS),
   )
+  const [welcomeGoodbyeEmbedTab, setWelcomeGoodbyeEmbedTab] = useState('welcome')
+  const [welcomeGoodbyeEmbeds, setWelcomeGoodbyeEmbeds] = useState(() =>
+    parseWelcomeGoodbyeEmbedsFromSettings(SETTING_DEFAULTS),
+  )
+  const [savedWelcomeGoodbyeEmbeds, setSavedWelcomeGoodbyeEmbeds] = useState(() =>
+    parseWelcomeGoodbyeEmbedsFromSettings(SETTING_DEFAULTS),
+  )
 
   const canModLogsConfig = isFullAdmin && featureAccess.mod_logs_config !== false
+  const canWelcomeGoodbye = isFullAdmin && featureAccess.welcome_goodbye !== false
   const canModLogsView = isFullAdmin || Boolean(featureAccess.mod_logs_view)
 
   const load = useCallback(async () => {
@@ -288,6 +302,9 @@ export default function BotAdmin() {
         const embeds = parseModLogEmbedsFromSettings(data.settings)
         setModLogEmbeds(embeds)
         setSavedModLogEmbeds(embeds)
+        const greetingEmbeds = parseWelcomeGoodbyeEmbedsFromSettings(data.settings)
+        setWelcomeGoodbyeEmbeds(greetingEmbeds)
+        setSavedWelcomeGoodbyeEmbeds(greetingEmbeds)
       } else if (canModLogsView) {
         setConfig({
           settings: { ...SETTING_DEFAULTS },
@@ -350,11 +367,16 @@ export default function BotAdmin() {
     [modLogEmbeds, savedModLogEmbeds],
   )
 
+  const welcomeGoodbyeEmbedsDirty = useMemo(
+    () => !welcomeGoodbyeEmbedsEqual(welcomeGoodbyeEmbeds, savedWelcomeGoodbyeEmbeds),
+    [welcomeGoodbyeEmbeds, savedWelcomeGoodbyeEmbeds],
+  )
+
   const isDirty = useMemo(() => {
     if (!draft || !config.settings) return false
     const settingsDirty = Object.keys(draft).some((k) => draft[k] !== config.settings[k])
-    return settingsDirty || modLogEmbedsDirty
-  }, [draft, config.settings, modLogEmbedsDirty])
+    return settingsDirty || modLogEmbedsDirty || welcomeGoodbyeEmbedsDirty
+  }, [draft, config.settings, modLogEmbedsDirty, welcomeGoodbyeEmbedsDirty])
 
   const voiceChannels = useMemo(
     () => channelsFromCache(config.discordCache, 'voice'),
@@ -501,12 +523,16 @@ export default function BotAdmin() {
       const next = await saveBotSettings(code, {
         ...draft,
         ...modLogEmbedsToSettingsPayload(modLogEmbeds),
+        ...welcomeGoodbyeEmbedsToSettingsPayload(welcomeGoodbyeEmbeds),
       })
       setConfig(next)
       setDraft(next.settings)
       const embeds = parseModLogEmbedsFromSettings(next.settings)
       setModLogEmbeds(embeds)
       setSavedModLogEmbeds(embeds)
+      const greetingEmbeds = parseWelcomeGoodbyeEmbedsFromSettings(next.settings)
+      setWelcomeGoodbyeEmbeds(greetingEmbeds)
+      setSavedWelcomeGoodbyeEmbeds(greetingEmbeds)
       setMessage(BOT_SETTINGS_SAVED_SUCCESS)
     } catch (err) {
       setError(err.message || 'Save failed')
@@ -814,6 +840,9 @@ export default function BotAdmin() {
     if (section === 'mod_logs') {
       return [root, { key: 'mod_logs', label: 'Moderation logs' }]
     }
+    if (section === 'welcome_goodbye') {
+      return [root, { key: 'welcome_goodbye', label: 'Welcome & goodbye' }]
+    }
     return [root]
   }
 
@@ -1005,6 +1034,37 @@ export default function BotAdmin() {
                         }
                   }
                   onOpen={() => goSection('mod_config')}
+                />
+              )}
+              {isRealFullAdmin && canWelcomeGoodbye && draft && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={UserPlus}
+                  iconBg="bg-emerald-500/15 text-emerald-400"
+                  title="Welcome & goodbye"
+                  description="Custom embeds when members join or leave (separate from mod logs)."
+                  meta={
+                    draft.welcome_enabled === 'true' || draft.goodbye_enabled === 'true'
+                      ? 'Enabled'
+                      : 'Disabled'
+                  }
+                  switch={
+                    previewReadOnly
+                      ? undefined
+                      : {
+                          checked:
+                            draft.welcome_enabled === 'true' ||
+                            draft.goodbye_enabled === 'true',
+                          onChange: (next) =>
+                            setDraft((p) => ({
+                              ...p,
+                              welcome_enabled: next ? 'true' : 'false',
+                              goodbye_enabled: next ? 'true' : 'false',
+                            })),
+                          ariaLabel: 'Enable welcome and goodbye messages',
+                        }
+                  }
+                  onOpen={() => goSection('welcome_goodbye')}
                 />
               )}
               {canModLogsView && (
@@ -2085,6 +2145,119 @@ export default function BotAdmin() {
             onReset={() => {
               setDraft(config.settings)
               setModLogEmbeds(savedModLogEmbeds)
+            }}
+            onSave={handleSaveSettings}
+          />
+        </SectionShell>
+      )}
+
+      {section === 'welcome_goodbye' && canWelcomeGoodbye && draft && (
+        <SectionShell>
+          <AdminBreadcrumb items={breadcrumbItems} />
+          <div className="mb-6">
+            <h3 className="text-xl font-bold tracking-tight text-white">Welcome & goodbye</h3>
+            <p className="mt-1 text-sm text-zinc-500">
+              Full-admin only. Post styled embeds when members join or leave. Bots are skipped.
+              This is separate from moderation join logs — both can run if both are enabled.
+            </p>
+          </div>
+          <div className={adminStack}>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <SubCard
+                collapsible
+                defaultOpen
+                title="Welcome"
+                description="Posted when a non-bot member joins."
+                switch={{
+                  checked: draft.welcome_enabled === 'true',
+                  onChange: (next) =>
+                    setDraft((p) => ({ ...p, welcome_enabled: next ? 'true' : 'false' })),
+                  ariaLabel: 'Enable welcome messages',
+                }}
+              >
+                <DiscordEntitySelect
+                  label="Welcome channel"
+                  value={draft.welcome_channel_id}
+                  onChange={(v) => setDraft((p) => ({ ...p, welcome_channel_id: v }))}
+                  options={channelsFromCache(config.discordCache, 'text')}
+                  placeholder="Select channel"
+                />
+              </SubCard>
+              <SubCard
+                collapsible
+                defaultOpen
+                title="Goodbye"
+                description="Posted when a member leaves the server."
+                switch={{
+                  checked: draft.goodbye_enabled === 'true',
+                  onChange: (next) =>
+                    setDraft((p) => ({ ...p, goodbye_enabled: next ? 'true' : 'false' })),
+                  ariaLabel: 'Enable goodbye messages',
+                }}
+              >
+                <DiscordEntitySelect
+                  label="Goodbye channel"
+                  value={draft.goodbye_channel_id}
+                  onChange={(v) => setDraft((p) => ({ ...p, goodbye_channel_id: v }))}
+                  options={channelsFromCache(config.discordCache, 'text')}
+                  placeholder="Select channel"
+                />
+              </SubCard>
+            </div>
+
+            <SubCard
+              collapsible
+              title="Embed appearance"
+              description="Customize welcome and goodbye embeds — same editor as moderation logs. Placeholders are filled when the bot posts."
+            >
+              <div
+                className="mb-4 flex justify-center admin-inset p-2"
+                role="tablist"
+                aria-label="Welcome and goodbye embed templates"
+              >
+                <div className="inline-flex flex-wrap items-center justify-center gap-1.5">
+                  {WELCOME_GOODBYE_EMBED_TEMPLATES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={welcomeGoodbyeEmbedTab === t.id}
+                      onClick={() => setWelcomeGoodbyeEmbedTab(t.id)}
+                      className={`shrink-0 rounded-lg px-3 py-1.5 text-center text-sm whitespace-nowrap transition ${
+                        welcomeGoodbyeEmbedTab === t.id
+                          ? 'bg-emerald-500/20 font-semibold text-emerald-100 ring-1 ring-emerald-500/40'
+                          : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {WELCOME_GOODBYE_EMBED_TEMPLATES.filter((t) => t.id === welcomeGoodbyeEmbedTab).map(
+                (t) => (
+                  <div key={t.id}>
+                    <p className="mb-4 text-sm text-zinc-500">{t.description}</p>
+                    <WelcomeGoodbyeEmbedEditor
+                      templateId={t.id}
+                      embed={welcomeGoodbyeEmbeds[t.id]}
+                      onChange={(next) =>
+                        setWelcomeGoodbyeEmbeds((prev) => ({ ...prev, [t.id]: next }))
+                      }
+                    />
+                  </div>
+                ),
+              )}
+            </SubCard>
+          </div>
+
+          <SettingsActions
+            isDirty={isDirty}
+            busy={busy}
+            readOnly={previewReadOnly}
+            onReset={() => {
+              setDraft(config.settings)
+              setWelcomeGoodbyeEmbeds(savedWelcomeGoodbyeEmbeds)
             }}
             onSave={handleSaveSettings}
           />

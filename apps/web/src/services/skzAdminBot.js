@@ -18,6 +18,12 @@ const OPERATIONAL_KEYS = [
   'qotd_post_minute_utc',
   'qotd_thread_name_format',
   'qotd_ping_role_id',
+  'welcome_enabled',
+  'welcome_channel_id',
+  'goodbye_enabled',
+  'goodbye_channel_id',
+  'welcome_embed',
+  'goodbye_embed',
   'qotd_bonus_would_you_rather_post_day_utc',
   'qotd_bonus_would_you_rather_post_hour_utc',
   'qotd_bonus_would_you_rather_post_minute_utc',
@@ -74,6 +80,10 @@ export const SETTING_DEFAULTS = {
   qotd_bonus_throwback_thursday_post_day_utc: '4',
   qotd_bonus_throwback_thursday_post_hour_utc: '18',
   qotd_bonus_throwback_thursday_post_minute_utc: '30',
+  welcome_enabled: 'false',
+  welcome_channel_id: '',
+  goodbye_enabled: 'false',
+  goodbye_channel_id: '',
   mod_log_enabled: 'false',
   mod_log_join_channel_id: '',
   mod_log_message_channel_id: '',
@@ -370,8 +380,8 @@ function normaliseEmbedShape(raw, fallback) {
   }
 }
 
-export function parseModLogEmbedJson(value, templateId) {
-  const fallback = DEFAULT_MOD_LOG_EMBEDS[templateId] ?? EMPTY_EMBED
+export function parseModLogEmbedJson(value, templateId, defaultsMap = DEFAULT_MOD_LOG_EMBEDS) {
+  const fallback = defaultsMap[templateId] ?? EMPTY_EMBED
   if (!value?.trim()) return normaliseEmbedShape(null, fallback)
   try {
     return normaliseEmbedShape(JSON.parse(value), fallback)
@@ -404,6 +414,82 @@ export function mergeModLogEmbedForEditor(embed, templateId) {
 
 export function modLogEmbedsEqual(a, b) {
   for (const t of MOD_LOG_EMBED_TEMPLATES) {
+    if (JSON.stringify(a[t.id]) !== JSON.stringify(b[t.id])) return false
+  }
+  return true
+}
+
+export const WELCOME_GOODBYE_EMBED_TEMPLATES = [
+  {
+    id: 'welcome',
+    settingKey: 'welcome_embed',
+    label: 'Welcome',
+    description: 'Posted when a member joins (not bots).',
+  },
+  {
+    id: 'goodbye',
+    settingKey: 'goodbye_embed',
+    label: 'Goodbye',
+    description: 'Posted when a member leaves.',
+  },
+]
+
+export const DEFAULT_WELCOME_GOODBYE_EMBEDS = {
+  welcome: {
+    title: 'Welcome to {server}!',
+    description: 'Hey {mention} — glad you made it to Stay Café.',
+    color: 0x57f287,
+    url: '',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '{avatar_url}' },
+    image: { url: '' },
+    footer: { text: '', icon_url: '' },
+    fields: [
+      { name: 'Member', value: '{tag}', inline: true },
+      { name: 'Member #', value: '{member_count}', inline: true },
+      { name: 'Account created', value: '{account_created}', inline: false },
+    ],
+  },
+  goodbye: {
+    title: 'Goodbye',
+    description: '{mention} left the server.',
+    color: 0xed4245,
+    url: '',
+    author: { name: '', url: '', icon_url: '' },
+    thumbnail: { url: '{avatar_url}' },
+    image: { url: '' },
+    footer: { text: '', icon_url: '' },
+    fields: [
+      { name: 'Member', value: '{tag}', inline: true },
+      { name: 'Left', value: '{left_at}', inline: true },
+      { name: 'Joined', value: '{joined_at}', inline: false },
+    ],
+  },
+}
+
+export function parseWelcomeGoodbyeEmbedsFromSettings(settings = {}) {
+  const out = {}
+  for (const t of WELCOME_GOODBYE_EMBED_TEMPLATES) {
+    out[t.id] = parseModLogEmbedJson(settings[t.settingKey], t.id, DEFAULT_WELCOME_GOODBYE_EMBEDS)
+  }
+  return out
+}
+
+export function welcomeGoodbyeEmbedsToSettingsPayload(embeds) {
+  const payload = {}
+  for (const t of WELCOME_GOODBYE_EMBED_TEMPLATES) {
+    const embed = embeds[t.id] ?? DEFAULT_WELCOME_GOODBYE_EMBEDS[t.id]
+    payload[t.settingKey] = JSON.stringify(embed)
+  }
+  return payload
+}
+
+export function mergeWelcomeGoodbyeEmbedForEditor(embed, templateId) {
+  return normaliseEmbedShape(embed, DEFAULT_WELCOME_GOODBYE_EMBEDS[templateId] ?? EMPTY_EMBED)
+}
+
+export function welcomeGoodbyeEmbedsEqual(a, b) {
+  for (const t of WELCOME_GOODBYE_EMBED_TEMPLATES) {
     if (JSON.stringify(a[t.id]) !== JSON.stringify(b[t.id])) return false
   }
   return true

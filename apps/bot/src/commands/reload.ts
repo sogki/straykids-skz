@@ -6,6 +6,7 @@ import { processOutbox } from '../services/outboxWorker.js'
 import { registerDiscordCommands } from '../services/registerDiscordCommands.js'
 import { syncDiscordCache } from '../services/syncDiscordCache.js'
 import { invalidateModLogSettingsCache } from '../services/modLogSettings.js'
+import { invalidateWelcomeGoodbyeSettingsCache } from '../services/welcomeGoodbyeSettings.js'
 import { clearPlayerAuthConfigCache } from '../http/playerAuthConfig.js'
 import type { SlashCommand } from './index.js'
 
@@ -23,6 +24,7 @@ export const reloadCommand: SlashCommand = {
       clearPlayerAuthConfigCache()
       const reconnected = await refreshDiscordSession(interaction.client)
       invalidateModLogSettingsCache()
+      invalidateWelcomeGoodbyeSettingsCache()
       const config = await reloadBotConfig()
       const synced = await syncDiscordCache(interaction.client)
       const outbox = await processOutbox(interaction.client)

@@ -39,3 +39,16 @@ export function memberLogContext(
 export function channelMention(id: string | null | undefined) {
   return id ? `<#${id}>` : '—'
 }
+
+/** Context for welcome / goodbye embeds. */
+export function memberGreetingContext(
+  member: GuildMember,
+  eventTitle: string,
+  options?: { includeLeftAt?: boolean },
+) {
+  const ctx = memberLogContext(member, eventTitle)
+  if (options?.includeLeftAt) {
+    return { ...ctx, left_at: discordTimestamp(Date.now()) }
+  }
+  return { ...ctx, left_at: '—' }
+}
