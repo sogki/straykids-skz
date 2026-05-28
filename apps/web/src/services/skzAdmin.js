@@ -1,5 +1,8 @@
 import { getSupabaseClient } from '@/lib/supabase/client'
 
+/** Discord slash command that issues one-time admin panel login codes. */
+export const ADMIN_DISCORD_SLASH_COMMAND = 'panel'
+
 const ADMIN_SESSION_KEY = 'skz_admin_staff_session'
 const ADMIN_ACCESS_KEY = 'skz_admin_access_v1'
 const ADMIN_WEB_SESSION_KEY = 'skz_admin_web_session_v1'

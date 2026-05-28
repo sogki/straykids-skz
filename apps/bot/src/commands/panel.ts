@@ -12,10 +12,10 @@ function createLoginCode(length = 8) {
   return out
 }
 
-export const adminLoginCommand: SlashCommand = {
+export const panelCommand: SlashCommand = {
   data: new SlashCommandBuilder()
-    .setName('adminlogin')
-    .setDescription('Get a one-time SKZ admin login code (ephemeral).'),
+    .setName('panel')
+    .setDescription('Get a one-time SKZ admin panel login code (ephemeral).'),
   async execute(interaction) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     if (!interaction.guildId || !interaction.member || !('roles' in interaction.member)) {
@@ -71,8 +71,7 @@ export const adminLoginCommand: SlashCommand = {
     }
 
     await interaction.editReply(
-      `Use this code on the admin login page within 5 minutes:\n\n**${code}**\n\nPermission: **${permissionLevel}**`,
+      `Use this code on the admin panel login page within 5 minutes:\n\n**${code}**\n\nPermission: **${permissionLevel}**`,
     )
   },
 }
-

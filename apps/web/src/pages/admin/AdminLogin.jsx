@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
+  ADMIN_DISCORD_SLASH_COMMAND,
   bootstrapAdminSession,
   exchangeDiscordLoginCode,
   signOutAdminAuth,
@@ -67,7 +68,9 @@ export default function AdminLogin() {
           </div>
           <CardTitle>SKZ Admin</CardTitle>
           <CardDescription>
-            Run <code className="text-xs text-violet-300">/adminlogin</code> in Discord, then
+            Run{' '}
+            <code className="text-xs text-violet-300">/{ADMIN_DISCORD_SLASH_COMMAND}</code> in
+            Discord, then
             enter the one-time code below.
           </CardDescription>
         </CardHeader>
