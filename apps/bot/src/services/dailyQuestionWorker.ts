@@ -44,6 +44,7 @@ interface QotdSettings {
   hourUtc: number
   minuteUtc: number
   threadNameFormat: string
+  pingRoleId: string
   bonusSchedule: Record<Exclude<QuestionType, 'standard'>, BonusSchedule>
 }
 
@@ -64,6 +65,7 @@ async function loadQotdSettings(): Promise<QotdSettings> {
       'qotd_post_hour_utc',
       'qotd_post_minute_utc',
       'qotd_thread_name_format',
+      'qotd_ping_role_id',
       ...BONUS_TYPES.flatMap((b) => [b.dayKey, b.hourKey, b.minuteKey]),
     ])
   if (error) throw new Error(`QOTD settings read failed: ${error.message}`)
@@ -86,6 +88,7 @@ async function loadQotdSettings(): Promise<QotdSettings> {
     hourUtc: parseIntClamped(map['qotd_post_hour_utc'], 0, 23, 12),
     minuteUtc: parseIntClamped(map['qotd_post_minute_utc'], 0, 59, 0),
     threadNameFormat: String(map['qotd_thread_name_format'] ?? 'QOTD • {date}').trim() || 'QOTD • {date}',
+    pingRoleId: String(map['qotd_ping_role_id'] ?? '').trim(),
     bonusSchedule,
   }
 }
@@ -103,6 +106,12 @@ function formatQotdMessage(questionType: string, prompt: string) {
     return `## Throwback Thursday\n\n${prompt}`
   }
   return `## Question of the Day\n\n${prompt}`
+}
+
+function buildQotdPostContent(settings: QotdSettings, questionType: string, prompt: string) {
+  const body = formatQotdMessage(questionType, prompt)
+  if (!settings.pingRoleId) return body
+  return `<@&${settings.pingRoleId}>\n\n${body}`
 }
 
 function threadNameForType(
@@ -261,7 +270,14 @@ async function postQuestionType(
     if (!channel || !channel.isTextBased()) throw new Error('QOTD channel is not text-based')
     const textChannel = channel as TextChannel
     const message = await textChannel.send({
-      content: formatQotdMessage(String(question.question_type ?? questionType), question.prompt),
+      content: buildQotdPostContent(
+        settings,
+        String(question.question_type ?? questionType),
+        question.prompt,
+      ),
+      allowedMentions: settings.pingRoleId
+        ? { roles: [settings.pingRoleId] }
+        : { parse: [] },
     })
 
     const dateLabel = now.toISOString().slice(0, 10)

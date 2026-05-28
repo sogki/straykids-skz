@@ -39,6 +39,7 @@ import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import {
   channelNameMapFromDiscordCache,
   channelsFromCache,
+  rolesFromCache,
   createDailyQuestion,
   createReactionRole,
   parseBulkQotdLine,
@@ -1332,7 +1333,7 @@ export default function BotAdmin() {
                     icon={Clock3}
                     iconBg="bg-violet-500/15 text-violet-400"
                     title="Schedule"
-                    description="Enable QOTD, pick channel, daily UTC time, and thread name."
+                    description="Enable QOTD, channel, ping role, daily UTC time, and thread name."
                     meta={
                       String(draft.qotd_enabled || 'false').toLowerCase() === 'true'
                         ? 'Enabled'
@@ -1384,6 +1385,17 @@ export default function BotAdmin() {
                         onChange={(v) => setField('qotd_channel_id', v)}
                           options={channelsFromCache(config.discordCache, 'text')}
                           placeholder="Select channel..."
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <DiscordEntitySelect
+                          label="Ping role (optional)"
+                          hint="Members with this role are notified when a QOTD or bonus question posts. Sync Discord dropdowns after creating a new role. The role must be mentionable in Discord."
+                          value={draft.qotd_ping_role_id}
+                          onChange={(v) => setField('qotd_ping_role_id', v)}
+                          options={rolesFromCache(config.discordCache)}
+                          placeholder="No role ping"
+                          allowEmpty
                         />
                       </div>
                       <label className="block space-y-1 sm:col-span-2">
