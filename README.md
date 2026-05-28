@@ -33,7 +33,7 @@ npm run build
 ## Apps
 
 - **[`apps/web`](apps/web)** — the existing site. Same code as before, just moved into the workspace. See `apps/web/README.md` for the Supabase setup it inherits from the old root README (now archived below).
-- **[`apps/bot`](apps/bot)** — the Discord bot. Minimal scaffold with `/ping`. See its README for Railway deployment and how to add commands.
+- **[`apps/bot`](apps/bot)** — the Discord bot (`/reload`, `/panel`, `/info`, etc.). See its README for Railway deployment and how to add commands.
 
 ## Packages
 

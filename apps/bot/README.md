@@ -32,7 +32,6 @@ Enable **Server Members Intent** and **Message Content Intent** in the [Discord 
 
 ## Commands
 
-- `/ping` — latency check
 - `/reload` — reload DB config, sync channel/role dropdown cache, process deploy queue
 - `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
 

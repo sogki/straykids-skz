@@ -1,5 +1,4 @@
 import type { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import { pingCommand } from './ping.js'
 import { reloadCommand } from './reload.js'
 import { panelCommand } from './panel.js'
 import { infoCommand } from './info.js'
@@ -19,7 +18,6 @@ export interface SlashCommand {
  * auto-routed by the interaction handler in `src/index.ts`.
  */
 export const commands: SlashCommand[] = [
-  pingCommand,
   reloadCommand,
   panelCommand,
   infoCommand,
