@@ -14,9 +14,16 @@ const PREVIEW_BY_TEMPLATE = {
   goodbye: GOODBYE_PREVIEW_CTX,
 }
 
-export default function WelcomeGoodbyeEmbedEditor({ templateId, embed, onChange, onResetDefault }) {
+export default function WelcomeGoodbyeEmbedEditor({
+  templateId,
+  embed,
+  onChange,
+  onResetDefault,
+  botPreview = null,
+}) {
   return (
     <EmbedTemplateEditor
+      botPreview={botPreview}
       templateId={templateId}
       embed={embed}
       onChange={onChange}

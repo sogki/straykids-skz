@@ -1,4 +1,19 @@
+import { discordAvatarUrl } from '@skz/shared'
 import { getSupabaseClient } from '../lib/supabase/client'
+
+/** Live Discord bot identity for admin message previews (synced by the bot). */
+export function botDiscordPreviewFromSettings(settings = {}) {
+  const userId = String(settings?.bot_discord_user_id ?? '').trim()
+  const username = String(settings?.bot_username ?? '').trim()
+  const globalName = String(settings?.bot_global_name ?? '').trim()
+  const hash = String(settings?.bot_avatar_hash ?? '').trim() || null
+  if (!userId) return null
+  return {
+    name: globalName || username || 'Bot',
+    avatarUrl: discordAvatarUrl(userId, hash, 128),
+    username,
+  }
+}
 
 export const SECRET_PLACEHOLDER = '__SECRET_SET__'
 
@@ -41,6 +56,7 @@ const OPERATIONAL_KEYS = [
   'mod_log_embed_message_delete',
   'mod_log_embed_message_edit',
   'mod_log_embed_message_bulk_delete',
+  'mod_notes_view_embed',
 ]
 
 const SECRET_KEYS = [
@@ -493,6 +509,46 @@ export function welcomeGoodbyeEmbedsEqual(a, b) {
     if (JSON.stringify(a[t.id]) !== JSON.stringify(b[t.id])) return false
   }
   return true
+}
+
+export const MOD_NOTES_VIEW_EMBED_SETTING_KEY = 'mod_notes_view_embed'
+
+export const DEFAULT_MOD_NOTES_VIEW_EMBED = {
+  title: '{event_title} — {target_display_name}',
+  description: '{target_mention} · `{target_user_id}`',
+  color: 0x5865f2,
+  url: '',
+  author: { name: '', url: '', icon_url: '' },
+  thumbnail: { url: '{avatar_url}' },
+  image: { url: '' },
+  footer: { text: 'Page {page} of {total_pages} · {total_notes} note(s)', icon_url: '' },
+  fields: [],
+}
+
+const MOD_NOTES_VIEW_EMBED_DEFAULTS = { view: DEFAULT_MOD_NOTES_VIEW_EMBED }
+
+export function parseModNotesViewEmbedFromSettings(settings = {}) {
+  return parseModLogEmbedJson(
+    settings[MOD_NOTES_VIEW_EMBED_SETTING_KEY],
+    'view',
+    MOD_NOTES_VIEW_EMBED_DEFAULTS,
+  )
+}
+
+export function modNotesViewEmbedToSettingsPayload(embed) {
+  return {
+    [MOD_NOTES_VIEW_EMBED_SETTING_KEY]: JSON.stringify(
+      embed ?? DEFAULT_MOD_NOTES_VIEW_EMBED,
+    ),
+  }
+}
+
+export function mergeModNotesViewEmbedForEditor(embed) {
+  return normaliseEmbedShape(embed, DEFAULT_MOD_NOTES_VIEW_EMBED)
+}
+
+export function modNotesViewEmbedEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b)
 }
 
 function normaliseConfig(raw) {

@@ -16,6 +16,7 @@ import {
   Shield,
   FlaskConical,
   UserPlus,
+  ClipboardList,
 } from 'lucide-react'
 import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
@@ -36,6 +37,8 @@ import CollapsibleSection from '@/components/admin/CollapsibleSection'
 import ModLogEmbedEditor from '@/components/admin/ModLogEmbedEditor'
 import WelcomeGoodbyeEmbedEditor from '@/components/admin/WelcomeGoodbyeEmbedEditor'
 import ModLogsViewer from '@/components/admin/ModLogsViewer'
+import ModNotesPanel from '@/components/admin/ModNotesPanel'
+import ModNotesEmbedEditor from '@/components/admin/ModNotesEmbedEditor'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import {
@@ -57,6 +60,7 @@ import {
   deleteRolePermission,
   deleteUserPermission,
   fetchBotConfig,
+  botDiscordPreviewFromSettings,
   MOD_LOG_EMBED_TEMPLATES,
   MOD_LOG_EVENT_TYPES,
   DEFAULT_MOD_LOG_EMBEDS,
@@ -67,6 +71,9 @@ import {
   WELCOME_GOODBYE_EMBED_TEMPLATES,
   welcomeGoodbyeEmbedsEqual,
   welcomeGoodbyeEmbedsToSettingsPayload,
+  parseModNotesViewEmbedFromSettings,
+  modNotesViewEmbedToSettingsPayload,
+  modNotesViewEmbedEqual,
   queueBotAction,
   saveBotSettings,
   SECRET_PLACEHOLDER,
@@ -104,6 +111,10 @@ import {
   adminModalNarrow,
   adminModalWide,
   adminPanel,
+  adminBotPage,
+  adminBotPageAlerts,
+  adminBotPageSections,
+  adminBotPageToolbar,
   adminSubsection,
   adminStack,
   adminSubsectionHead,
@@ -125,7 +136,7 @@ function isMigrationError(message) {
   return m.includes('skz_admin_bot_') || m.includes('skz_bot_')
 }
 
-/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs' | 'welcome_goodbye'} BotSection */
+/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs' | 'mod_notes' | 'welcome_goodbye'} BotSection */
 
 function SectionShell({ children }) {
   return <div className={adminPanel}>{children}</div>
@@ -285,10 +296,22 @@ export default function BotAdmin() {
   const [savedWelcomeGoodbyeEmbeds, setSavedWelcomeGoodbyeEmbeds] = useState(() =>
     parseWelcomeGoodbyeEmbedsFromSettings(SETTING_DEFAULTS),
   )
+  const [modNotesViewEmbed, setModNotesViewEmbed] = useState(() =>
+    parseModNotesViewEmbedFromSettings(SETTING_DEFAULTS),
+  )
+  const [savedModNotesViewEmbed, setSavedModNotesViewEmbed] = useState(() =>
+    parseModNotesViewEmbedFromSettings(SETTING_DEFAULTS),
+  )
 
   const canModLogsConfig = isFullAdmin && featureAccess.mod_logs_config !== false
   const canWelcomeGoodbye = isFullAdmin && featureAccess.welcome_goodbye !== false
   const canModLogsView = isFullAdmin || Boolean(featureAccess.mod_logs_view)
+  const canModNotes = isFullAdmin || Boolean(featureAccess.mod_notes)
+
+  const botDiscordPreview = useMemo(
+    () => botDiscordPreviewFromSettings(draft ?? config.settings ?? {}),
+    [draft, config.settings],
+  )
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -305,7 +328,10 @@ export default function BotAdmin() {
         const greetingEmbeds = parseWelcomeGoodbyeEmbedsFromSettings(data.settings)
         setWelcomeGoodbyeEmbeds(greetingEmbeds)
         setSavedWelcomeGoodbyeEmbeds(greetingEmbeds)
-      } else if (canModLogsView) {
+        const notesEmbed = parseModNotesViewEmbedFromSettings(data.settings)
+        setModNotesViewEmbed(notesEmbed)
+        setSavedModNotesViewEmbed(notesEmbed)
+      } else if (canModLogsView || canModNotes) {
         setConfig({
           settings: { ...SETTING_DEFAULTS },
           reactionRoles: [],
@@ -325,7 +351,7 @@ export default function BotAdmin() {
     } finally {
       setLoading(false)
     }
-  }, [code, hasStaffCode, canModLogsView])
+  }, [code, hasStaffCode, canModLogsView, canModNotes])
 
   useEffect(() => {
     load()
@@ -372,11 +398,27 @@ export default function BotAdmin() {
     [welcomeGoodbyeEmbeds, savedWelcomeGoodbyeEmbeds],
   )
 
+  const modNotesViewEmbedDirty = useMemo(
+    () => !modNotesViewEmbedEqual(modNotesViewEmbed, savedModNotesViewEmbed),
+    [modNotesViewEmbed, savedModNotesViewEmbed],
+  )
+
   const isDirty = useMemo(() => {
     if (!draft || !config.settings) return false
     const settingsDirty = Object.keys(draft).some((k) => draft[k] !== config.settings[k])
-    return settingsDirty || modLogEmbedsDirty || welcomeGoodbyeEmbedsDirty
-  }, [draft, config.settings, modLogEmbedsDirty, welcomeGoodbyeEmbedsDirty])
+    return (
+      settingsDirty ||
+      modLogEmbedsDirty ||
+      welcomeGoodbyeEmbedsDirty ||
+      modNotesViewEmbedDirty
+    )
+  }, [
+    draft,
+    config.settings,
+    modLogEmbedsDirty,
+    welcomeGoodbyeEmbedsDirty,
+    modNotesViewEmbedDirty,
+  ])
 
   const voiceChannels = useMemo(
     () => channelsFromCache(config.discordCache, 'voice'),
@@ -524,6 +566,7 @@ export default function BotAdmin() {
         ...draft,
         ...modLogEmbedsToSettingsPayload(modLogEmbeds),
         ...welcomeGoodbyeEmbedsToSettingsPayload(welcomeGoodbyeEmbeds),
+        ...modNotesViewEmbedToSettingsPayload(modNotesViewEmbed),
       })
       setConfig(next)
       setDraft(next.settings)
@@ -533,6 +576,9 @@ export default function BotAdmin() {
       const greetingEmbeds = parseWelcomeGoodbyeEmbedsFromSettings(next.settings)
       setWelcomeGoodbyeEmbeds(greetingEmbeds)
       setSavedWelcomeGoodbyeEmbeds(greetingEmbeds)
+      const notesEmbed = parseModNotesViewEmbedFromSettings(next.settings)
+      setModNotesViewEmbed(notesEmbed)
+      setSavedModNotesViewEmbed(notesEmbed)
       setMessage(BOT_SETTINGS_SAVED_SUCCESS)
     } catch (err) {
       setError(err.message || 'Save failed')
@@ -840,6 +886,9 @@ export default function BotAdmin() {
     if (section === 'mod_logs') {
       return [root, { key: 'mod_logs', label: 'Moderation logs' }]
     }
+    if (section === 'mod_notes') {
+      return [root, { key: 'mod_notes', label: 'Mod notes' }]
+    }
     if (section === 'welcome_goodbye') {
       return [root, { key: 'welcome_goodbye', label: 'Welcome & goodbye' }]
     }
@@ -896,7 +945,7 @@ export default function BotAdmin() {
     )
   }
 
-  if (!hasStaffCode && !canModLogsView) {
+  if (!hasStaffCode && !canModLogsView && !canModNotes) {
     return (
       <div className={`${adminPanel} text-sm text-zinc-400`}>
         Your account does not have permission to view the Discord bot admin.
@@ -905,54 +954,53 @@ export default function BotAdmin() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100">Discord bot</h2>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-500">
-            {moderatorOnly
-              ? 'Moderator access — view moderation logs as allowed by your role.'
-              : BOT_PAGE_INTRO}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleSyncDiscord}
-            disabled={previewReadOnly || busy || !draft?.guild_id}
-            className={UI_BUTTON_SECONDARY}
-          >
-            Sync Discord dropdowns
-          </button>
-          <button
-            type="button"
-            onClick={load}
-            disabled={previewReadOnly}
-            className={UI_BUTTON_SECONDARY}
-          >
-            <RefreshCw className="size-4" />
-            Refresh
-          </button>
+    <div className={adminBotPage}>
+      <div className={adminBotPageToolbar}>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-100">Discord bot</h2>
+            <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+              {moderatorOnly
+                ? 'Moderator access — moderation logs and mod notes as allowed by your role.'
+                : BOT_PAGE_INTRO}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleSyncDiscord}
+              disabled={previewReadOnly || busy || !draft?.guild_id}
+              className={UI_BUTTON_SECONDARY}
+            >
+              Sync Discord dropdowns
+            </button>
+            <button
+              type="button"
+              onClick={load}
+              disabled={previewReadOnly}
+              className={UI_BUTTON_SECONDARY}
+            >
+              <RefreshCw className="size-4" />
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
-      {message && (
-        <p className={adminCalloutInfo}>
-          {message}
-        </p>
-      )}
-      {error && (
-        <p className={adminCalloutError}>
-          {error}
-        </p>
-      )}
-      {showHint && (
-        <p className={adminCalloutWarn}>
-          <span className="font-semibold">Setup required: </span>
-          {MIGRATION_HINT}
-        </p>
+      {(message || error || showHint) && (
+        <div className={adminBotPageAlerts}>
+          {message && <p className={adminCalloutInfo}>{message}</p>}
+          {error && <p className={adminCalloutError}>{error}</p>}
+          {showHint && (
+            <p className={adminCalloutWarn}>
+              <span className="font-semibold">Setup required: </span>
+              {MIGRATION_HINT}
+            </p>
+          )}
+        </div>
       )}
 
+      <div className={adminBotPageSections}>
       {section === 'hub' && (
         <SectionShell>
           <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
@@ -1079,6 +1127,17 @@ export default function BotAdmin() {
                     goSection('mod_logs')
                     loadModLogs()
                   }}
+                />
+              )}
+              {canModNotes && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={ClipboardList}
+                  iconBg="bg-indigo-500/15 text-indigo-400"
+                  title="Mod notes"
+                  description="Per-member staff notes and /notes in Discord."
+                  meta="Staff notes"
+                  onOpen={() => goSection('mod_notes')}
                 />
               )}
               {canRolePermissions && (
@@ -1963,6 +2022,7 @@ export default function BotAdmin() {
             message={editingPanel === 'new' ? null : editingPanel}
             initialTemplate={editingPanel === 'new' ? pendingTemplate : null}
             discordCache={config.discordCache}
+            botPreview={botDiscordPreview}
             linkedRoles={config.reactionRoles.filter(
               (r) =>
                 r.bot_message_id === (editingPanel === 'new' ? null : editingPanel.id),
@@ -2129,6 +2189,7 @@ export default function BotAdmin() {
                   <ModLogEmbedEditor
                     templateId={t.id}
                     embed={modLogEmbeds[t.id]}
+                    botPreview={botDiscordPreview}
                     onChange={(next) =>
                       setModLogEmbeds((prev) => ({ ...prev, [t.id]: next }))
                     }
@@ -2241,6 +2302,7 @@ export default function BotAdmin() {
                     <WelcomeGoodbyeEmbedEditor
                       templateId={t.id}
                       embed={welcomeGoodbyeEmbeds[t.id]}
+                      botPreview={botDiscordPreview}
                       onChange={(next) =>
                         setWelcomeGoodbyeEmbeds((prev) => ({ ...prev, [t.id]: next }))
                       }
@@ -2261,6 +2323,43 @@ export default function BotAdmin() {
             }}
             onSave={handleSaveSettings}
           />
+        </SectionShell>
+      )}
+
+      {section === 'mod_notes' && canModNotes && (
+        <SectionShell>
+          <AdminBreadcrumb items={breadcrumbItems} />
+          <div className="mb-6">
+            <h3 className="text-xl font-bold tracking-tight text-white">Mod notes</h3>
+            <p className="mt-1 text-sm text-zinc-500">
+              Staff-only notes per member. Sync Discord to refresh the member list.
+            </p>
+          </div>
+          <div className={adminStack}>
+            {isRealFullAdmin && draft && (
+              <SubCard
+                collapsible
+                title="Notes embed appearance"
+                description="/notes layout in Discord — note text is added as fields automatically."
+              >
+                <ModNotesEmbedEditor
+                  embed={modNotesViewEmbed}
+                  botPreview={botDiscordPreview}
+                  onChange={setModNotesViewEmbed}
+                />
+              </SubCard>
+            )}
+            <ModNotesPanel readOnly={previewReadOnly} onError={setError} />
+          </div>
+          {isRealFullAdmin && draft && (
+            <SettingsActions
+              isDirty={modNotesViewEmbedDirty}
+              busy={busy}
+              readOnly={previewReadOnly}
+              onReset={() => setModNotesViewEmbed(savedModNotesViewEmbed)}
+              onSave={handleSaveSettings}
+            />
+          )}
         </SectionShell>
       )}
 
@@ -2642,6 +2741,7 @@ export default function BotAdmin() {
                               ['qotd', 'QOTD'],
                               ['session_logs', 'Session logs'],
                               ['mod_logs_view', 'Mod logs view'],
+                              ['mod_notes', 'Mod notes'],
                             ].map(([key, label]) => (
                               <AdminSettingsRow
                                 key={key}
@@ -2675,6 +2775,7 @@ export default function BotAdmin() {
           </div>
         </SectionShell>
       )}
+      </div>
     </div>
   )
 }

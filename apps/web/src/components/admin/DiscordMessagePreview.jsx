@@ -59,6 +59,7 @@ export function MessageReactionsPreview({ interactionMode, roles }) {
  * Full Discord message chrome — bot avatar, APP tag, timestamp, embed at Discord width.
  */
 export default function DiscordMessagePreview({
+  botPreview = null,
   botName = 'SKZ Arcade',
   embed,
   interactionMode,
@@ -67,6 +68,8 @@ export default function DiscordMessagePreview({
 }) {
   const now = new Date()
   const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const displayName = botPreview?.name || botName
+  const avatarUrl = botPreview?.avatarUrl || null
 
   return (
     <div
@@ -74,16 +77,25 @@ export default function DiscordMessagePreview({
       style={{ width: DISCORD_MESSAGE_PREVIEW_WIDTH, maxWidth: '100%' }}
     >
       <div className="flex gap-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#5865f2] text-xs font-bold text-white">
-          SKZ
-        </div>
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt=""
+            referrerPolicy="no-referrer"
+            className="size-10 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#5865f2] text-xs font-bold text-white">
+            SKZ
+          </div>
+        )}
         <div
           className="min-w-0 flex-1"
           style={{ maxWidth: DISCORD_EMBED_MAX_WIDTH }}
         >
           <div className="mb-0.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0">
             <span className="text-[15px] font-semibold leading-tight text-[#f2f3f5]">
-              {botName}
+              {displayName}
             </span>
             <span className="rounded-[3px] bg-[#5865f2] px-1 py-px text-[10px] font-bold leading-none text-white">
               APP

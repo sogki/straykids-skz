@@ -13,6 +13,7 @@ import { bootstrapSupabaseFromDb } from './db/supabase.js'
 import { registerButtonRoles } from './handlers/buttonRoles.js'
 import { registerModLogs } from './handlers/modLogs.js'
 import { registerWelcomeGoodbye } from './handlers/welcomeGoodbye.js'
+import { registerModNotesButtons } from './handlers/modNotesButtons.js'
 import { registerReactionRoles } from './handlers/reactionRoles.js'
 import {
   cleanupOrphanedTempChannels,
@@ -57,6 +58,7 @@ registerButtonRoles(client)
 registerVoiceHub(client)
 registerModLogs(client)
 registerWelcomeGoodbye(client)
+registerModNotesButtons(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)

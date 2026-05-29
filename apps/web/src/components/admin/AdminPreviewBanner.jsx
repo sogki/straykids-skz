@@ -1,5 +1,6 @@
 import { Eye, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { adminPreviewBanner } from '@/components/admin/adminUi'
 import { clearAdminPreview } from '@/services/adminPreview'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 
@@ -17,7 +18,7 @@ export default function AdminPreviewBanner() {
   return (
     <div
       role="status"
-      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-500/35 bg-amber-500/10 px-4 py-3"
+      className={`${adminPreviewBanner} flex flex-wrap items-center justify-between gap-3 border border-amber-500/35 bg-amber-500/10 px-4 py-3`}
     >
       <div className="flex min-w-0 items-start gap-2.5">
         <Eye className="mt-0.5 size-4 shrink-0 text-amber-300" aria-hidden />

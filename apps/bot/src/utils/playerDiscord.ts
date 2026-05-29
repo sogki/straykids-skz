@@ -8,13 +8,9 @@ export const PLAYER_DAILY_GAMES = {
 
 export type PlayerDailyGameSlug = keyof typeof PLAYER_DAILY_GAMES
 
-export function discordAvatarUrl(userId: string, hash: string | null | undefined, size = 128) {
-  if (hash) {
-    return `https://cdn.discordapp.com/avatars/${userId}/${hash}.png?size=${size}`
-  }
-  const index = Number(BigInt(userId) % 6n)
-  return `https://cdn.discordapp.com/embed/avatars/${index}.png`
-}
+import { discordAvatarUrl } from '@skz/shared'
+
+export { discordAvatarUrl }
 
 export function gameLabel(slug: string) {
   const meta = PLAYER_DAILY_GAMES[slug as PlayerDailyGameSlug]

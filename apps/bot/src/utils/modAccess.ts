@@ -7,6 +7,7 @@ export type ModAccess = {
   permissionLevel: StaffPermissionLevel
   canViewModLogs: boolean
   canConfigureModLogs: boolean
+  canManageModNotes: boolean
   canRunModCommands: boolean
 }
 
@@ -33,6 +34,7 @@ export async function resolveModAccess(member: GuildMember): Promise<ModAccess> 
       permissionLevel: 'none',
       canViewModLogs: false,
       canConfigureModLogs: false,
+      canManageModNotes: false,
       canRunModCommands: false,
     }
   }
@@ -57,10 +59,15 @@ export async function resolveModAccess(member: GuildMember): Promise<ModAccess> 
     permissionLevel,
     canViewModLogs: isFullAdmin || Boolean(f.mod_logs_view),
     canConfigureModLogs: isFullAdmin && f.mod_logs_config !== false,
+    canManageModNotes: isFullAdmin || Boolean(f.mod_notes),
     canRunModCommands: staffModPlus,
   }
 }
 
 export function memberCanRunModCommand(access: ModAccess): boolean {
   return access.canRunModCommands
+}
+
+export function memberCanManageModNotes(access: ModAccess): boolean {
+  return access.canManageModNotes
 }

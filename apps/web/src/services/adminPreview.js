@@ -15,6 +15,7 @@ export const BOT_FEATURE_DEFAULTS = {
     mod_logs_config: true,
     welcome_goodbye: true,
     mod_logs_view: true,
+    mod_notes: true,
   },
   moderator: {
     credentials: false,
@@ -26,6 +27,7 @@ export const BOT_FEATURE_DEFAULTS = {
     mod_logs_config: false,
     mod_logs_view: false,
     welcome_goodbye: false,
+    mod_notes: false,
   },
   member: {
     credentials: false,
@@ -37,6 +39,7 @@ export const BOT_FEATURE_DEFAULTS = {
     mod_logs_config: false,
     mod_logs_view: false,
     welcome_goodbye: false,
+    mod_notes: false,
   },
 }
 
@@ -50,6 +53,7 @@ export const BOT_FEATURE_LABELS = {
   mod_logs_config: 'Moderation logging (config)',
   welcome_goodbye: 'Welcome & goodbye',
   mod_logs_view: 'Moderation logs (view)',
+  mod_notes: 'Mod notes',
 }
 
 export const PREVIEW_PRESETS = [

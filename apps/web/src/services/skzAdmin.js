@@ -1,3 +1,4 @@
+import { discordAvatarUrl } from '@skz/shared'
 import { getSupabaseClient } from '@/lib/supabase/client'
 
 /** Discord slash command that issues one-time admin panel login codes. */
@@ -136,6 +137,108 @@ export async function fetchAdminModLogs(limit = 100, eventType = null) {
   })
   if (error) throw error
   return Array.isArray(data) ? data : []
+}
+
+function normalizeGuildMember(row) {
+  const extra =
+    row?.extra && typeof row.extra === 'object' && !Array.isArray(row.extra) ? row.extra : {}
+  const userId = String(row?.discord_user_id || row?.entity_id || '').trim()
+  const loginName = String(
+    row?.username || row?.login_username || extra.username || '',
+  ).trim()
+  const displayName = String(
+    row?.display_name || extra.display_name || extra.global_name || row?.name || '',
+  ).trim()
+  const avatarHash =
+    String(row?.avatar_hash || extra.avatar_hash || '').trim() || null
+  return {
+    discord_user_id: userId,
+    username: loginName,
+    display_name: displayName || loginName || userId,
+    avatar_hash: avatarHash,
+    avatar_url: discordAvatarUrl(userId, avatarHash, 128),
+    note_count: Number(row?.note_count) || 0,
+  }
+}
+
+export async function fetchAdminGuildMembers(query = '', { limit = 80, offset = 0 } = {}) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_search_guild_members', {
+    p_session_token: sessionToken,
+    p_query: query || '',
+    p_limit: limit,
+    p_offset: offset,
+  })
+  if (error) throw error
+  const payload =
+    data && typeof data === 'object'
+      ? data
+      : { members: [], total: 0, limit, offset, query: query || '' }
+  const members = Array.isArray(payload.members)
+    ? payload.members.map(normalizeGuildMember)
+    : []
+  return { ...payload, members }
+}
+
+export async function fetchAdminModNoteSubjects() {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_list_mod_note_subjects', {
+    p_session_token: sessionToken,
+  })
+  if (error) throw error
+  return Array.isArray(data) ? data : []
+}
+
+export async function fetchAdminModNotes(targetDiscordUserId, page = 1, perPage = 10) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_list_mod_notes', {
+    p_session_token: sessionToken,
+    p_target_discord_user_id: targetDiscordUserId,
+    p_page: page,
+    p_per_page: perPage,
+  })
+  if (error) throw error
+  return data && typeof data === 'object' ? data : { notes: [], page: 1, total: 0, total_pages: 1 }
+}
+
+export async function createAdminModNote({
+  targetDiscordUserId,
+  body,
+  targetUsername = '',
+  targetDisplayName = '',
+  targetAvatarUrl = '',
+}) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_create_mod_note', {
+    p_session_token: sessionToken,
+    p_target_discord_user_id: targetDiscordUserId,
+    p_body: body,
+    p_target_username: targetUsername || '',
+    p_target_display_name: targetDisplayName || '',
+    p_target_avatar_url: targetAvatarUrl || '',
+  })
+  if (error) throw error
+  return data
+}
+
+export async function deleteAdminModNote(noteId) {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_delete_mod_note', {
+    p_session_token: sessionToken,
+    p_note_id: noteId,
+  })
+  if (error) throw error
+  return Boolean(data)
 }
 
 export async function fetchAdminSessionLogs(limit = 200) {

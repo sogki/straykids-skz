@@ -157,6 +157,7 @@ export default function BotMessageEditor({
   message,
   initialTemplate = null,
   discordCache,
+  botPreview = null,
   onPublish,
   onSave,
   onDiscard,
@@ -833,6 +834,7 @@ export default function BotMessageEditor({
             </p>
             <DiscordMessagePreview
               embed={previewEmbed}
+              botPreview={botPreview}
               interactionMode={
                 isGeneral ? null : draft.interaction_mode
               }

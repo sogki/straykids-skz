@@ -36,6 +36,7 @@ All slash commands are **guild-only** (your configured Stay Café server — ins
 - `/reload` — reload DB config, sync channel/role dropdown cache, re-register slash commands, process deploy queue
 - `/panel` — deploy reaction role panels
 - `/info [user]` — detailed account lookup (Discord roles mapped as **moderator** or **full admin** only)
+- `/notes` — staff mod notes (`view` / `add` / `remove`); requires **moderator** or **full admin** role mapping (same as `/info`)
 - `/leaderboard [game] [days]` — top players by daily puzzle points
 - `/profile [user]` — player points, rank, and daily wins (privacy-aware)
 

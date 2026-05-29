@@ -1,6 +1,11 @@
 /** Shared admin panel class names — keep borders on panels, controls, and tables only. */
 
 export const adminPanel = 'admin-panel'
+export const adminBotPage = 'admin-bot-page'
+export const adminBotPageToolbar = 'admin-bot-page__toolbar'
+export const adminBotPageAlerts = 'admin-bot-page__alerts'
+export const adminBotPageSections = 'admin-bot-page__sections'
+export const adminPreviewBanner = 'admin-preview-banner'
 export const adminSubsection = 'admin-subsection'
 export const adminSubsectionHead = 'admin-subsection__head'
 export const adminHubCard = 'admin-hub-card'

@@ -64,6 +64,66 @@
   }
 }
 
+/* Discord bot admin — one surface, rounded top only; continues straight down */
+.admin-shell-content:has(> .admin-preview-banner):has(> .admin-bot-page) {
+  gap: 0;
+}
+
+.admin-preview-banner {
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+
+.admin-shell-content:has(> .admin-preview-banner) > .admin-bot-page {
+  border-top: none;
+  border-radius: 0;
+}
+
+.admin-bot-page {
+  border: 1px solid var(--admin-border);
+  border-radius: 12px 12px 0 0;
+  background: var(--admin-bg-elevated);
+}
+
+.admin-bot-page__toolbar {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--admin-divider);
+}
+
+@media (min-width: 640px) {
+  .admin-bot-page__toolbar {
+    padding: 1.5rem 1.75rem 1.15rem;
+  }
+}
+
+.admin-bot-page__alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 0;
+}
+
+@media (min-width: 640px) {
+  .admin-bot-page__alerts {
+    padding: 1rem 1.75rem 0;
+  }
+}
+
+.admin-bot-page__alerts .admin-callout {
+  margin: 0;
+}
+
+.admin-bot-page__sections .admin-panel {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.admin-bot-page__sections .admin-panel + .admin-panel {
+  margin-top: 0;
+  border-top: 1px solid var(--admin-divider);
+}
+
 /* Sections inside a panel — spacing only, no extra boxes */
 .admin-subsection {
   padding-top: 1.5rem;
@@ -189,13 +249,48 @@
   background: #232328;
 }
 
+.admin-feature-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 1rem 0;
+}
+
+.admin-feature-card__icon-btn {
+  display: flex;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.admin-feature-card__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-feature-card__open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
 .admin-feature-card__main {
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: stretch;
   min-height: 0;
-  padding: 1rem 1rem 0.85rem;
+  padding: 0.75rem 1rem 0.85rem;
   text-align: left;
   background: transparent;
   border: none;
@@ -203,19 +298,10 @@
   cursor: pointer;
 }
 
-.admin-feature-card__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
 .admin-feature-card__chevron {
   flex-shrink: 0;
   width: 1rem;
   height: 1rem;
-  margin-top: 0.15rem;
   color: #52525b;
   transition: color 0.15s;
 }
@@ -251,13 +337,6 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #71717a;
-}
-
-.admin-feature-card__switch {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 1rem 0.85rem;
 }
 
 /* Hub / settings navigation rows */

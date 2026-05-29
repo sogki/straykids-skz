@@ -2,18 +2,21 @@ import type {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js'
 import { reloadCommand } from './reload.js'
 import { panelCommand } from './panel.js'
 import { leaderboardCommand } from './leaderboard.js'
 import { profileCommand } from './profile.js'
 import { infoCommand } from './info.js'
+import { notesCommand } from './notes.js'
 
 export interface SlashCommand {
   /** The slash command definition Discord registers. */
   data:
     | SlashCommandBuilder
     | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder
     | ReturnType<SlashCommandBuilder['toJSON']>
   /** Handler invoked when a user runs the command. */
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>
@@ -28,6 +31,7 @@ export const guildCommands: SlashCommand[] = [
   reloadCommand,
   panelCommand,
   infoCommand,
+  notesCommand,
   leaderboardCommand,
   profileCommand,
 ]

@@ -7,7 +7,6 @@ import EmbedColorPicker from '@/components/admin/EmbedColorPicker'
 import { DISCORD_MESSAGE_PREVIEW_WIDTH } from '@/components/admin/discordPreviewConstants'
 import { EMPTY_EMBED, hexColorToInt } from '@/services/skzAdminBot'
 import {
-  adminCalloutInfo,
   adminControl,
   adminControlTextarea,
   adminDividerSection,
@@ -46,6 +45,7 @@ export default function EmbedTemplateEditor({
   defaultEmbeds,
   placeholders,
   previewCtx,
+  botPreview = null,
   titleHint = 'Use {event_title} or your own title text.',
 }) {
   const baseEmbed = useMemo(
@@ -103,11 +103,6 @@ export default function EmbedTemplateEditor({
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0 space-y-4">
-        <p className={`${adminCalloutInfo} text-xs`}>
-          The preview substitutes sample data for <code className="text-violet-300">{'{placeholders}'}</code>.
-          Fields below are what you edit — they are saved exactly as written.
-        </p>
-
         <CollapsibleSection
           title="Embed message"
           subtitle="Title, description, color, and field rows."
@@ -227,8 +222,8 @@ export default function EmbedTemplateEditor({
         className="sticky top-20 shrink-0"
         style={{ width: DISCORD_MESSAGE_PREVIEW_WIDTH }}
       >
-        <p className="mb-2 text-xs font-medium text-zinc-500">Discord preview (sample data)</p>
-        <DiscordMessagePreview embed={previewEmbed} />
+        <p className="mb-2 text-xs font-medium text-zinc-500">Discord preview</p>
+        <DiscordMessagePreview embed={previewEmbed} botPreview={botPreview} />
       </div>
     </div>
   )

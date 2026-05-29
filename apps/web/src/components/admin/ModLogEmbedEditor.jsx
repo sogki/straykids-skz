@@ -26,9 +26,16 @@ const PLACEHOLDERS_BY_TEMPLATE = {
   message_bulk_delete: MOD_LOG_MESSAGE_PLACEHOLDERS,
 }
 
-export default function ModLogEmbedEditor({ templateId, embed, onChange, onResetDefault }) {
+export default function ModLogEmbedEditor({
+  templateId,
+  embed,
+  onChange,
+  onResetDefault,
+  botPreview = null,
+}) {
   return (
     <EmbedTemplateEditor
+      botPreview={botPreview}
       templateId={templateId}
       embed={embed}
       onChange={onChange}

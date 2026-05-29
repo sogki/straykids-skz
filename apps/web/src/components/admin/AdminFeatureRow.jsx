@@ -21,8 +21,8 @@ export default function AdminFeatureRow({
   if (layout === 'card') {
     return (
       <article className={adminFeatureCard}>
-        <button type="button" onClick={onOpen} className="admin-feature-card__main">
-          <div className="admin-feature-card__top">
+        <div className="admin-feature-card__top">
+          <button type="button" onClick={onOpen} className="admin-feature-card__icon-btn">
             {Icon ? (
               <span
                 className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
@@ -31,28 +31,33 @@ export default function AdminFeatureRow({
                 <Icon className="size-5" />
               </span>
             ) : null}
-            <ChevronRight className="admin-feature-card__chevron" aria-hidden />
+          </button>
+          <div className="admin-feature-card__actions">
+            {hasSwitch ? (
+              <AdminSwitch
+                checked={switchProps.checked}
+                onChange={switchProps.onChange}
+                disabled={switchProps.disabled}
+                aria-label={switchProps.ariaLabel || `Enable ${title}`}
+              />
+            ) : null}
+            <button
+              type="button"
+              onClick={onOpen}
+              className="admin-feature-card__open"
+              aria-label={`Open ${title}`}
+            >
+              <ChevronRight className="admin-feature-card__chevron" aria-hidden />
+            </button>
           </div>
+        </div>
+        <button type="button" onClick={onOpen} className="admin-feature-card__main">
           <span className="admin-feature-card__title">{title}</span>
           {description ? (
             <span className="admin-feature-card__desc">{description}</span>
           ) : null}
           {meta ? <span className="admin-feature-card__meta">{meta}</span> : null}
         </button>
-        {hasSwitch ? (
-          <div
-            className="admin-feature-card__switch"
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-          >
-            <AdminSwitch
-              checked={switchProps.checked}
-              onChange={switchProps.onChange}
-              disabled={switchProps.disabled}
-              aria-label={switchProps.ariaLabel || `Enable ${title}`}
-            />
-          </div>
-        ) : null}
       </article>
     )
   }
