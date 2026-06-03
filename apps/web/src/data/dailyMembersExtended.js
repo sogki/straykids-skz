@@ -68,7 +68,7 @@ export const dailyMembersExtended = [
     questionType: 'unit',
     prompt: 'I.N is the maknae — who is the second-youngest member?',
     displayAnswer: 'Hyunjin',
-    answers: ['hyunjin', 'hwang hyunjin'],
+    answers: ['seungmin', 'Kim Seung-min'],
     reveals: [
       { type: 'hint', label: 'Hint', content: 'Born 2000' },
       { type: 'category', label: 'Born', content: 'I.N · 2001' },
