@@ -14,6 +14,8 @@ import { registerButtonRoles } from './handlers/buttonRoles.js'
 import { registerModLogs } from './handlers/modLogs.js'
 import { registerWelcomeGoodbye } from './handlers/welcomeGoodbye.js'
 import { registerModNotesButtons } from './handlers/modNotesButtons.js'
+import { registerAccountAgeGate } from './handlers/accountAgeGate.js'
+import { registerContentModeration } from './handlers/contentModeration.js'
 import { registerReactionRoles } from './handlers/reactionRoles.js'
 import {
   cleanupOrphanedTempChannels,
@@ -59,6 +61,8 @@ registerVoiceHub(client)
 registerModLogs(client)
 registerWelcomeGoodbye(client)
 registerModNotesButtons(client)
+registerAccountAgeGate(client)
+registerContentModeration(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)

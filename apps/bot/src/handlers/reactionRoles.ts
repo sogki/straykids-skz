@@ -8,7 +8,9 @@ import {
   type User,
 } from 'discord.js'
 import { findReactionRole, type ReactionRoleRow } from '../db/botConfig.js'
+import { loadSecuritySettings } from '../services/securitySettings.js'
 import { emojiKeyFromReaction } from '../utils/discordEmoji.js'
+import { verifyBlockedByAccountAge } from '../utils/securityGate.js'
 import { applyReactionRoleChange } from '../utils/roleFeedback.js'
 
 async function hydrateReaction(
@@ -47,6 +49,15 @@ async function handleReactionRole(
 
   const member = await fetchMember(reaction, user)
   if (!member) return
+
+  if (action === 'add' && match.category === 'verify') {
+    const settings = await loadSecuritySettings()
+    const blocked = await verifyBlockedByAccountAge(member, settings)
+    if (blocked) {
+      console.log(`[skz-bot] verify blocked (account age): ${user.id}`)
+      return
+    }
+  }
 
   const label = match.label || match.category
   const result = await applyReactionRoleChange(member, match.roleId, label, action)

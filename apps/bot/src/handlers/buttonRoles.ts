@@ -1,7 +1,9 @@
 import { Events, GuildMember, MessageFlags, type Client } from 'discord.js'
 import { getBotConfig } from '../db/botConfig.js'
+import { loadSecuritySettings } from '../services/securitySettings.js'
 import { applyReactionRoleChange, roleDisplayName } from '../utils/roleFeedback.js'
 import { resolvePanelFeedback } from '../utils/panelFeedback.js'
+import { verifyBlockedByAccountAge } from '../utils/securityGate.js'
 
 function panelForRole(botMessageId: string | null) {
   if (!botMessageId) return undefined
@@ -56,6 +58,15 @@ export function registerButtonRoles(client: Client) {
           resolvePanelFeedback(panel, 'already', member, roleName),
         )
         return
+      }
+
+      if (!hadRole && match.category === 'verify') {
+        const settings = await loadSecuritySettings()
+        const blocked = await verifyBlockedByAccountAge(member, settings)
+        if (blocked) {
+          await safeEphemeralReply(interaction, blocked)
+          return
+        }
       }
 
       const result = await applyReactionRoleChange(

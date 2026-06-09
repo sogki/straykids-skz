@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ChevronRight,
   Clock3,
+  Hash,
   KeyRound,
   LayoutGrid,
   ListOrdered,
@@ -14,6 +15,7 @@ import {
   ScrollText,
   Server,
   Shield,
+  ShieldAlert,
   FlaskConical,
   UserPlus,
   ClipboardList,
@@ -39,6 +41,10 @@ import WelcomeGoodbyeEmbedEditor from '@/components/admin/WelcomeGoodbyeEmbedEdi
 import ModLogsViewer from '@/components/admin/ModLogsViewer'
 import ModNotesPanel from '@/components/admin/ModNotesPanel'
 import ModNotesEmbedEditor from '@/components/admin/ModNotesEmbedEditor'
+import SecurityAccountAgePanel from '@/components/admin/SecurityAccountAgePanel'
+import SecurityExemptChannelsPanel from '@/components/admin/SecurityExemptChannelsPanel'
+import SecurityLoggingPanel from '@/components/admin/SecurityLoggingPanel'
+import SecurityPatternsPanel from '@/components/admin/SecurityPatternsPanel'
 import PanelTemplatePicker from '@/components/admin/PanelTemplatePicker'
 import DiscordEntitySelect from '@/components/admin/DiscordEntitySelect'
 import {
@@ -78,6 +84,10 @@ import {
   saveBotSettings,
   SECRET_PLACEHOLDER,
   SETTING_DEFAULTS,
+  contentFilterPatternsEqual,
+  contentFilterPatternsToSettingsPayload,
+  parseContentFilterPatternsFromSettings,
+  parseExemptChannelIds,
   upsertRolePermission,
   upsertUserPermission,
   updateReactionRole,
@@ -136,7 +146,7 @@ function isMigrationError(message) {
   return m.includes('skz_admin_bot_') || m.includes('skz_bot_')
 }
 
-/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'mod_logs' | 'mod_notes' | 'welcome_goodbye'} BotSection */
+/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'security' | 'mod_logs' | 'mod_notes' | 'welcome_goodbye'} BotSection */
 
 function SectionShell({ children }) {
   return <div className={adminPanel}>{children}</div>
@@ -261,6 +271,8 @@ export default function BotAdmin() {
   const [section, setSection] = useState('hub')
   const [serverSubsection, setServerSubsection] = useState('hub')
   const [qotdSubsection, setQotdSubsection] = useState('hub')
+  /** @type {['hub' | 'account_age' | 'patterns' | 'exemptions' | 'logging', function('hub' | 'account_age' | 'patterns' | 'exemptions' | 'logging'): void]} */
+  const [securitySubsection, setSecuritySubsection] = useState('hub')
   const [editingPanel, setEditingPanel] = useState(null) // null | 'new' | message object
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [sessionLogs, setSessionLogs] = useState([])
@@ -302,6 +314,12 @@ export default function BotAdmin() {
   const [savedModNotesViewEmbed, setSavedModNotesViewEmbed] = useState(() =>
     parseModNotesViewEmbedFromSettings(SETTING_DEFAULTS),
   )
+  const [contentFilterPatterns, setContentFilterPatterns] = useState(() =>
+    parseContentFilterPatternsFromSettings(SETTING_DEFAULTS),
+  )
+  const [savedContentFilterPatterns, setSavedContentFilterPatterns] = useState(() =>
+    parseContentFilterPatternsFromSettings(SETTING_DEFAULTS),
+  )
 
   const canModLogsConfig = isFullAdmin && featureAccess.mod_logs_config !== false
   const canWelcomeGoodbye = isFullAdmin && featureAccess.welcome_goodbye !== false
@@ -331,6 +349,9 @@ export default function BotAdmin() {
         const notesEmbed = parseModNotesViewEmbedFromSettings(data.settings)
         setModNotesViewEmbed(notesEmbed)
         setSavedModNotesViewEmbed(notesEmbed)
+        const filterPatterns = parseContentFilterPatternsFromSettings(data.settings)
+        setContentFilterPatterns(filterPatterns)
+        setSavedContentFilterPatterns(filterPatterns)
       } else if (canModLogsView || canModNotes) {
         setConfig({
           settings: { ...SETTING_DEFAULTS },
@@ -403,14 +424,23 @@ export default function BotAdmin() {
     [modNotesViewEmbed, savedModNotesViewEmbed],
   )
 
+  const contentFilterPatternsDirty = useMemo(
+    () => !contentFilterPatternsEqual(contentFilterPatterns, savedContentFilterPatterns),
+    [contentFilterPatterns, savedContentFilterPatterns],
+  )
+
   const isDirty = useMemo(() => {
     if (!draft || !config.settings) return false
-    const settingsDirty = Object.keys(draft).some((k) => draft[k] !== config.settings[k])
+    const settingsDirty = Object.keys(draft).some((k) => {
+      if (k === 'content_filter_patterns') return false
+      return draft[k] !== config.settings[k]
+    })
     return (
       settingsDirty ||
       modLogEmbedsDirty ||
       welcomeGoodbyeEmbedsDirty ||
-      modNotesViewEmbedDirty
+      modNotesViewEmbedDirty ||
+      contentFilterPatternsDirty
     )
   }, [
     draft,
@@ -418,10 +448,16 @@ export default function BotAdmin() {
     modLogEmbedsDirty,
     welcomeGoodbyeEmbedsDirty,
     modNotesViewEmbedDirty,
+    contentFilterPatternsDirty,
   ])
 
   const voiceChannels = useMemo(
     () => channelsFromCache(config.discordCache, 'voice'),
+    [config.discordCache],
+  )
+
+  const textChannels = useMemo(
+    () => channelsFromCache(config.discordCache, 'text'),
     [config.discordCache],
   )
 
@@ -486,6 +522,7 @@ export default function BotAdmin() {
     setSection('hub')
     setServerSubsection('hub')
     setQotdSubsection('hub')
+    setSecuritySubsection('hub')
     setEditingPanel(null)
     setPendingTemplate(null)
   }
@@ -496,8 +533,21 @@ export default function BotAdmin() {
       setServerSubsection('hub')
       setQotdSubsection('hub')
     }
+    if (next === 'security') {
+      setSecuritySubsection('hub')
+    }
     setEditingPanel(null)
     setPendingTemplate(null)
+  }
+
+  function openSecuritySubsection(next) {
+    setSection('security')
+    setSecuritySubsection(next)
+  }
+
+  function resetSecuritySettings() {
+    setDraft(config.settings)
+    setContentFilterPatterns(parseContentFilterPatternsFromSettings(config.settings))
   }
 
   function openQotdSubsection(next) {
@@ -561,12 +611,19 @@ export default function BotAdmin() {
     setBusy(true)
     setError('')
     setMessage('')
+    const patternsToSave = contentFilterPatterns.filter((row) => String(row.text ?? '').trim())
+    if (draft.content_filter_enabled === 'true' && !patternsToSave.length) {
+      setBusy(false)
+      setError('Add at least one blocked text entry before enabling the content filter.')
+      return
+    }
     try {
       const next = await saveBotSettings(code, {
         ...draft,
         ...modLogEmbedsToSettingsPayload(modLogEmbeds),
         ...welcomeGoodbyeEmbedsToSettingsPayload(welcomeGoodbyeEmbeds),
         ...modNotesViewEmbedToSettingsPayload(modNotesViewEmbed),
+        ...contentFilterPatternsToSettingsPayload(patternsToSave),
       })
       setConfig(next)
       setDraft(next.settings)
@@ -579,6 +636,9 @@ export default function BotAdmin() {
       const notesEmbed = parseModNotesViewEmbedFromSettings(next.settings)
       setModNotesViewEmbed(notesEmbed)
       setSavedModNotesViewEmbed(notesEmbed)
+      const filterPatterns = parseContentFilterPatternsFromSettings(next.settings)
+      setContentFilterPatterns(filterPatterns)
+      setSavedContentFilterPatterns(filterPatterns)
       setMessage(BOT_SETTINGS_SAVED_SUCCESS)
     } catch (err) {
       setError(err.message || 'Save failed')
@@ -883,6 +943,29 @@ export default function BotAdmin() {
     if (section === 'mod_config') {
       return [root, { key: 'mod_config', label: 'Moderation logging' }]
     }
+    if (section === 'security') {
+      const items = [
+        root,
+        {
+          key: 'security',
+          label: 'Server security',
+          onClick: () => setSecuritySubsection('hub'),
+        },
+      ]
+      if (securitySubsection !== 'hub') {
+        const labelMap = {
+          account_age: 'Account age gate',
+          patterns: 'Pattern security',
+          exemptions: 'Exempt channels',
+          logging: 'Security logging',
+        }
+        items.push({
+          key: `security-${securitySubsection}`,
+          label: labelMap[securitySubsection] || 'Details',
+        })
+      }
+      return items
+    }
     if (section === 'mod_logs') {
       return [root, { key: 'mod_logs', label: 'Moderation logs' }]
     }
@@ -935,6 +1018,49 @@ export default function BotAdmin() {
         'Guild ID is the source of truth — changing it here updates bot settings on save. Run Sync Discord dropdowns after setting a guild ID.',
     }
   }, [serverSubsection, qotdSubsection])
+
+  const securityPageHeader = useMemo(() => {
+    if (securitySubsection === 'account_age') {
+      return {
+        title: 'Account age gate',
+        description:
+          'Stop brand-new Discord accounts from joining and verifying until they are old enough.',
+      }
+    }
+    if (securitySubsection === 'patterns') {
+      return {
+        title: 'Pattern security',
+        description:
+          'Configure what the bot blocks in chat and what happens when a message matches.',
+      }
+    }
+    if (securitySubsection === 'exemptions') {
+      return {
+        title: 'Exempt channels',
+        description:
+          'Pick channels where the content filter is turned off — typically staff-only mod rooms.',
+      }
+    }
+    if (securitySubsection === 'logging') {
+      return {
+        title: 'Security logging',
+        description:
+          'Discord channels for age-gate and content-filter actions. All events are also stored in moderation log history.',
+      }
+    }
+    return {
+      title: 'Server security',
+      description:
+        'Automated protections for young accounts, prohibited content, and staff discussion channels.',
+    }
+  }, [securitySubsection])
+
+  const securityLoggingConfigured = useMemo(() => {
+    if (!draft) return false
+    return Boolean(
+      draft.account_age_log_channel_id?.trim() || draft.content_filter_log_channel_id?.trim(),
+    )
+  }, [draft])
 
   if (loading || (hasStaffCode && !draft)) {
     return (
@@ -1082,6 +1208,22 @@ export default function BotAdmin() {
                         }
                   }
                   onOpen={() => goSection('mod_config')}
+                />
+              )}
+              {isRealFullAdmin && canModLogsConfig && draft && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={ShieldAlert}
+                  iconBg="bg-red-500/15 text-red-300"
+                  title="Server security"
+                  description="Account age gate and prohibited content auto-ban."
+                  meta={[
+                    draft.account_age_gate_enabled === 'true' ? 'Age gate on' : null,
+                    draft.content_filter_enabled === 'true' ? 'Filter on' : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || 'Configure'}
+                  onOpen={() => goSection('security')}
                 />
               )}
               {isRealFullAdmin && canWelcomeGoodbye && draft && (
@@ -2049,6 +2191,179 @@ export default function BotAdmin() {
             }}
           />
         </>
+      )}
+
+      {section === 'security' && canModLogsConfig && draft && (
+        <SectionShell>
+          <AdminBreadcrumb items={breadcrumbItems} />
+          <div className="mb-6">
+            <h3 className="text-xl font-bold tracking-tight text-white">
+              {securityPageHeader.title}
+            </h3>
+            <p className="mt-1 text-sm text-zinc-500">{securityPageHeader.description}</p>
+          </div>
+
+          {securitySubsection === 'hub' && (
+            <div className={adminHubGrid}>
+              <AdminFeatureRow
+                layout="card"
+                icon={Clock3}
+                iconBg="bg-amber-500/15 text-amber-300"
+                title="Account age gate"
+                description="Minimum account age on join and verify, with kick or ban."
+                meta={
+                  draft.account_age_gate_enabled === 'true'
+                    ? `${draft.account_age_min_hours || '24'}h minimum`
+                    : 'Disabled'
+                }
+                switch={
+                  previewReadOnly
+                    ? undefined
+                    : {
+                        checked: draft.account_age_gate_enabled === 'true',
+                        onChange: (next) =>
+                          setDraft((p) => ({
+                            ...p,
+                            account_age_gate_enabled: next ? 'true' : 'false',
+                          })),
+                        ariaLabel: 'Enable account age gate',
+                      }
+                }
+                onOpen={() => openSecuritySubsection('account_age')}
+              />
+              <AdminFeatureRow
+                layout="card"
+                icon={ShieldAlert}
+                iconBg="bg-rose-500/15 text-rose-300"
+                title="Pattern security"
+                description="Blocked words, phrases, abbreviations, and links."
+                meta={
+                  draft.content_filter_enabled === 'true'
+                    ? `${contentFilterPatterns.filter((r) => r.text?.trim()).length} entries`
+                    : 'Disabled'
+                }
+                switch={
+                  previewReadOnly
+                    ? undefined
+                    : {
+                        checked: draft.content_filter_enabled === 'true',
+                        onChange: (next) =>
+                          setDraft((p) => ({
+                            ...p,
+                            content_filter_enabled: next ? 'true' : 'false',
+                          })),
+                        ariaLabel: 'Enable content filter',
+                      }
+                }
+                onOpen={() => openSecuritySubsection('patterns')}
+              />
+              <AdminFeatureRow
+                layout="card"
+                icon={Hash}
+                iconBg="bg-sky-500/15 text-sky-300"
+                title="Exempt channels"
+                description="Channels where the content filter does not run."
+                meta={`${parseExemptChannelIds(draft.content_filter_exempt_channel_ids).length} selected`}
+                onOpen={() => openSecuritySubsection('exemptions')}
+              />
+              <AdminFeatureRow
+                layout="card"
+                icon={ScrollText}
+                iconBg="bg-orange-500/15 text-orange-300"
+                title="Security logging"
+                description="Discord channels for kicks, bans, and rejections."
+                meta={securityLoggingConfigured ? 'Configured' : 'Set up channels'}
+                onOpen={() => openSecuritySubsection('logging')}
+              />
+            </div>
+          )}
+
+          {securitySubsection === 'account_age' && (
+            <div className={adminStack}>
+              <SecurityAccountAgePanel
+                draft={draft}
+                setDraft={setDraft}
+                readOnly={previewReadOnly}
+              />
+              <SettingsActions
+                isDirty={isDirty}
+                busy={busy}
+                readOnly={previewReadOnly}
+                onReset={resetSecuritySettings}
+                onSave={handleSaveSettings}
+              />
+            </div>
+          )}
+
+          {securitySubsection === 'patterns' && (
+            <div className={adminStack}>
+              <SecurityPatternsPanel
+                draft={draft}
+                setDraft={setDraft}
+                patterns={contentFilterPatterns}
+                onPatternsChange={setContentFilterPatterns}
+                readOnly={previewReadOnly}
+              />
+              <SettingsActions
+                isDirty={isDirty}
+                busy={busy}
+                readOnly={previewReadOnly}
+                onReset={resetSecuritySettings}
+                onSave={handleSaveSettings}
+              />
+            </div>
+          )}
+
+          {securitySubsection === 'exemptions' && (
+            <div className={adminStack}>
+              <SecurityExemptChannelsPanel
+                draft={draft}
+                setDraft={setDraft}
+                channels={textChannels}
+                readOnly={previewReadOnly}
+              />
+              <SettingsActions
+                isDirty={isDirty}
+                busy={busy}
+                readOnly={previewReadOnly}
+                onReset={resetSecuritySettings}
+                onSave={handleSaveSettings}
+              />
+            </div>
+          )}
+
+          {securitySubsection === 'logging' && (
+            <div className={adminStack}>
+              <SecurityLoggingPanel
+                draft={draft}
+                setDraft={setDraft}
+                channels={textChannels}
+                readOnly={previewReadOnly}
+                onViewLogs={() => {
+                  goSection('mod_logs')
+                  loadModLogs()
+                }}
+              />
+              <SettingsActions
+                isDirty={isDirty}
+                busy={busy}
+                readOnly={previewReadOnly}
+                onReset={resetSecuritySettings}
+                onSave={handleSaveSettings}
+              />
+            </div>
+          )}
+
+          {securitySubsection === 'hub' && (
+            <SettingsActions
+              isDirty={isDirty}
+              busy={busy}
+              readOnly={previewReadOnly}
+              onReset={resetSecuritySettings}
+              onSave={handleSaveSettings}
+            />
+          )}
+        </SectionShell>
       )}
 
       {section === 'mod_config' && canModLogsConfig && draft && (

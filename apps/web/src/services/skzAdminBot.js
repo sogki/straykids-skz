@@ -57,6 +57,15 @@ const OPERATIONAL_KEYS = [
   'mod_log_embed_message_edit',
   'mod_log_embed_message_bulk_delete',
   'mod_notes_view_embed',
+  'account_age_gate_enabled',
+  'account_age_min_hours',
+  'account_age_action',
+  'account_age_log_channel_id',
+  'content_filter_enabled',
+  'content_filter_action',
+  'content_filter_log_channel_id',
+  'content_filter_exempt_channel_ids',
+  'content_filter_patterns',
 ]
 
 const SECRET_KEYS = [
@@ -107,7 +116,27 @@ export const SETTING_DEFAULTS = {
   mod_log_message_edits: 'true',
   mod_log_message_deletes: 'true',
   mod_log_message_bulk_deletes: 'true',
+  account_age_gate_enabled: 'false',
+  account_age_min_hours: '24',
+  account_age_action: 'kick',
+  account_age_log_channel_id: '',
+  content_filter_enabled: 'false',
+  content_filter_action: 'ban',
+  content_filter_log_channel_id: '',
+  content_filter_exempt_channel_ids: '',
+  content_filter_patterns: '',
 }
+
+export {
+  DEFAULT_BLOCKED_TEXTS,
+  DEFAULT_CONTENT_FILTER_RULES as DEFAULT_CONTENT_FILTER_PATTERNS,
+  contentFilterRulesEqual as contentFilterPatternsEqual,
+  contentFilterRulesToSettingsPayload as contentFilterPatternsToSettingsPayload,
+  exemptChannelIdsToValue,
+  parseContentFilterRulesFromSettings as parseContentFilterPatternsFromSettings,
+  parseExemptChannelIds,
+  ruleHasValidationError,
+} from './contentFilterRules'
 
 export const MOD_LOG_EVENT_TYPES = [
   { value: '', label: 'All events' },
@@ -116,6 +145,8 @@ export const MOD_LOG_EVENT_TYPES = [
   { value: 'message_delete', label: 'Message deleted' },
   { value: 'message_edit', label: 'Message edited' },
   { value: 'message_bulk_delete', label: 'Bulk delete' },
+  { value: 'account_age_rejected', label: 'Account age rejected' },
+  { value: 'content_filter_action', label: 'Content filter action' },
 ]
 
 /** Tailwind classes for mod log event badges in the admin viewer. */
@@ -125,6 +156,8 @@ export const MOD_LOG_EVENT_STYLES = {
   message_delete: 'bg-red-500/15 text-red-200 ring-red-500/30',
   message_edit: 'bg-amber-500/15 text-amber-200 ring-amber-500/30',
   message_bulk_delete: 'bg-red-500/15 text-red-200 ring-red-500/30',
+  account_age_rejected: 'bg-orange-500/15 text-orange-200 ring-orange-500/30',
+  content_filter_action: 'bg-rose-500/15 text-rose-200 ring-rose-500/30',
 }
 
 export function channelNameMapFromDiscordCache(cache = []) {
