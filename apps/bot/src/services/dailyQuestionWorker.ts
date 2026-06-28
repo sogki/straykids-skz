@@ -1,5 +1,6 @@
 import type { Client, TextChannel } from 'discord.js'
 import { getSupabase } from '../db/supabase.js'
+import { recordQotdCheck } from './botHealth.js'
 
 type QuestionType = 'standard' | 'would_you_rather' | 'throwback_thursday'
 
@@ -384,10 +385,14 @@ export async function processDailyQuestion(
 }
 
 export function startDailyQuestionPoller(client: Client, intervalMs = 60_000) {
-  const tick = () =>
+  const tick = () => {
+    recordQotdCheck().catch((err) =>
+      console.warn('[skz-bot] QOTD health check stamp failed:', err),
+    )
     processDailyQuestion(client).catch((err) =>
       console.warn('[skz-bot] daily question poll failed:', err),
     )
+  }
   tick()
   return setInterval(tick, intervalMs)
 }

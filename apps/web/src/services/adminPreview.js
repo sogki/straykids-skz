@@ -16,6 +16,13 @@ export const BOT_FEATURE_DEFAULTS = {
     welcome_goodbye: true,
     mod_logs_view: true,
     mod_notes: true,
+    bot_health: true,
+    bot_health_connection: true,
+    bot_health_outbox: true,
+    bot_health_qotd: true,
+    bot_health_cache: true,
+    bot_health_features: true,
+    bot_health_activity: true,
   },
   moderator: {
     credentials: false,
@@ -28,6 +35,13 @@ export const BOT_FEATURE_DEFAULTS = {
     mod_logs_view: false,
     welcome_goodbye: false,
     mod_notes: false,
+    bot_health: false,
+    bot_health_connection: false,
+    bot_health_outbox: false,
+    bot_health_qotd: false,
+    bot_health_cache: false,
+    bot_health_features: false,
+    bot_health_activity: false,
   },
   member: {
     credentials: false,
@@ -40,6 +54,13 @@ export const BOT_FEATURE_DEFAULTS = {
     mod_logs_view: false,
     welcome_goodbye: false,
     mod_notes: false,
+    bot_health: false,
+    bot_health_connection: false,
+    bot_health_outbox: false,
+    bot_health_qotd: false,
+    bot_health_cache: false,
+    bot_health_features: false,
+    bot_health_activity: false,
   },
 }
 
@@ -54,7 +75,42 @@ export const BOT_FEATURE_LABELS = {
   welcome_goodbye: 'Welcome & goodbye',
   mod_logs_view: 'Moderation logs (view)',
   mod_notes: 'Mod notes',
+  bot_health: 'Bot health (access)',
+  bot_health_connection: 'Bot health · Connection',
+  bot_health_outbox: 'Bot health · Outbox queue',
+  bot_health_qotd: 'Bot health · QOTD scheduler',
+  bot_health_cache: 'Bot health · Discord cache',
+  bot_health_features: 'Bot health · Feature toggles',
+  bot_health_activity: 'Bot health · Activity stats',
 }
+
+/** Grouped keys for the role-permissions feature grid. */
+export const BOT_FEATURE_GROUPS = [
+  {
+    title: 'Configuration',
+    keys: ['credentials', 'server', 'panels', 'qotd', 'welcome_goodbye', 'mod_logs_config'],
+  },
+  {
+    title: 'Moderation',
+    keys: ['mod_logs_view', 'mod_notes', 'session_logs'],
+  },
+  {
+    title: 'Bot health',
+    keys: [
+      'bot_health',
+      'bot_health_connection',
+      'bot_health_outbox',
+      'bot_health_qotd',
+      'bot_health_cache',
+      'bot_health_features',
+      'bot_health_activity',
+    ],
+  },
+  {
+    title: 'Administration',
+    keys: ['role_permissions'],
+  },
+]
 
 export const PREVIEW_PRESETS = [
   {

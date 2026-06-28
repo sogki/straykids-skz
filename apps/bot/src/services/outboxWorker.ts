@@ -1,5 +1,6 @@
 import type { Client } from 'discord.js'
 import { getSupabase } from '../db/supabase.js'
+import { recordOutboxRun } from './botHealth.js'
 import { deployBotMessage } from './messageDeploy.js'
 import { syncDiscordCache } from './syncDiscordCache.js'
 import {
@@ -82,6 +83,10 @@ export async function processOutbox(client: Client): Promise<number> {
         .eq('id', row.id)
       console.error(`[skz-bot] outbox ${row.id} failed:`, err)
     }
+  }
+
+  if (processed > 0) {
+    await recordOutboxRun()
   }
 
   return processed

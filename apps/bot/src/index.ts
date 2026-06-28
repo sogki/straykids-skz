@@ -27,6 +27,12 @@ import {
   startOutboxRealtime,
   stopOutboxRealtime,
 } from './services/outboxWorker.js'
+import {
+  recordBotReady,
+  recordBotOffline,
+  startHealthHeartbeat,
+  stopHealthHeartbeat,
+} from './services/botHealth.js'
 import { syncDiscordCache } from './services/syncDiscordCache.js'
 import { startDailyQuestionPoller } from './services/dailyQuestionWorker.js'
 import { startRotatingPresence, stopRotatingPresence } from './services/rotatingPresence.js'
@@ -66,6 +72,8 @@ registerContentModeration(client)
 
 async function onReady() {
   console.log(`[skz-bot] logged in as ${client.user?.tag}`)
+  await recordBotReady()
+  startHealthHeartbeat()
   startRotatingPresence(client)
   try {
     const cfg = await reloadBotConfig()
@@ -119,7 +127,9 @@ async function shutdown(signal: string) {
   if (shuttingDown) return
   shuttingDown = true
   console.log(`[skz-bot] shutting down (${signal})`)
+  stopHealthHeartbeat()
   stopRotatingPresence()
+  await recordBotOffline().catch(() => {})
   if (outboxPollerTimer) clearInterval(outboxPollerTimer)
   if (dailyQuestionPollerTimer) clearInterval(dailyQuestionPollerTimer)
   stopOutboxRealtime()

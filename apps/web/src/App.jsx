@@ -47,7 +47,10 @@ export default function App() {
 
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
-            <Route path="bot" element={<AdminBotPage />} />
+            <Route path="bot">
+              <Route index element={<Navigate to="features" replace />} />
+              <Route path="*" element={<AdminBotPage />} />
+            </Route>
             <Route element={<AdminFullRoute />}>
               <Route index element={<AdminOverview />} />
               <Route path="banner" element={<AdminBannerPage />} />

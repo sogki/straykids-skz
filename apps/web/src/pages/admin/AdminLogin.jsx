@@ -28,7 +28,7 @@ export default function AdminLogin() {
         setAccess(nextAccess)
         if (nextAccess?.permission_level === 'full_admin') navigate('/admin', { replace: true })
         if (nextAccess?.permission_level === 'moderator') {
-          navigate('/admin/bot', { replace: true })
+          navigate('/admin/bot/features', { replace: true })
         }
       } catch {
         if (!active) return
@@ -48,7 +48,7 @@ export default function AdminLogin() {
       setAccess(result)
       if (result?.permission_level === 'full_admin') navigate('/admin', { replace: true })
       else if (result?.permission_level === 'moderator') {
-        navigate('/admin/bot', { replace: true })
+          navigate('/admin/bot/features', { replace: true })
       } else {
         setError('Your code is valid but has no mapped permissions.')
       }
@@ -103,7 +103,7 @@ export default function AdminLogin() {
             )}
 
             {access?.permission_level === 'moderator' && (
-              <Button type="button" className="w-full" onClick={() => navigate('/admin/bot', { replace: true })}>
+              <Button type="button" className="w-full" onClick={() => navigate('/admin/bot/features', { replace: true })}>
                 Open Moderator Panel
               </Button>
             )}

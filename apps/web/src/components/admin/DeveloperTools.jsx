@@ -126,7 +126,7 @@ export default function DeveloperTools() {
         ? buildPreviewFromPreset(selectedOption.preset)
         : buildPreviewFromRolePermission(selectedOption.role)
     setAdminPreview(payload)
-    navigate('/admin/bot')
+    navigate('/admin/bot/features')
   }
 
   function exitPreview() {

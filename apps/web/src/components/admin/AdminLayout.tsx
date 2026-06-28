@@ -1,16 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
   Bot,
+  ClipboardList,
+  Clock3,
   FlaskConical,
   Gamepad2,
+  HeartPulse,
   Home,
+  KeyRound,
   LayoutDashboard,
+  LayoutGrid,
+  ListOrdered,
   LogOut,
   Megaphone,
+  ScrollText,
+  Server,
+  Shield,
+  ShieldAlert,
   Trophy,
   Inbox,
+  UserPlus,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -31,8 +42,10 @@ import {
 } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import AdminPreviewBanner from '@/components/admin/AdminPreviewBanner'
+import AdminBotNavGroup from '@/components/admin/AdminBotNavGroup'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { signOutAdminAuth } from '@/services/skzAdmin'
+import { BOT_NAV_PAGE_TITLES, getBotNavItems } from '@/lib/admin/botNav'
 import { cn } from '@/lib/utils'
 import '@/styles/Admin.css'
 
@@ -49,9 +62,21 @@ const DEV_NAV = [
   { to: '/admin/developer', label: 'Developer tools', icon: FlaskConical, badge: 'Beta' as const },
 ] as const
 
-const BOT_NAV = [
-  { to: '/admin/bot', label: 'Discord bot', icon: Bot, badge: 'Beta' as const },
-] as const
+const BOT_ICON_MAP = {
+  bot: Bot,
+  'layout-dashboard': LayoutDashboard,
+  'layout-grid': LayoutGrid,
+  'key-round': KeyRound,
+  server: Server,
+  'list-ordered': ListOrdered,
+  shield: Shield,
+  'shield-alert': ShieldAlert,
+  'user-plus': UserPlus,
+  'heart-pulse': HeartPulse,
+  'scroll-text': ScrollText,
+  'clipboard-list': ClipboardList,
+  'clock-3': Clock3,
+}
 
 function NavGroup({
   label,
@@ -101,10 +126,23 @@ function NavGroup({
 export default function AdminLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { isFullAdmin, isModerator, isPreview, isRealFullAdmin } = useAdminAccess()
+  const { isFullAdmin, isModerator, isPreview, isRealFullAdmin, featureAccess } = useAdminAccess()
   const siteNavItems = isFullAdmin ? SITE_NAV : []
   const showBotNav = isFullAdmin || isModerator
   const showDevNav = isRealFullAdmin && !isPreview
+
+  const botNavItems = useMemo(
+    () =>
+      showBotNav
+        ? getBotNavItems({ isFullAdmin, isRealFullAdmin, featureAccess }).map((item) => ({
+            to: item.path,
+            end: item.path === '/admin/bot/features',
+            label: item.label,
+            icon: BOT_ICON_MAP[item.icon] || Bot,
+          }))
+        : [],
+    [showBotNav, isFullAdmin, isRealFullAdmin, featureAccess],
+  )
 
   useEffect(() => {
     document.documentElement.classList.add('dark')
@@ -115,29 +153,25 @@ export default function AdminLayout() {
     signOutAdminAuth().finally(() => navigate('/admin/login', { replace: true }))
   }
 
-  const pageTitle =
-    pathname === '/admin/developer'
-      ? 'Developer tools'
-      : pathname === '/admin/banner'
-        ? 'Site banner'
-        : pathname === '/admin/leaderboard'
-          ? 'Leaderboard'
-          : pathname === '/admin/analytics'
-            ? 'Analytics'
-            : pathname === '/admin/games'
-              ? 'Games'
-              : pathname === '/admin/requests'
-                ? 'Requests'
-                : pathname === '/admin/bot'
-                  ? 'Discord bot'
-                  : pathname === '/admin'
-                    ? 'Dashboard'
-                    : 'Admin'
+  const pageTitle = useMemo(() => {
+    if (pathname === '/admin/developer') return 'Developer tools'
+    if (pathname === '/admin/banner') return 'Site banner'
+    if (pathname === '/admin/leaderboard') return 'Leaderboard'
+    if (pathname === '/admin/analytics') return 'Analytics'
+    if (pathname === '/admin/games') return 'Games'
+    if (pathname === '/admin/requests') return 'Requests'
+    if (pathname === '/admin') return 'Dashboard'
+    if (pathname.startsWith('/admin/bot')) {
+      const segment = pathname.replace(/^\/admin\/bot\/?/, '').split('/')[0] || 'features'
+      return BOT_NAV_PAGE_TITLES[segment] || 'Discord bot'
+    }
+    return 'Admin'
+  }, [pathname])
 
   return (
     <TooltipProvider>
       <SidebarProvider className="admin-shell min-h-svh">
-        <Sidebar variant="inset" collapsible="icon">
+        <Sidebar variant="sidebar" collapsible="icon">
           <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-1 py-0.5">
               <img
@@ -151,12 +185,12 @@ export default function AdminLayout() {
               </div>
             </div>
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="admin-sidebar-scroll">
             {siteNavItems.length > 0 ? (
               <NavGroup label="Website" items={siteNavItems} pathname={pathname} />
             ) : null}
-            {showBotNav ? (
-              <NavGroup label="Discord bot" items={BOT_NAV} pathname={pathname} />
+            {showBotNav && botNavItems.length > 0 ? (
+              <AdminBotNavGroup items={botNavItems} pathname={pathname} />
             ) : null}
             {showDevNav ? (
               <NavGroup label="Developer" items={DEV_NAV} pathname={pathname} />
@@ -182,8 +216,8 @@ export default function AdminLayout() {
           <SidebarRail />
         </Sidebar>
 
-        <SidebarInset className="admin-shell-inset">
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:px-6">
+        <SidebarInset className="admin-shell-inset min-h-svh">
+          <header className="admin-shell-header flex h-14 shrink-0 items-center gap-2 px-4 md:px-6">
             <SidebarTrigger className="-ml-1" />
             <div className="flex flex-1 items-center justify-between gap-4">
               <h1 className="text-sm font-semibold">{pageTitle}</h1>
@@ -205,7 +239,7 @@ export default function AdminLayout() {
               </span>
             </div>
           </header>
-          <div className="admin-shell-content flex flex-1 flex-col gap-4">
+          <div className="admin-shell-content admin-shell-content--flush flex flex-1 flex-col">
             <AdminPreviewBanner />
             <Outlet />
           </div>

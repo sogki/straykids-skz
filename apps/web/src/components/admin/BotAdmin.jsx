@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Bot,
   ChevronDown,
@@ -19,6 +19,7 @@ import {
   FlaskConical,
   UserPlus,
   ClipboardList,
+  HeartPulse,
 } from 'lucide-react'
 import AdminSwitch from '@/components/admin/AdminSwitch'
 import BotMessageEditor from '@/components/admin/BotMessageEditor'
@@ -41,6 +42,7 @@ import WelcomeGoodbyeEmbedEditor from '@/components/admin/WelcomeGoodbyeEmbedEdi
 import ModLogsViewer from '@/components/admin/ModLogsViewer'
 import ModNotesPanel from '@/components/admin/ModNotesPanel'
 import ModNotesEmbedEditor from '@/components/admin/ModNotesEmbedEditor'
+import BotHealthPanel, { BotHealthHubStrip } from '@/components/admin/BotHealthPanel'
 import SecurityAccountAgePanel from '@/components/admin/SecurityAccountAgePanel'
 import SecurityExemptChannelsPanel from '@/components/admin/SecurityExemptChannelsPanel'
 import SecurityLoggingPanel from '@/components/admin/SecurityLoggingPanel'
@@ -99,6 +101,8 @@ import {
   fetchAdminSessionLogs,
   getStoredAdminCode,
 } from '@/services/skzAdmin'
+import { BOT_FEATURE_GROUPS, BOT_FEATURE_LABELS } from '@/services/adminPreview'
+import { botPathFromSection, botSectionFromPathname } from '@/lib/admin/botNav'
 import {
   adminBtnPrimary,
   adminBtnSecondary,
@@ -146,7 +150,7 @@ function isMigrationError(message) {
   return m.includes('skz_admin_bot_') || m.includes('skz_bot_')
 }
 
-/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'security' | 'mod_logs' | 'mod_notes' | 'welcome_goodbye'} BotSection */
+/** @typedef {'hub' | 'credentials' | 'server' | 'panels' | 'logs' | 'permissions' | 'mod_config' | 'security' | 'mod_logs' | 'mod_notes' | 'welcome_goodbye' | 'bot_health'} BotSection */
 
 function SectionShell({ children }) {
   return <div className={adminPanel}>{children}</div>
@@ -244,6 +248,7 @@ function AdminDataTable({ columns, rows, emptyMessage, loading }) {
 
 export default function BotAdmin() {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const {
     isFullAdmin,
     isRealFullAdmin,
@@ -325,6 +330,9 @@ export default function BotAdmin() {
   const canWelcomeGoodbye = isFullAdmin && featureAccess.welcome_goodbye !== false
   const canModLogsView = isFullAdmin || Boolean(featureAccess.mod_logs_view)
   const canModNotes = isFullAdmin || Boolean(featureAccess.mod_notes)
+  const canBotHealth = isFullAdmin
+    ? featureAccess.bot_health !== false
+    : Boolean(featureAccess.bot_health)
 
   const botDiscordPreview = useMemo(
     () => botDiscordPreviewFromSettings(draft ?? config.settings ?? {}),
@@ -352,7 +360,7 @@ export default function BotAdmin() {
         const filterPatterns = parseContentFilterPatternsFromSettings(data.settings)
         setContentFilterPatterns(filterPatterns)
         setSavedContentFilterPatterns(filterPatterns)
-      } else if (canModLogsView || canModNotes) {
+      } else if (canModLogsView || canModNotes || canBotHealth) {
         setConfig({
           settings: { ...SETTING_DEFAULTS },
           reactionRoles: [],
@@ -372,11 +380,28 @@ export default function BotAdmin() {
     } finally {
       setLoading(false)
     }
-  }, [code, hasStaffCode, canModLogsView, canModNotes])
+  }, [code, hasStaffCode, canModLogsView, canModNotes, canBotHealth])
 
   useEffect(() => {
     load()
   }, [load])
+
+  useEffect(() => {
+    const mapped = botSectionFromPathname(pathname)
+    if (mapped === 'qotd') {
+      setSection('server')
+      setServerSubsection('qotd')
+      setQotdSubsection('hub')
+      return
+    }
+    setSection(mapped)
+    if (mapped === 'server') {
+      setServerSubsection('hub')
+      setQotdSubsection('hub')
+    } else if (mapped === 'security') {
+      setSecuritySubsection('hub')
+    }
+  }, [pathname])
 
   useEffect(() => {
     const nextPrompts = {}
@@ -519,7 +544,7 @@ export default function BotAdmin() {
   )
 
   function goHub() {
-    setSection('hub')
+    navigate(botPathFromSection('hub'))
     setServerSubsection('hub')
     setQotdSubsection('hub')
     setSecuritySubsection('hub')
@@ -528,19 +553,27 @@ export default function BotAdmin() {
   }
 
   function goSection(next) {
-    setSection(next)
-    if (next === 'server') {
+    if (next === 'qotd') {
+      setSection('server')
+      setServerSubsection('qotd')
+      setQotdSubsection('hub')
+    } else if (next === 'server') {
+      setSection('server')
       setServerSubsection('hub')
       setQotdSubsection('hub')
+    } else {
+      setSection(next)
+      if (next === 'security') {
+        setSecuritySubsection('hub')
+      }
     }
-    if (next === 'security') {
-      setSecuritySubsection('hub')
-    }
+    navigate(botPathFromSection(next))
     setEditingPanel(null)
     setPendingTemplate(null)
   }
 
   function openSecuritySubsection(next) {
+    navigate('/admin/bot/security')
     setSection('security')
     setSecuritySubsection(next)
   }
@@ -551,6 +584,7 @@ export default function BotAdmin() {
   }
 
   function openQotdSubsection(next) {
+    navigate('/admin/bot/qotd')
     setServerSubsection('qotd')
     setQotdSubsection(next)
     if (next === 'questions') setDailyQuestionsOpen(true)
@@ -879,7 +913,7 @@ export default function BotAdmin() {
         : null
 
   function buildBreadcrumbs() {
-    const root = { key: 'hub', label: 'Discord bot', onClick: goHub }
+    const root = { key: 'hub', label: 'Features', onClick: goHub }
     if (section === 'hub') return [root]
     if (section === 'credentials') {
       return [root, { key: 'credentials', label: 'Credentials' }]
@@ -974,6 +1008,9 @@ export default function BotAdmin() {
     }
     if (section === 'welcome_goodbye') {
       return [root, { key: 'welcome_goodbye', label: 'Welcome & goodbye' }]
+    }
+    if (section === 'bot_health') {
+      return [root, { key: 'bot_health', label: 'Bot health' }]
     }
     return [root]
   }
@@ -1084,7 +1121,9 @@ export default function BotAdmin() {
       <div className={adminBotPageToolbar}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-zinc-100">Discord bot</h2>
+            <h2 className="text-lg font-semibold text-zinc-100">
+              {section === 'hub' ? 'Features' : breadcrumbItems[breadcrumbItems.length - 1]?.label || 'Discord bot'}
+            </h2>
             <p className="mt-1 max-w-2xl text-sm text-zinc-500">
               {moderatorOnly
                 ? 'Moderator access — moderation logs and mod notes as allowed by your role.'
@@ -1131,7 +1170,7 @@ export default function BotAdmin() {
         <SectionShell>
           <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <h3 className="text-xl font-bold tracking-tight text-white">Bot settings</h3>
+              <h3 className="text-xl font-bold tracking-tight text-white">Features</h3>
               <p className="mt-1 max-w-2xl text-sm text-zinc-500">{BOT_HUB_INTRO}</p>
             </div>
             {isRealFullAdmin && draft && !previewReadOnly && (
@@ -1145,6 +1184,9 @@ export default function BotAdmin() {
               />
             )}
           </div>
+          {canBotHealth && (
+            <BotHealthHubStrip onOpenDetails={() => goSection('bot_health')} />
+          )}
           <div className={adminHubMain}>
             <div className={adminHubGrid}>
               {canPanels && (
@@ -1307,6 +1349,17 @@ export default function BotAdmin() {
                   }}
                 />
               )}
+              {canBotHealth && (
+                <AdminFeatureRow
+                  layout="card"
+                  icon={HeartPulse}
+                  iconBg="bg-rose-500/15 text-rose-400"
+                  title="Bot health"
+                  description="Connection status, outbox queue, QOTD scheduler, and activity metrics."
+                  meta="Live dashboard"
+                  onOpen={() => goSection('bot_health')}
+                />
+              )}
             </div>
           </div>
 
@@ -1359,6 +1412,7 @@ export default function BotAdmin() {
             canSessionLogs,
             canRolePermissions,
             canModLogsView,
+            canBotHealth,
             isRealFullAdmin,
           ].some(Boolean) && (
             <p className={adminCalloutWarn}>
@@ -1447,7 +1501,7 @@ export default function BotAdmin() {
         </SectionShell>
       )}
 
-      {section === 'server' && canServer && (
+      {section === 'server' && (canServer || (serverSubsection === 'qotd' && canQotd)) && (
         <SectionShell>
           <AdminBreadcrumb items={breadcrumbItems} />
           <div className="mb-6">
@@ -2678,6 +2732,20 @@ export default function BotAdmin() {
         </SectionShell>
       )}
 
+      {section === 'bot_health' && canBotHealth && (
+        <SectionShell>
+          <AdminBreadcrumb items={breadcrumbItems} />
+          <div className="mb-6">
+            <h3 className="text-xl font-bold tracking-tight text-white">Bot health</h3>
+            <p className="mt-1 max-w-2xl text-sm text-zinc-500">
+              Live metrics from the bot process and database. Which sections you see depends on
+              your role&apos;s bot health permissions — adjust them in Role permissions.
+            </p>
+          </div>
+          <BotHealthPanel />
+        </SectionShell>
+      )}
+
       {section === 'mod_logs' && canModLogsView && (
         <SectionShell>
           <AdminBreadcrumb items={breadcrumbItems} />
@@ -2725,7 +2793,7 @@ export default function BotAdmin() {
         <SectionShell>
           <AdminBreadcrumb
             items={[
-              { key: 'hub', label: 'Discord bot', onClick: goHub },
+              { key: 'hub', label: 'Features', onClick: goHub },
               { key: 'logs', label: 'Session logs' },
             ]}
           />
@@ -2808,7 +2876,7 @@ export default function BotAdmin() {
         <SectionShell>
           <AdminBreadcrumb
             items={[
-              { key: 'hub', label: 'Discord bot', onClick: goHub },
+              { key: 'hub', label: 'Features', onClick: goHub },
               { key: 'permissions', label: 'Role permissions' },
             ]}
           />
@@ -3044,43 +3112,50 @@ export default function BotAdmin() {
 
                         {rp.permission_level === 'full_admin' ? (
                           <p className="admin-inset text-xs text-zinc-400">
-                            Full admin always has access to all bot admin features, including
-                            moderation log configuration.
+                            Owner user IDs (Discord user overrides) always receive full access.
+                            Feature toggles below apply to this role mapping — use them to limit
+                            bot health sections or other features for users who only have this role.
                           </p>
-                        ) : (
-                          <div className="grid gap-2 sm:grid-cols-2">
-                            {[
-                              ['credentials', 'Credentials'],
-                              ['server', 'Server'],
-                              ['panels', 'Panels'],
-                              ['qotd', 'QOTD'],
-                              ['session_logs', 'Session logs'],
-                              ['mod_logs_view', 'Mod logs view'],
-                              ['mod_notes', 'Mod notes'],
-                            ].map(([key, label]) => (
-                              <AdminSettingsRow
-                                key={key}
-                                title={label}
-                                checked={Boolean((rp.bot_feature_access || {})[key])}
-                                onChange={(next) => {
-                                  const updated = {
-                                    ...(rp.bot_feature_access || {}),
-                                    [key]: next,
-                                  }
-                                  upsertRolePermission(code, {
-                                    discord_role_id: rp.discord_role_id,
-                                    label: rp.label,
-                                    permission_level: rp.permission_level,
-                                    is_active: rp.is_active !== false,
-                                    bot_feature_access: updated,
-                                  })
-                                    .then(setConfig)
-                                    .catch((err) => setError(err.message))
-                                }}
-                              />
-                            ))}
-                          </div>
-                        )}
+                        ) : null}
+                        <div className="space-y-4">
+                          {BOT_FEATURE_GROUPS.map((group) => (
+                            <div key={group.title}>
+                              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
+                                {group.title}
+                              </p>
+                              <div className="grid gap-2 sm:grid-cols-2">
+                                {group.keys.map((key) => (
+                                  <AdminSettingsRow
+                                    key={key}
+                                    title={BOT_FEATURE_LABELS[key] || key}
+                                    checked={
+                                      rp.permission_level === 'full_admin'
+                                        ? (rp.bot_feature_access || {})[key] !== false &&
+                                          ((rp.bot_feature_access || {})[key] ??
+                                            true)
+                                        : Boolean((rp.bot_feature_access || {})[key])
+                                    }
+                                    onChange={(next) => {
+                                      const updated = {
+                                        ...(rp.bot_feature_access || {}),
+                                        [key]: next,
+                                      }
+                                      upsertRolePermission(code, {
+                                        discord_role_id: rp.discord_role_id,
+                                        label: rp.label,
+                                        permission_level: rp.permission_level,
+                                        is_active: rp.is_active !== false,
+                                        bot_feature_access: updated,
+                                      })
+                                        .then(setConfig)
+                                        .catch((err) => setError(err.message))
+                                      }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                   </SubCard>
                 )

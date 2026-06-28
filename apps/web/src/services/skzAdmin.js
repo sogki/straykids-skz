@@ -253,6 +253,18 @@ export async function fetchAdminSessionLogs(limit = 200) {
   return Array.isArray(data) ? data : []
 }
 
+/** Live bot process metrics for the admin health dashboard (session + feature gated). */
+export async function fetchAdminBotHealth() {
+  const sessionToken = getStoredAdminWebSession()
+  if (!sessionToken) throw new Error('No admin session token')
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase.rpc('skz_admin_bot_get_health', {
+    p_session_token: sessionToken,
+  })
+  if (error) throw error
+  return data || null
+}
+
 export async function verifyStaffCode(code) {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase.rpc('skz_admin_verify_staff_code', {

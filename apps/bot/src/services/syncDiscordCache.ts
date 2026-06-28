@@ -8,6 +8,7 @@ import {
 } from 'discord.js'
 import { getBotConfig } from '../db/botConfig.js'
 import { getSupabase } from '../db/supabase.js'
+import { recordCacheSync } from './botHealth.js'
 
 async function memberProfile(m: GuildMember) {
   const user = m.user.partial ? await m.user.fetch() : m.user
@@ -235,5 +236,6 @@ export async function syncDiscordCache(client: Client): Promise<number> {
   console.log(
     `[skz-bot] synced ${totalCached} Discord cache rows (${memberCount} members in role cache) for guild ${guildId}`,
   )
+  await recordCacheSync()
   return totalCached
 }

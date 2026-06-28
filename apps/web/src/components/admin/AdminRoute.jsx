@@ -51,7 +51,7 @@ export function AdminProtectedRoute() {
 export function AdminFullRoute() {
   const access = getEffectiveAdminAccess()
   if (access?.permission_level !== 'full_admin') {
-    return <Navigate to="/admin/bot" replace />
+    return <Navigate to="/admin/bot/features" replace />
   }
   return <Outlet />
 }
@@ -59,7 +59,7 @@ export function AdminFullRoute() {
 /** Developer tools — real full admin only (not while previewing another role). */
 export function AdminDeveloperRoute() {
   if (!isRealFullAdmin()) {
-    return <Navigate to="/admin/bot" replace />
+    return <Navigate to="/admin/bot/features" replace />
   }
   return <Outlet />
 }
