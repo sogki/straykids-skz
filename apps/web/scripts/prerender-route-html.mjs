@@ -1,6 +1,6 @@
 /**
- * Writes dist/<route>/index.html with route-specific meta tags so link
- * previews work on Discord, iMessage, X, etc. (crawlers that skip JS).
+ * Writes dist/<route>/index.html with closed-site meta so old shared links
+ * preview as offline (Discord, iMessage, X, etc.).
  *
  * Run after vite build: node scripts/prerender-route-html.mjs
  */
@@ -15,89 +15,34 @@ const indexPath = path.join(distDir, 'index.html')
 const SITE_ORIGIN = (
   process.env.VITE_SITE_URL?.trim() || 'https://skzarcade.com'
 ).replace(/\/$/, '')
-const SITE_NAME = 'SKZ Arcade'
 const OG_IMAGE = `${SITE_ORIGIN}/og/skz-arcade.png`
 
-const ROUTES = [
-  {
-    path: '/',
-    title: SITE_NAME,
-    description:
-      'Daily Stray Kids puzzles for STAYs — song, member, and lyric guesses, bias quiz, and fan profile maker.',
-  },
-  {
-    path: '/arcade',
-    title: 'Browse Arcade · SKZ Arcade',
-    description: 'Browse all SKZ Arcade minigames for Stray Kids fans.',
-  },
-  {
-    path: '/leaderboard',
-    title: 'Leaderboard · SKZ Arcade',
-    description:
-      'Global player leaderboard and country rankings for daily Stray Kids puzzles.',
-  },
-  {
-    path: '/guess-song',
-    title: 'Daily Song Guess · SKZ Arcade',
-    description:
-      'Guess today’s Stray Kids track from emoji and lyric clues. Five tries, new puzzle every day.',
-  },
-  {
-    path: '/guess-member',
-    title: 'Daily Member Guess · SKZ Arcade',
-    description: 'Guess which Stray Kids member matches today’s vibe clues.',
-  },
-  {
-    path: '/guess-lyric',
-    title: 'Daily Lyric Guess · SKZ Arcade',
-    description: 'Fill in the blank in today’s Stray Kids lyric.',
-  },
-  {
-    path: '/fan-profile',
-    title: 'Fan Profile Maker · SKZ Arcade',
-    description: 'Design and export your STAY profile card.',
-  },
-  {
-    path: '/bias-quiz',
-    title: 'Bias Quiz · SKZ Arcade',
-    description: 'Which Stray Kids member matches your vibe?',
-  },
-  {
-    path: '/memory-match',
-    title: 'SKZOO Match · SKZ Arcade',
-    description: 'Memory minigame — match random SKZOO pairs.',
-  },
-  {
-    path: '/tier-list',
-    title: 'SKZ Tier List Lab · SKZ Arcade',
-    description: 'Customizable tier list builder for SKZOO, gallery photos, and uploads.',
-  },
-  {
-    path: '/higher-lower',
-    title: 'Higher or Lower · SKZ Arcade',
-    description: 'Compare Stray Kids stats to stack a streak — ages, heights, and album years.',
-  },
-  {
-    path: '/audio-guess',
-    title: 'Audio Guess · SKZ Arcade',
-    description:
-      'Name the Stray Kids song from a short clip. Wrong guesses unlock more audio.',
-  },
-  {
-    path: '/terms',
-    title: 'Terms of Use · SKZ Arcade',
-    description: 'Terms of use for SKZ Arcade.',
-  },
-  {
-    path: '/privacy',
-    title: 'Privacy Policy · SKZ Arcade',
-    description: 'Privacy policy for SKZ Arcade.',
-  },
-  {
-    path: '/contact',
-    title: 'Contact · SKZ Arcade',
-    description: 'Contact SKZ Arcade for corrections, takedowns, and privacy requests.',
-  },
+const CLOSED = {
+  title: 'SKZ Arcade — Closed',
+  description:
+    'The arcade has closed. Thanks for playing — games and APIs are offline permanently.',
+}
+
+/** Old paths still get a closed OG preview when someone shares a bookmark. */
+const LEGACY_PATHS = [
+  '/',
+  '/arcade',
+  '/leaderboard',
+  '/guess-song',
+  '/guess-member',
+  '/guess-lyric',
+  '/fan-profile',
+  '/bias-quiz',
+  '/memory-match',
+  '/tier-list',
+  '/higher-lower',
+  '/audio-guess',
+  '/terms',
+  '/privacy',
+  '/contact',
+  '/profile',
+  '/link',
+  '/admin',
 ]
 
 function escapeHtml(s) {
@@ -108,10 +53,10 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
 }
 
-function applyRouteMeta(html, route) {
-  const url = `${SITE_ORIGIN}${route.path === '/' ? '/' : route.path}`
-  const title = escapeHtml(route.title)
-  const description = escapeHtml(route.description)
+function applyClosedMeta(html, routePath) {
+  const url = `${SITE_ORIGIN}${routePath === '/' ? '/' : routePath}`
+  const title = escapeHtml(CLOSED.title)
+  const description = escapeHtml(CLOSED.description)
   const image = escapeHtml(OG_IMAGE)
 
   let out = html
@@ -153,14 +98,6 @@ function applyRouteMeta(html, route) {
     `<meta name="twitter:image" content="${image}"`
   )
 
-  if (!out.includes('og:image:secure_url')) {
-    out = out.replace(
-      /<meta property="og:image" content="[^"]*"\s*\/>/,
-      (m) =>
-        `${m}\n    <meta property="og:image:secure_url" content="${image}" />`
-    )
-  }
-
   return out
 }
 
@@ -171,15 +108,15 @@ if (!fs.existsSync(indexPath)) {
 
 const baseHtml = fs.readFileSync(indexPath, 'utf8')
 
-for (const route of ROUTES) {
-  const html = applyRouteMeta(baseHtml, route)
+for (const routePath of LEGACY_PATHS) {
+  const html = applyClosedMeta(baseHtml, routePath)
   const outPath =
-    route.path === '/'
+    routePath === '/'
       ? indexPath
-      : path.join(distDir, route.path.slice(1), 'index.html')
+      : path.join(distDir, routePath.slice(1), 'index.html')
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
   fs.writeFileSync(outPath, html)
-  console.log(`  ${route.path} → ${path.relative(distDir, outPath)}`)
+  console.log(`  ${routePath} → ${path.relative(distDir, outPath)}`)
 }
 
-console.log(`Prerendered ${ROUTES.length} routes for Open Graph crawlers.`)
+console.log(`Prerendered ${LEGACY_PATHS.length} closed routes for Open Graph crawlers.`)

@@ -6,35 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const jypeImageProxy = {
-  target: 'https://d1al7qj7ydfbpt.cloudfront.net',
-  changeOrigin: true,
-  rewrite: (reqPath) => reqPath.replace(/^\/api\/jype-image/, ''),
-}
-
+/** Site is offline — no API proxies. */
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-    },
-  },
-  server: {
-    proxy: {
-      '/api/jype-image': jypeImageProxy,
-      '/api/player': {
-        target: 'http://127.0.0.1:8787',
-        changeOrigin: true,
-      },
-    },
-  },
-  preview: {
-    proxy: {
-      '/api/jype-image': jypeImageProxy,
-      '/api/player': {
-        target: 'http://127.0.0.1:8787',
-        changeOrigin: true,
-      },
     },
   },
 })
